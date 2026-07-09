@@ -6,6 +6,7 @@ const DPR = Math.max(1, window.devicePixelRatio || 1);
 const state = {
   config: null,
   apiMode: false,
+  llm: { provider: 'ollama', model: 'gemma4:e4b', ok: false },
   agents: [],
   activity: [],
   stats: {},
@@ -23,8 +24,24 @@ const state = {
 };
 
 const LOCAL_CONFIG_KEY = 'vo-node-office-config';
+const LOCAL_AGENTS_KEY = 'vo-node-agents';
 
 const localAgents = [
+  {
+    id: 'ai-person-1',
+    name: 'AI Person 1',
+    roleName: 'Client Concierge',
+    role: 'Front Desk / Client Intake Manager',
+    job: 'Welcome visitors, capture project briefs, qualify leads, summarize needs, identify missing details, and route work to the right office team.',
+    personality: 'Warm, concise, organized, calm under pressure, politely curious, and excellent at turning messy client requests into clear intake notes.',
+    branch: 'CEO',
+    color: '#ffd43b',
+    status: 'intake',
+    x: 500,
+    y: 115,
+    managed: true,
+    llm: { provider: 'ollama', model: 'gemma4:e4b' }
+  },
   { id: 'calen', name: 'Calen', branch: 'CEO', color: '#5fbf60', role: 'Lead operator', status: 'browsing', x: 610, y: 100 },
   { id: 'flo', name: 'Flo', branch: 'BRANCH_2', color: '#8a2be2', role: 'Kitchen ops', status: 'watching TV', x: 735, y: 110 },
   { id: 'alan', name: 'Alan', branch: 'BRANCH_2', color: '#ff6d00', role: 'Support', status: 'walking', x: 545, y: 210 },
@@ -80,6 +97,7 @@ const furnitureBounds = {
 const tools = {
   editToggle: document.getElementById('editToggle'),
   saveLayout: document.getElementById('saveLayout'),
+  spawnToggle: document.getElementById('spawnToggle'),
   resetCamera: document.getElementById('resetCamera'),
   expandBubbles: document.getElementById('expandBubbles'),
   minimizeBubbles: document.getElementById('minimizeBubbles'),
@@ -92,8 +110,19 @@ const tools = {
   chatForm: document.getElementById('chatForm'),
   chatInput: document.getElementById('chatInput'),
   closeAgent: document.getElementById('closeAgent'),
+  spawnPanel: document.getElementById('spawnPanel'),
+  closeSpawn: document.getElementById('closeSpawn'),
+  spawnForm: document.getElementById('spawnForm'),
+  spawnName: document.getElementById('spawnName'),
+  spawnRoleName: document.getElementById('spawnRoleName'),
+  spawnJob: document.getElementById('spawnJob'),
+  spawnPersonality: document.getElementById('spawnPersonality'),
+  spawnBranch: document.getElementById('spawnBranch'),
   branchList: document.getElementById('branchList'),
-  activityLog: document.getElementById('activityLog')
+  activityLog: document.getElementById('activityLog'),
+  llmStatus: document.getElementById('llmStatus'),
+  llmModel: document.getElementById('llmModel'),
+  llmDetail: document.getElementById('llmDetail')
 };
 
 async function boot() {
@@ -103,6 +132,7 @@ async function boot() {
   applySnapshot(initial.snapshot);
   if (state.apiMode) {
     connectSocket();
+    refreshLlmHealth();
   } else {
     startLocalSimulation();
   }
@@ -126,20 +156,23 @@ async function loadInitialState() {
     };
   } catch {
     const saved = localStorage.getItem(LOCAL_CONFIG_KEY);
+    const savedAgents = localStorage.getItem(LOCAL_AGENTS_KEY);
     const config = saved
       ? JSON.parse(saved)
       : await fetch('/data/default-office-config.json').then(res => res.json());
+    const agents = savedAgents ? JSON.parse(savedAgents) : localAgents.map(agent => ({ ...agent }));
     return {
       apiMode: false,
       config,
       snapshot: {
-        agents: localAgents.map(agent => ({ ...agent })),
+        agents,
         activity: [
           localLog('Static Netlify mode loaded'),
           localLog('Office config loaded in browser'),
           localLog('Agent simulation started')
         ],
-        stats: buildStats(localAgents)
+        stats: buildStats(agents),
+        llm: { provider: 'ollama', model: 'gemma4:e4b', ok: false }
       }
     };
   }
@@ -162,6 +195,7 @@ function applySnapshot(data) {
   }
   if (data.activity) state.activity = data.activity;
   if (data.stats) state.stats = data.stats;
+  if (data.llm) state.llm = { ...state.llm, ...data.llm };
   renderDashboard();
 }
 
@@ -209,6 +243,17 @@ function buildStats(agents) {
   };
 }
 
+async function refreshLlmHealth() {
+  try {
+    const res = await fetch('/api/llm/health');
+    const data = await res.json();
+    state.llm = data;
+  } catch {
+    state.llm = { provider: 'ollama', model: 'gemma4:e4b', ok: false, error: 'Ollama health check failed' };
+  }
+  renderDashboard();
+}
+
 function resizeCanvas() {
   const box = canvas.getBoundingClientRect();
   canvas.width = Math.floor(box.width * DPR);
@@ -225,6 +270,13 @@ function wireEvents() {
     tools.editHint.classList.toggle('hidden', !state.editMode);
   });
   tools.saveLayout.addEventListener('click', saveLayout);
+  tools.spawnToggle.addEventListener('click', () => {
+    tools.spawnPanel.classList.toggle('hidden');
+  });
+  tools.closeSpawn.addEventListener('click', () => {
+    tools.spawnPanel.classList.add('hidden');
+  });
+  tools.spawnForm.addEventListener('submit', spawnAgent);
   tools.resetCamera.addEventListener('click', () => {
     state.userCamera = false;
     fitCameraToOffice();
@@ -808,11 +860,21 @@ function drawPerformance() {
 
 function renderDashboard() {
   if (!state.config) return;
+  if (tools.llmStatus) {
+    const online = state.llm && state.llm.ok && state.llm.modelAvailable !== false;
+    const missing = state.llm && state.llm.ok && state.llm.modelAvailable === false;
+    tools.llmStatus.textContent = online ? 'online' : (missing ? 'missing' : (state.apiMode ? 'offline' : 'static'));
+    tools.llmStatus.style.color = online ? 'var(--green)' : 'var(--gold)';
+    tools.llmModel.textContent = state.llm?.model || 'gemma4:e4b';
+    tools.llmDetail.textContent = state.apiMode
+      ? (online ? 'Ollama ready for agent chat' : (missing ? 'Ollama is running, but this model is not installed' : `Ollama unavailable: ${state.llm?.error || 'model not confirmed'}`))
+      : 'Static deploy uses browser demo replies';
+  }
   const branches = state.config.branches || [];
   const branchCards = branches.concat([{ id: 'UNASSIGNED', name: 'Unassigned', emoji: '?' }]).map(branch => {
     const members = state.agents.filter(agent => (agent.branch || 'UNASSIGNED') === branch.id);
     const rows = members.map(agent => (
-      `<div class="agent-row"><span>${agent.name}</span><small>${agent.status}</small></div>`
+      `<div class="agent-row"><span>${agent.name}</span><small>${agent.roleName || agent.status}</small></div>`
     )).join('');
     const color = branch.color || branchColors[branch.id] || '#8b95aa';
     return `<div class="branch-card" style="border-left-color:${color}"><strong>${branch.emoji || ''} ${branch.name}</strong><small>${members.length} agent${members.length === 1 ? '' : 's'}</small>${rows}</div>`;
@@ -860,6 +922,75 @@ function addFurniture(x, y) {
   state.selectedFurniture = item;
 }
 
+async function spawnAgent(event) {
+  event.preventDefault();
+  const payload = {
+    name: tools.spawnName.value.trim() || `AI Person ${state.agents.length + 1}`,
+    roleName: tools.spawnRoleName.value.trim() || 'Office Manager',
+    role: tools.spawnRoleName.value.trim() || 'Office Manager',
+    job: tools.spawnJob.value.trim(),
+    personality: tools.spawnPersonality.value.trim(),
+    branch: tools.spawnBranch.value,
+    x: 500 + Math.random() * 120 - 60,
+    y: 125 + Math.random() * 40,
+    color: pickAgentColor()
+  };
+  if (state.apiMode) {
+    try {
+      const res = await fetch('/api/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Spawn failed');
+      const data = await res.json();
+      state.agents = [];
+      applySnapshot(data);
+      tools.spawnPanel.classList.add('hidden');
+      prepareNextSpawnName();
+      return;
+    } catch {
+      state.apiMode = false;
+    }
+  }
+  const agent = createLocalAgent(payload);
+  state.agents.unshift(agent);
+  localStorage.setItem(LOCAL_AGENTS_KEY, JSON.stringify(state.agents));
+  state.activity.push(localLog(`${agent.name} spawned as ${agent.roleName}`));
+  state.stats = buildStats(state.agents);
+  renderDashboard();
+  tools.spawnPanel.classList.add('hidden');
+  prepareNextSpawnName();
+}
+
+function createLocalAgent(payload) {
+  const base = payload.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `agent-${Date.now()}`;
+  const ids = new Set(state.agents.map(agent => agent.id));
+  let id = base;
+  let suffix = 2;
+  while (ids.has(id)) {
+    id = `${base}-${suffix}`;
+    suffix += 1;
+  }
+  return {
+    id,
+    ...payload,
+    status: 'intake',
+    managed: true,
+    llm: { provider: 'ollama', model: state.llm?.model || 'gemma4:e4b' }
+  };
+}
+
+function prepareNextSpawnName() {
+  const count = state.agents.filter(agent => agent.managed).length + 1;
+  tools.spawnName.value = `AI Person ${count}`;
+}
+
+function pickAgentColor() {
+  const colors = ['#ffd43b', '#60a5fa', '#4ade80', '#ff7a1a', '#ff5cb8', '#a78bfa', '#22d3ee'];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
 async function saveLayout() {
   localStorage.setItem(LOCAL_CONFIG_KEY, JSON.stringify(state.config));
   if (!state.apiMode) {
@@ -882,8 +1013,8 @@ function openAgentPanel(agent) {
   state.selectedAgent = agent;
   tools.agentPanel.classList.remove('hidden');
   tools.agentTitle.textContent = agent.name;
-  tools.agentMeta.textContent = `${agent.role} - ${agent.status}`;
-  tools.chatLog.innerHTML = `<div class="message">${agent.name}: ${agent.bubble || 'Ready for work.'}</div>`;
+  tools.agentMeta.textContent = `${agent.roleName || agent.role} - ${agent.job || agent.status}`;
+  tools.chatLog.innerHTML = `<div class="message">${agent.name}: ${agent.bubble || agent.personality || 'Ready for work.'}</div>`;
   tools.chatInput.focus();
 }
 
@@ -913,7 +1044,7 @@ async function sendChat(event) {
       state.apiMode = false;
     }
   }
-  const reply = `${state.selectedAgent.name}: queued "${text}" in the browser demo.`;
+  const reply = `${state.selectedAgent.name}: I captured "${text}". As ${state.selectedAgent.roleName || state.selectedAgent.role}, my next step is to clarify the goal, deadline, decision maker, budget, and handoff owner.`;
   state.selectedAgent.status = 'chatting';
   state.selectedAgent.bubble = reply;
   state.selectedAgent.bubbleUntil = Date.now() + 9000;

@@ -375,6 +375,78 @@ select {
   cursor: pointer;
 }
 
+.spawn-panel {
+  left: 24px;
+  right: auto;
+  bottom: 24px;
+  width: min(430px, calc(100% - 48px));
+}
+
+.spawn-form {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.spawn-form label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.spawn-form input,
+.spawn-form textarea,
+.spawn-form select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #080a14;
+  color: var(--text);
+  padding: 9px 10px;
+}
+
+.spawn-form textarea {
+  min-height: 74px;
+  resize: vertical;
+  line-height: 1.35;
+}
+
+.primary-action {
+  height: 40px;
+  border: 1px solid #806800;
+  border-radius: 6px;
+  background: #3b3000;
+  color: #fff4b3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.llm-card {
+  display: grid;
+  gap: 4px;
+  padding: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  background: #15182a;
+}
+
+.llm-card strong {
+  color: var(--gold);
+  font-size: 13px;
+}
+
+.llm-card small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .edit-hint {
   position: absolute;
   left: 16px;

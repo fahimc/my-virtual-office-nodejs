@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Virtual Office Node</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/styles.css?v=agent-spawn-1">
   <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script defer src="/app.js"></script>
+  <script defer src="/app.js?v=agent-spawn-1"></script>
 </head>
 <body>
   <main class="shell">
@@ -26,8 +26,30 @@
           </form>
         </div>
         <div class="edit-hint hidden" id="editHint">Edit mode: choose furniture, click to place, drag items to move.</div>
+        <div class="floating-panel spawn-panel hidden" id="spawnPanel">
+          <div class="panel-title">
+            <span>Spawn Agent</span>
+            <button class="icon-button" id="closeSpawn" title="Close"><i data-lucide="x"></i></button>
+          </div>
+          <form class="spawn-form" id="spawnForm">
+            <label>Name<input id="spawnName" autocomplete="off" value="AI Person 2"></label>
+            <label>Role Name<input id="spawnRoleName" autocomplete="off" value="Project Intake Manager"></label>
+            <label>Job<textarea id="spawnJob">Collect client requirements, organize the project brief, identify missing details, and prepare clean handoff notes.</textarea></label>
+            <label>Personality<textarea id="spawnPersonality">Clear, friendly, detail-oriented, direct, and careful with client expectations.</textarea></label>
+            <label>Team
+              <select id="spawnBranch">
+                <option value="CEO">CEO</option>
+                <option value="BRANCH_1">Branch #1</option>
+                <option value="BRANCH_2">Branch #2</option>
+                <option value="UNASSIGNED">Unassigned</option>
+              </select>
+            </label>
+            <button class="primary-action" title="Spawn agent"><i data-lucide="sparkles"></i><span>Spawn Agent</span></button>
+          </form>
+        </div>
       </div>
       <div class="toolbar">
+        <button id="spawnToggle" title="Spawn agent"><i data-lucide="sparkles"></i><span>Spawn Agent</span></button>
         <button id="editToggle" title="Edit office"><i data-lucide="pencil"></i><span>Edit Office</span></button>
         <button id="saveLayout" title="Save layout"><i data-lucide="save"></i><span>Save</span></button>
         <button id="resetCamera" title="Reset view"><i data-lucide="scan"></i><span>Reset View</span></button>
@@ -49,6 +71,13 @@
         <h1>Virtual Office</h1>
         <p>Dashboard</p>
       </div>
+      <section class="dash-section">
+        <div class="section-heading"><i data-lucide="brain-circuit"></i><span>LLM</span><b id="llmStatus">checking</b></div>
+        <div class="llm-card">
+          <strong id="llmModel">gemma4:e4b</strong>
+          <small id="llmDetail">Ollama local runtime</small>
+        </div>
+      </section>
       <section class="dash-section">
         <div class="section-heading"><i data-lucide="monitor"></i><span>PC Performance</span><b id="heartbeat">live</b></div>
         <div class="meter"><span>CPU</span><strong id="cpuValue">0%</strong><div><em id="cpuBar"></em></div></div>

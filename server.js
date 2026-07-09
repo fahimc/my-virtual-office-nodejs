@@ -11,6 +11,9 @@ const PORT = Number(process.env.PORT || process.env.VO_PORT || 3000);
 const DATA_DIR = path.join(__dirname, 'data');
 const DEFAULT_CONFIG = path.join(DATA_DIR, 'default-office-config.json');
 const USER_CONFIG = path.join(DATA_DIR, 'office-config.json');
+const AGENTS_FILE = path.join(DATA_DIR, 'agents.json');
+const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'gemma4:e4b';
 
 const app = express();
 const server = createServer(app);
@@ -19,7 +22,25 @@ const wss = new WebSocketServer({ server });
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const agents = [
+const defaultSpawnedAgents = [
+  {
+    id: 'ai-person-1',
+    name: 'AI Person 1',
+    roleName: 'Client Concierge',
+    role: 'Front Desk / Client Intake Manager',
+    job: 'Welcome visitors, capture project briefs, qualify leads, summarize needs, identify missing details, and route work to the right office team.',
+    personality: 'Warm, concise, organized, calm under pressure, politely curious, and excellent at turning messy client requests into clear intake notes.',
+    branch: 'CEO',
+    color: '#ffd43b',
+    status: 'intake',
+    x: 500,
+    y: 115,
+    managed: true,
+    llm: { provider: 'ollama', model: OLLAMA_MODEL }
+  }
+];
+
+const baseAgents = [
   { id: 'calen', name: 'Calen', branch: 'CEO', color: '#5fbf60', role: 'Lead operator', status: 'browsing', x: 610, y: 100 },
   { id: 'flo', name: 'Flo', branch: 'BRANCH_2', color: '#8a2be2', role: 'Kitchen ops', status: 'watching TV', x: 735, y: 110 },
   { id: 'alan', name: 'Alan', branch: 'BRANCH_2', color: '#ff6d00', role: 'Support', status: 'walking', x: 545, y: 210 },
@@ -37,10 +58,12 @@ const agents = [
   { id: 'trainer', name: 'Gen Trainer', branch: 'UNASSIGNED', color: '#ec407a', role: 'Trainer', status: 'working', x: 770, y: 690 }
 ];
 
+let spawnedAgents = [];
+
 const activityLog = [
   logEntry('Office booted'),
   logEntry('Agents discovered'),
-  logEntry('Default layout loaded')
+  logEntry(`Ollama model set to ${OLLAMA_MODEL}`)
 ];
 
 function logEntry(message) {
@@ -55,6 +78,21 @@ async function ensureConfig() {
     const seed = await fs.readFile(DEFAULT_CONFIG, 'utf8');
     await fs.writeFile(USER_CONFIG, seed);
   }
+}
+
+async function ensureAgents() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  try {
+    const raw = await fs.readFile(AGENTS_FILE, 'utf8');
+    spawnedAgents = JSON.parse(raw);
+  } catch {
+    spawnedAgents = defaultSpawnedAgents.map(agent => ({ ...agent }));
+    await saveSpawnedAgents();
+  }
+}
+
+async function saveSpawnedAgents() {
+  await fs.writeFile(AGENTS_FILE, JSON.stringify(spawnedAgents, null, 2));
 }
 
 async function readConfig() {
@@ -75,7 +113,16 @@ function broadcast(payload) {
   }
 }
 
+function getAgents() {
+  return [...spawnedAgents, ...baseAgents];
+}
+
+function findAgent(id) {
+  return getAgents().find(item => item.id === id);
+}
+
 function snapshot() {
+  const agents = getAgents();
   return {
     agents,
     activity: activityLog.slice(-80),
@@ -85,6 +132,73 @@ function snapshot() {
       idle: agents.filter(a => a.status === 'idle').length,
       break: agents.filter(a => a.status === 'break').length
     }
+  };
+}
+
+function buildAgentPrompt(agent, text) {
+  return [
+    `You are ${agent.name}, working inside a virtual office.`,
+    `Role name: ${agent.roleName || agent.role || 'Office Agent'}.`,
+    `Job: ${agent.job || agent.role || 'Help the user with office work.'}`,
+    `Personality: ${agent.personality || 'Helpful, concise, and practical.'}`,
+    'Stay in character. Answer as this office agent. Be concise, ask for missing intake details when needed, and turn vague requests into clear next steps.',
+    '',
+    `User message: ${text}`
+  ].join('\n');
+}
+
+async function askOllama(agent, text) {
+  const response = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: agent.llm?.model || OLLAMA_MODEL,
+      prompt: buildAgentPrompt(agent, text),
+      stream: false,
+      options: {
+        temperature: 0.55,
+        top_p: 0.9,
+        num_predict: 320
+      }
+    }),
+    signal: AbortSignal.timeout(180000)
+  });
+  if (!response.ok) {
+    const body = await response.text().catch(() => '');
+    throw new Error(`Ollama ${response.status}: ${body || response.statusText}`);
+  }
+  const data = await response.json();
+  return String(data.response || '').trim();
+}
+
+function createAgent(payload = {}) {
+  const name = String(payload.name || `AI Person ${spawnedAgents.length + 1}`).trim();
+  const roleName = String(payload.roleName || 'Office Manager').trim();
+  const role = String(payload.role || roleName).trim();
+  const job = String(payload.job || 'Handle office requests and route work to the right person.').trim();
+  const personality = String(payload.personality || 'Helpful, organized, and concise.').trim();
+  const idBase = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `agent-${Date.now()}`;
+  let id = idBase;
+  let suffix = 2;
+  const existing = new Set(getAgents().map(agent => agent.id));
+  while (existing.has(id)) {
+    id = `${idBase}-${suffix}`;
+    suffix += 1;
+  }
+  return {
+    id,
+    name,
+    roleName,
+    role,
+    job,
+    personality,
+    branch: payload.branch || 'UNASSIGNED',
+    color: payload.color || '#ffd43b',
+    status: 'intake',
+    x: Number(payload.x || 500),
+    y: Number(payload.y || 115),
+    managed: true,
+    llm: { provider: 'ollama', model: payload.model || OLLAMA_MODEL }
   };
 }
 
@@ -124,25 +238,72 @@ app.post('/api/reset-config', async (_req, res, next) => {
 });
 
 app.get('/api/agents', (_req, res) => {
-  res.json(snapshot());
+  res.json({ ...snapshot(), llm: { provider: 'ollama', model: OLLAMA_MODEL, baseUrl: OLLAMA_BASE_URL } });
 });
 
-app.post('/api/agents/:id/chat', (req, res) => {
-  const agent = agents.find(item => item.id === req.params.id);
+app.get('/api/llm/health', async (_req, res) => {
+  try {
+    const response = await fetch(`${OLLAMA_BASE_URL}/api/tags`, { signal: AbortSignal.timeout(5000) });
+    if (!response.ok) throw new Error(response.statusText);
+    const data = await response.json();
+    const models = Array.isArray(data.models) ? data.models.map(model => model.name) : [];
+    res.json({
+      ok: true,
+      provider: 'ollama',
+      model: OLLAMA_MODEL,
+      baseUrl: OLLAMA_BASE_URL,
+      modelAvailable: models.includes(OLLAMA_MODEL),
+      models
+    });
+  } catch (error) {
+    res.status(503).json({
+      ok: false,
+      provider: 'ollama',
+      model: OLLAMA_MODEL,
+      baseUrl: OLLAMA_BASE_URL,
+      error: error.message
+    });
+  }
+});
+
+app.post('/api/agents', async (req, res, next) => {
+  try {
+    const agent = createAgent(req.body || {});
+    spawnedAgents.unshift(agent);
+    await saveSpawnedAgents();
+    activityLog.push(logEntry(`${agent.name} spawned as ${agent.roleName}`));
+    broadcast({ type: 'activity', ...snapshot() });
+    res.status(201).json({ ok: true, agent, ...snapshot() });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/agents/:id/chat', async (req, res) => {
+  const agent = findAgent(req.params.id);
   if (!agent) {
     res.status(404).json({ error: 'Agent not found' });
     return;
   }
   const text = String(req.body?.message || '').trim();
-  const reply = text
-    ? `${agent.name}: queued "${text}" and marked it for follow-up.`
-    : `${agent.name}: ready when you are.`;
+  let reply;
+  let llmError = null;
+  if (text) {
+    try {
+      reply = await askOllama(agent, text);
+    } catch (error) {
+      llmError = error.message;
+      reply = `${agent.name}: I captured that. Ollama is not reachable right now, so I saved the request as an intake note: "${text}".`;
+    }
+  } else {
+    reply = `${agent.name}: ready when you are.`;
+  }
   agent.status = 'chatting';
   agent.bubble = reply;
   agent.bubbleUntil = Date.now() + 9000;
-  activityLog.push(logEntry(`${agent.name} replied in chat`));
+  activityLog.push(logEntry(llmError ? `${agent.name} used fallback chat` : `${agent.name} replied with ${agent.llm?.model || OLLAMA_MODEL}`));
   broadcast({ type: 'chat', agentId: agent.id, reply, ...snapshot() });
-  res.json({ ok: true, reply });
+  res.json({ ok: true, reply, llmError });
 });
 
 app.use((error, _req, res, _next) => {
@@ -156,6 +317,7 @@ wss.on('connection', ws => {
 
 const statuses = ['working', 'idle', 'meeting', 'break', 'walking', 'browsing', 'watching TV'];
 setInterval(() => {
+  const agents = getAgents();
   const agent = agents[Math.floor(Math.random() * agents.length)];
   agent.status = statuses[Math.floor(Math.random() * statuses.length)];
   agent.target = {
@@ -172,6 +334,8 @@ setInterval(() => {
 }, 4500);
 
 await ensureConfig();
+await ensureAgents();
 server.listen(PORT, () => {
   console.log(`Virtual Office Node server running at http://localhost:${PORT}`);
+  console.log(`Ollama: ${OLLAMA_BASE_URL} model ${OLLAMA_MODEL}`);
 });

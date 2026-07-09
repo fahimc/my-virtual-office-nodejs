@@ -19,6 +19,33 @@ npm start
 
 Open `http://localhost:3000`.
 
+## Ollama Agents
+
+The Node server uses Ollama for managed office agents.
+
+Default model:
+
+```bash
+ollama pull gemma4:e4b
+```
+
+Environment overrides:
+
+```bash
+$env:OLLAMA_BASE_URL="http://127.0.0.1:11434"
+$env:OLLAMA_MODEL="gemma4:e4b"
+npm start
+```
+
+The first managed agent is seeded automatically:
+
+- Name: `AI Person 1`
+- Role name: `Client Concierge`
+- Job: `Front Desk / Client Intake Manager`
+- Personality: warm, concise, organized, calmly curious, and focused on turning client requests into clear intake notes
+
+Use **Spawn Agent** in the toolbar to create more agents. Each spawned agent has a name, role name, job, personality, team assignment, and an Ollama model binding.
+
 ## Controls
 
 - Drag empty canvas space to pan.
