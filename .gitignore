@@ -1,0 +1,4 @@
+node_modules/
+data/office-config.json
+.env
+*.log

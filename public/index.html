@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Virtual Office Node</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <section class="office-pane">
+      <div class="canvas-wrap">
+        <canvas id="officeCanvas" width="1000" height="740" aria-label="Virtual office canvas"></canvas>
+        <div class="floating-panel hidden" id="agentPanel">
+          <div class="panel-title">
+            <span id="agentTitle">Agent</span>
+            <button class="icon-button" id="closeAgent" title="Close"><i data-lucide="x"></i></button>
+          </div>
+          <div class="agent-meta" id="agentMeta"></div>
+          <div class="chat-log" id="chatLog"></div>
+          <form class="chat-form" id="chatForm">
+            <input id="chatInput" autocomplete="off" placeholder="Send a task or message">
+            <button title="Send"><i data-lucide="send"></i></button>
+          </form>
+        </div>
+        <div class="edit-hint hidden" id="editHint">Edit mode: choose furniture, click to place, drag items to move.</div>
+      </div>
+      <div class="toolbar">
+        <button id="editToggle" title="Edit office"><i data-lucide="pencil"></i><span>Edit Office</span></button>
+        <button id="saveLayout" title="Save layout"><i data-lucide="save"></i><span>Save</span></button>
+        <button id="resetCamera" title="Reset view"><i data-lucide="scan"></i><span>Reset View</span></button>
+        <button id="expandBubbles" title="Expand bubbles"><i data-lucide="message-circle"></i><span>Expand</span></button>
+        <button id="minimizeBubbles" title="Hide bubbles"><i data-lucide="message-circle-off"></i><span>Minimize</span></button>
+        <select id="furniturePicker" title="Furniture to place">
+          <option value="desk">Desk</option>
+          <option value="plant">Plant</option>
+          <option value="whiteboard">Whiteboard</option>
+          <option value="bookshelf">Bookshelf</option>
+          <option value="vendingMachine">Vending Machine</option>
+          <option value="couch">Couch</option>
+          <option value="textLabel">Label</option>
+        </select>
+      </div>
+    </section>
+    <aside class="dashboard">
+      <div class="brand">
+        <h1>Virtual Office</h1>
+        <p>Dashboard</p>
+      </div>
+      <section class="dash-section">
+        <div class="section-heading"><i data-lucide="monitor"></i><span>PC Performance</span><b id="heartbeat">live</b></div>
+        <div class="meter"><span>CPU</span><strong id="cpuValue">0%</strong><div><em id="cpuBar"></em></div></div>
+        <div class="meter"><span>RAM</span><strong id="ramValue">0%</strong><div><em id="ramBar"></em></div></div>
+      </section>
+      <section class="dash-section">
+        <div class="section-heading"><i data-lucide="building-2"></i><span>Branches</span></div>
+        <div id="branchList" class="branch-list"></div>
+      </section>
+      <section class="dash-section">
+        <div class="section-heading"><i data-lucide="users"></i><span>Agents</span></div>
+        <div class="status-grid">
+          <span><i class="dot green"></i>Working <b id="statWorking">0</b></span>
+          <span><i class="dot blue"></i>Meeting <b id="statMeeting">0</b></span>
+          <span><i class="dot gold"></i>Idle <b id="statIdle">0</b></span>
+          <span><i class="dot pink"></i>Break <b id="statBreak">0</b></span>
+        </div>
+      </section>
+      <section class="dash-section activity-section">
+        <div class="section-heading"><i data-lucide="activity"></i><span>Activity Log</span></div>
+        <ol id="activityLog"></ol>
+      </section>
+    </aside>
+  </main>
+</body>
+</html>
