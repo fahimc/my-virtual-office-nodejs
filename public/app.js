@@ -5,6 +5,7 @@ const DPR = Math.max(1, window.devicePixelRatio || 1);
 
 const state = {
   config: null,
+  apiMode: false,
   agents: [],
   activity: [],
   stats: {},
@@ -20,6 +21,26 @@ const state = {
   cpu: 0,
   ram: 0
 };
+
+const LOCAL_CONFIG_KEY = 'vo-node-office-config';
+
+const localAgents = [
+  { id: 'calen', name: 'Calen', branch: 'CEO', color: '#5fbf60', role: 'Lead operator', status: 'browsing', x: 610, y: 100 },
+  { id: 'flo', name: 'Flo', branch: 'BRANCH_2', color: '#8a2be2', role: 'Kitchen ops', status: 'watching TV', x: 735, y: 110 },
+  { id: 'alan', name: 'Alan', branch: 'BRANCH_2', color: '#ff6d00', role: 'Support', status: 'walking', x: 545, y: 210 },
+  { id: 'ana', name: 'Ana', branch: 'BRANCH_1', color: '#536dfe', role: 'Engineer', status: 'working', x: 720, y: 330 },
+  { id: 'plan', name: 'Plan', branch: 'UNASSIGNED', color: '#90a4ae', role: 'Planner', status: 'idle', x: 730, y: 455 },
+  { id: 'elix', name: 'Elix', branch: 'UNASSIGNED', color: '#ffd700', role: 'Office AI', status: 'watching TV', x: 390, y: 250 },
+  { id: 'moe', name: 'Moe', branch: 'BRANCH_1', color: '#d32f2f', role: 'Ops', status: 'idle', x: 115, y: 340 },
+  { id: 'mark', name: 'Mark', branch: 'BRANCH_1', color: '#7d5a4f', role: 'Engineer', status: 'chatting', x: 205, y: 350 },
+  { id: 'cash', name: 'Cash', branch: 'UNASSIGNED', color: '#ffab00', role: 'Finance', status: 'walking', x: 415, y: 620 },
+  { id: 'mike', name: 'Mike', branch: 'BRANCH_1', color: '#1976d2', role: 'Integrator', status: 'meeting', x: 60, y: 690 },
+  { id: 'filer', name: 'Filer', branch: 'BRANCH_1', color: '#009688', role: 'Archivist', status: 'working', x: 155, y: 690 },
+  { id: 'reva', name: 'Reva', branch: 'BRANCH_2', color: '#ff6d00', role: 'Reviewer', status: 'break', x: 245, y: 690 },
+  { id: 'tasky', name: 'Tasky', branch: 'CEO', color: '#4caf50', role: 'Scheduler', status: 'working', x: 605, y: 690 },
+  { id: 'itty', name: 'Itty', branch: 'UNASSIGNED', color: '#00bcd4', role: 'Assistant', status: 'idle', x: 690, y: 690 },
+  { id: 'trainer', name: 'Gen Trainer', branch: 'UNASSIGNED', color: '#ec407a', role: 'Trainer', status: 'working', x: 770, y: 690 }
+];
 
 const branchColors = {
   BRANCH_1: '#427bff',
@@ -76,17 +97,52 @@ const tools = {
 };
 
 async function boot() {
-  const [configRes, agentRes] = await Promise.all([
-    fetch('/api/office-config'),
-    fetch('/api/agents')
-  ]);
-  state.config = await configRes.json();
-  applySnapshot(await agentRes.json());
-  connectSocket();
+  const initial = await loadInitialState();
+  state.apiMode = initial.apiMode;
+  state.config = initial.config;
+  applySnapshot(initial.snapshot);
+  if (state.apiMode) {
+    connectSocket();
+  } else {
+    startLocalSimulation();
+  }
   resizeCanvas();
   wireEvents();
   requestAnimationFrame(loop);
   if (window.lucide) window.lucide.createIcons();
+}
+
+async function loadInitialState() {
+  try {
+    const [configRes, agentRes] = await Promise.all([
+      fetch('/api/office-config'),
+      fetch('/api/agents')
+    ]);
+    if (!configRes.ok || !agentRes.ok) throw new Error('API unavailable');
+    return {
+      apiMode: true,
+      config: await configRes.json(),
+      snapshot: await agentRes.json()
+    };
+  } catch {
+    const saved = localStorage.getItem(LOCAL_CONFIG_KEY);
+    const config = saved
+      ? JSON.parse(saved)
+      : await fetch('/data/default-office-config.json').then(res => res.json());
+    return {
+      apiMode: false,
+      config,
+      snapshot: {
+        agents: localAgents.map(agent => ({ ...agent })),
+        activity: [
+          localLog('Static Netlify mode loaded'),
+          localLog('Office config loaded in browser'),
+          localLog('Agent simulation started')
+        ],
+        stats: buildStats(localAgents)
+      }
+    };
+  }
 }
 
 function applySnapshot(data) {
@@ -118,6 +174,39 @@ function connectSocket() {
     applySnapshot(data);
   });
   ws.addEventListener('close', () => setTimeout(connectSocket, 1200));
+}
+
+function startLocalSimulation() {
+  setInterval(() => {
+    const statuses = ['working', 'idle', 'meeting', 'break', 'walking', 'browsing', 'watching TV'];
+    const agent = state.agents[Math.floor(Math.random() * state.agents.length)];
+    agent.status = statuses[Math.floor(Math.random() * statuses.length)];
+    agent.target = {
+      x: Math.max(35, Math.min(965, agent.x + (Math.random() * 260 - 130))),
+      y: Math.max(110, Math.min(705, agent.y + (Math.random() * 220 - 110)))
+    };
+    if (Math.random() > 0.55) {
+      agent.bubble = `${agent.status}...`;
+      agent.bubbleUntil = Date.now() + 5000;
+    }
+    state.activity.push(localLog(`${agent.name} is ${agent.status}`));
+    if (state.activity.length > 120) state.activity.shift();
+    state.stats = buildStats(state.agents);
+    renderDashboard();
+  }, 4500);
+}
+
+function localLog(message) {
+  return { time: new Date().toISOString(), message };
+}
+
+function buildStats(agents) {
+  return {
+    working: agents.filter(agent => agent.status === 'working').length,
+    meeting: agents.filter(agent => agent.status === 'meeting').length,
+    idle: agents.filter(agent => agent.status === 'idle').length,
+    break: agents.filter(agent => agent.status === 'break').length
+  };
 }
 
 function resizeCanvas() {
@@ -772,11 +861,21 @@ function addFurniture(x, y) {
 }
 
 async function saveLayout() {
-  await fetch('/api/office-config', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(state.config)
-  });
+  localStorage.setItem(LOCAL_CONFIG_KEY, JSON.stringify(state.config));
+  if (!state.apiMode) {
+    state.activity.push(localLog('Office layout saved in this browser'));
+    renderDashboard();
+    return;
+  }
+  try {
+    await fetch('/api/office-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state.config)
+    });
+  } catch {
+    state.apiMode = false;
+  }
 }
 
 function openAgentPanel(agent) {
@@ -800,13 +899,28 @@ async function sendChat(event) {
   if (!text) return;
   tools.chatInput.value = '';
   appendMessage(text, 'user');
-  const res = await fetch(`/api/agents/${state.selectedAgent.id}/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: text })
-  });
-  const data = await res.json();
-  appendMessage(data.reply || 'No reply.');
+  if (state.apiMode) {
+    try {
+      const res = await fetch(`/api/agents/${state.selectedAgent.id}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+      appendMessage(data.reply || 'No reply.');
+      return;
+    } catch {
+      state.apiMode = false;
+    }
+  }
+  const reply = `${state.selectedAgent.name}: queued "${text}" in the browser demo.`;
+  state.selectedAgent.status = 'chatting';
+  state.selectedAgent.bubble = reply;
+  state.selectedAgent.bubbleUntil = Date.now() + 9000;
+  state.activity.push(localLog(`${state.selectedAgent.name} replied in local chat`));
+  state.stats = buildStats(state.agents);
+  renderDashboard();
+  appendMessage(reply);
 }
 
 function appendMessage(text, kind = '') {
