@@ -7,6 +7,7 @@ const state = {
   config: null,
   apiMode: false,
   llm: { provider: 'ollama', model: 'gemma4:e4b', ok: false },
+  email: { smtpEnabled: false, domain: 'virtual-office.local' },
   agents: [],
   activity: [],
   stats: {},
@@ -25,6 +26,7 @@ const state = {
 
 const LOCAL_CONFIG_KEY = 'vo-node-office-config';
 const LOCAL_AGENTS_KEY = 'vo-node-agents';
+const LOCAL_EMAILS_KEY = 'vo-node-emails';
 
 const localAgents = [
   {
@@ -40,6 +42,8 @@ const localAgents = [
     x: 500,
     y: 115,
     managed: true,
+    email: 'ai-person-1@virtual-office.local',
+    capabilities: { email: true },
     llm: { provider: 'ollama', model: 'gemma4:e4b' }
   },
   { id: 'calen', name: 'Calen', branch: 'CEO', color: '#5fbf60', role: 'Lead operator', status: 'browsing', x: 610, y: 100 },
@@ -110,6 +114,16 @@ const tools = {
   chatForm: document.getElementById('chatForm'),
   chatInput: document.getElementById('chatInput'),
   closeAgent: document.getElementById('closeAgent'),
+  emailComposer: document.getElementById('emailComposer'),
+  emailIdentity: document.getElementById('emailIdentity'),
+  emailMode: document.getElementById('emailMode'),
+  emailForm: document.getElementById('emailForm'),
+  emailTo: document.getElementById('emailTo'),
+  emailSubject: document.getElementById('emailSubject'),
+  emailBrief: document.getElementById('emailBrief'),
+  emailBody: document.getElementById('emailBody'),
+  draftEmail: document.getElementById('draftEmail'),
+  emailList: document.getElementById('emailList'),
   spawnPanel: document.getElementById('spawnPanel'),
   closeSpawn: document.getElementById('closeSpawn'),
   spawnForm: document.getElementById('spawnForm'),
@@ -172,7 +186,8 @@ async function loadInitialState() {
           localLog('Agent simulation started')
         ],
         stats: buildStats(agents),
-        llm: { provider: 'ollama', model: 'gemma4:e4b', ok: false }
+        llm: { provider: 'ollama', model: 'gemma4:e4b', ok: false },
+        email: { smtpEnabled: false, domain: 'virtual-office.local' }
       }
     };
   }
@@ -196,6 +211,7 @@ function applySnapshot(data) {
   if (data.activity) state.activity = data.activity;
   if (data.stats) state.stats = data.stats;
   if (data.llm) state.llm = { ...state.llm, ...data.llm };
+  if (data.email) state.email = { ...state.email, ...data.email };
   renderDashboard();
 }
 
@@ -285,6 +301,8 @@ function wireEvents() {
   tools.minimizeBubbles.addEventListener('click', () => { state.bubbles = false; });
   tools.closeAgent.addEventListener('click', closeAgentPanel);
   tools.chatForm.addEventListener('submit', sendChat);
+  tools.draftEmail.addEventListener('click', draftAgentEmail);
+  tools.emailForm.addEventListener('submit', sendAgentEmail);
 
   canvas.addEventListener('wheel', event => {
     event.preventDefault();
@@ -890,6 +908,25 @@ function renderDashboard() {
   }).join('');
 }
 
+function getLocalEmails(agentId) {
+  try {
+    const messages = JSON.parse(localStorage.getItem(LOCAL_EMAILS_KEY) || '[]');
+    return messages.filter(message => message.agentId === agentId);
+  } catch {
+    return [];
+  }
+}
+
+function saveLocalEmail(message) {
+  const messages = JSON.parse(localStorage.getItem(LOCAL_EMAILS_KEY) || '[]');
+  messages.unshift(message);
+  localStorage.setItem(LOCAL_EMAILS_KEY, JSON.stringify(messages.slice(0, 500)));
+}
+
+function makeAgentEmail(agent) {
+  return agent.email || `${agent.id}@${state.email.domain || 'virtual-office.local'}`;
+}
+
 function hitAgent(x, y) {
   return state.agents.find(agent => Math.abs(agent.x - x) < 24 && Math.abs(agent.y - y) < 52);
 }
@@ -977,6 +1014,8 @@ function createLocalAgent(payload) {
     ...payload,
     status: 'intake',
     managed: true,
+    email: payload.email || `${id}@virtual-office.local`,
+    capabilities: { email: true },
     llm: { provider: 'ollama', model: state.llm?.model || 'gemma4:e4b' }
   };
 }
@@ -1015,12 +1054,149 @@ function openAgentPanel(agent) {
   tools.agentTitle.textContent = agent.name;
   tools.agentMeta.textContent = `${agent.roleName || agent.role} - ${agent.job || agent.status}`;
   tools.chatLog.innerHTML = `<div class="message">${agent.name}: ${agent.bubble || agent.personality || 'Ready for work.'}</div>`;
+  setupEmailPanel(agent);
   tools.chatInput.focus();
 }
 
 function closeAgentPanel() {
   state.selectedAgent = null;
   tools.agentPanel.classList.add('hidden');
+}
+
+async function setupEmailPanel(agent) {
+  const enabled = Boolean(agent.managed && (agent.capabilities?.email || agent.email));
+  tools.emailComposer.classList.toggle('hidden', !enabled);
+  if (!enabled) {
+    tools.emailList.innerHTML = '';
+    return;
+  }
+  tools.emailIdentity.textContent = makeAgentEmail(agent);
+  tools.emailMode.textContent = state.apiMode
+    ? (state.email.smtpEnabled ? 'SMTP enabled' : 'local outbox')
+    : 'browser outbox';
+  tools.emailTo.value = '';
+  tools.emailSubject.value = '';
+  tools.emailBrief.value = '';
+  tools.emailBody.value = '';
+  await loadAgentEmails(agent);
+}
+
+async function loadAgentEmails(agent) {
+  let messages = [];
+  if (state.apiMode) {
+    try {
+      const res = await fetch(`/api/agents/${agent.id}/emails`);
+      if (res.ok) {
+        const data = await res.json();
+        messages = data.messages || [];
+        state.email.smtpEnabled = Boolean(data.smtpEnabled);
+        tools.emailMode.textContent = data.smtpEnabled ? 'SMTP enabled' : 'local outbox';
+      }
+    } catch {
+      state.apiMode = false;
+    }
+  }
+  if (!state.apiMode) messages = getLocalEmails(agent.id);
+  renderEmailList(messages);
+}
+
+function renderEmailList(messages) {
+  if (!messages.length) {
+    tools.emailList.innerHTML = '<div class="email-item"><strong>No email yet</strong><small>Draft or send from this agent.</small></div>';
+    return;
+  }
+  tools.emailList.innerHTML = messages.slice(0, 6).map(message => `
+    <div class="email-item">
+      <strong>${escapeHtml(message.subject || '(no subject)')}</strong>
+      <small>${escapeHtml(message.status || 'recorded')} to ${escapeHtml(message.to || '')}</small>
+    </div>
+  `).join('');
+}
+
+async function draftAgentEmail() {
+  if (!state.selectedAgent) return;
+  const payload = {
+    to: tools.emailTo.value.trim(),
+    subject: tools.emailSubject.value.trim(),
+    brief: tools.emailBrief.value.trim()
+  };
+  tools.draftEmail.disabled = true;
+  tools.draftEmail.querySelector('span').textContent = 'Drafting';
+  try {
+    if (state.apiMode) {
+      const res = await fetch(`/api/agents/${state.selectedAgent.id}/email/draft`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Draft failed');
+      const data = await res.json();
+      tools.emailBody.value = data.body || '';
+      return;
+    }
+    tools.emailBody.value = buildLocalEmailDraft(state.selectedAgent, payload);
+  } catch {
+    state.apiMode = false;
+    tools.emailBody.value = buildLocalEmailDraft(state.selectedAgent, payload);
+  } finally {
+    tools.draftEmail.disabled = false;
+    tools.draftEmail.querySelector('span').textContent = 'Draft';
+  }
+}
+
+function buildLocalEmailDraft(agent, payload) {
+  const brief = payload.brief || 'your request';
+  return `Hello,\n\nThank you for reaching out. I captured ${brief}.\n\nTo move this forward, please send the goal, timeline, budget range, decision maker, and any links or files we should review.\n\nBest,\n${agent.name}`;
+}
+
+async function sendAgentEmail(event) {
+  event.preventDefault();
+  if (!state.selectedAgent) return;
+  const payload = {
+    to: tools.emailTo.value.trim(),
+    subject: tools.emailSubject.value.trim(),
+    body: tools.emailBody.value.trim()
+  };
+  if (!payload.to || !payload.subject || !payload.body) {
+    appendMessage('Email needs a recipient, subject, and body.');
+    return;
+  }
+  if (state.apiMode) {
+    try {
+      const res = await fetch(`/api/agents/${state.selectedAgent.id}/email/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Send failed');
+      const data = await res.json();
+      appendMessage(`Email ${data.message.status === 'sent' ? 'sent' : 'saved to local outbox'} to ${data.message.to}.`);
+      await loadAgentEmails(state.selectedAgent);
+      return;
+    } catch {
+      state.apiMode = false;
+    }
+  }
+  const message = {
+    id: `email-${Date.now()}`,
+    agentId: state.selectedAgent.id,
+    agentName: state.selectedAgent.name,
+    from: makeAgentEmail(state.selectedAgent),
+    to: payload.to,
+    subject: payload.subject,
+    body: payload.body,
+    status: 'recorded',
+    transport: 'browser-outbox',
+    createdAt: new Date().toISOString()
+  };
+  saveLocalEmail(message);
+  state.selectedAgent.status = 'emailing';
+  state.selectedAgent.bubble = `Email saved to ${payload.to}`;
+  state.selectedAgent.bubbleUntil = Date.now() + 9000;
+  state.activity.push(localLog(`${state.selectedAgent.name} recorded email to ${payload.to}`));
+  renderDashboard();
+  appendMessage(`Email saved to browser outbox for ${payload.to}.`);
+  renderEmailList(getLocalEmails(state.selectedAgent.id));
 }
 
 async function sendChat(event) {

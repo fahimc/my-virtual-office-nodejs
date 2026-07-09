@@ -46,6 +46,33 @@ The first managed agent is seeded automatically:
 
 Use **Spawn Agent** in the toolbar to create more agents. Each spawned agent has a name, role name, job, personality, team assignment, and an Ollama model binding.
 
+## Agent Email
+
+Every spawned agent gets email capability automatically:
+
+- a local identity such as `ai-person-1@virtual-office.local`
+- an email composer in the agent panel
+- agent-assisted drafting through Ollama
+- a persisted local outbox in `data/emails.json`
+
+Without SMTP settings, emails are recorded in the local outbox. To send real email, configure SMTP before starting the server:
+
+```bash
+$env:SMTP_HOST="smtp.example.com"
+$env:SMTP_PORT="587"
+$env:SMTP_USER="user@example.com"
+$env:SMTP_PASS="app-password"
+$env:SMTP_FROM="Virtual Office <user@example.com>"
+npm start
+```
+
+Optional:
+
+```bash
+$env:OFFICE_EMAIL_DOMAIN="office.example.com"
+$env:SMTP_SECURE="false"
+```
+
 ## Controls
 
 - Drag empty canvas space to pan.

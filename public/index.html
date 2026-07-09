@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Virtual Office Node</title>
-  <link rel="stylesheet" href="/styles.css?v=agent-spawn-1">
+  <link rel="stylesheet" href="/styles.css?v=agent-email-1">
   <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script defer src="/app.js?v=agent-spawn-1"></script>
+  <script defer src="/app.js?v=agent-email-1"></script>
 </head>
 <body>
   <main class="shell">
@@ -20,6 +20,23 @@
           </div>
           <div class="agent-meta" id="agentMeta"></div>
           <div class="chat-log" id="chatLog"></div>
+          <section class="email-composer hidden" id="emailComposer">
+            <div class="email-heading">
+              <span id="emailIdentity">agent@virtual-office.local</span>
+              <small id="emailMode">local outbox</small>
+            </div>
+            <form id="emailForm">
+              <input id="emailTo" autocomplete="off" placeholder="client@example.com">
+              <input id="emailSubject" autocomplete="off" placeholder="Subject">
+              <textarea id="emailBrief" placeholder="Brief for the agent to draft from"></textarea>
+              <textarea id="emailBody" placeholder="Email body"></textarea>
+              <div class="email-actions">
+                <button type="button" id="draftEmail" title="Draft with agent"><i data-lucide="wand-sparkles"></i><span>Draft</span></button>
+                <button type="submit" title="Send or save email"><i data-lucide="mail"></i><span>Send</span></button>
+              </div>
+            </form>
+            <div id="emailList" class="email-list"></div>
+          </section>
           <form class="chat-form" id="chatForm">
             <input id="chatInput" autocomplete="off" placeholder="Send a task or message">
             <button title="Send"><i data-lucide="send"></i></button>

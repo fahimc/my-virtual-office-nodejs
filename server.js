@@ -4,6 +4,7 @@ import { createServer } from 'http';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import nodemailer from 'nodemailer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,8 +13,10 @@ const DATA_DIR = path.join(__dirname, 'data');
 const DEFAULT_CONFIG = path.join(DATA_DIR, 'default-office-config.json');
 const USER_CONFIG = path.join(DATA_DIR, 'office-config.json');
 const AGENTS_FILE = path.join(DATA_DIR, 'agents.json');
+const EMAILS_FILE = path.join(DATA_DIR, 'emails.json');
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'gemma4:e4b';
+const OFFICE_EMAIL_DOMAIN = process.env.OFFICE_EMAIL_DOMAIN || 'virtual-office.local';
 
 const app = express();
 const server = createServer(app);
@@ -36,6 +39,8 @@ const defaultSpawnedAgents = [
     x: 500,
     y: 115,
     managed: true,
+    email: 'ai-person-1@virtual-office.local',
+    capabilities: { email: true },
     llm: { provider: 'ollama', model: OLLAMA_MODEL }
   }
 ];
@@ -59,6 +64,7 @@ const baseAgents = [
 ];
 
 let spawnedAgents = [];
+let emailStore = { messages: [] };
 
 const activityLog = [
   logEntry('Office booted'),
@@ -84,15 +90,31 @@ async function ensureAgents() {
   await fs.mkdir(DATA_DIR, { recursive: true });
   try {
     const raw = await fs.readFile(AGENTS_FILE, 'utf8');
-    spawnedAgents = JSON.parse(raw);
+    spawnedAgents = JSON.parse(raw).map(ensureAgentCapabilities);
+    await saveSpawnedAgents();
   } catch {
-    spawnedAgents = defaultSpawnedAgents.map(agent => ({ ...agent }));
+    spawnedAgents = defaultSpawnedAgents.map(agent => ensureAgentCapabilities({ ...agent }));
     await saveSpawnedAgents();
   }
 }
 
 async function saveSpawnedAgents() {
   await fs.writeFile(AGENTS_FILE, JSON.stringify(spawnedAgents, null, 2));
+}
+
+async function ensureEmails() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  try {
+    emailStore = JSON.parse(await fs.readFile(EMAILS_FILE, 'utf8'));
+    if (!Array.isArray(emailStore.messages)) emailStore = { messages: [] };
+  } catch {
+    emailStore = { messages: [] };
+    await saveEmailStore();
+  }
+}
+
+async function saveEmailStore() {
+  await fs.writeFile(EMAILS_FILE, JSON.stringify(emailStore, null, 2));
 }
 
 async function readConfig() {
@@ -126,6 +148,7 @@ function snapshot() {
   return {
     agents,
     activity: activityLog.slice(-80),
+    email: { smtpEnabled: smtpEnabled(), domain: OFFICE_EMAIL_DOMAIN },
     stats: {
       working: agents.filter(a => a.status === 'working').length,
       meeting: agents.filter(a => a.status === 'meeting').length,
@@ -133,6 +156,18 @@ function snapshot() {
       break: agents.filter(a => a.status === 'break').length
     }
   };
+}
+
+function makeAgentEmail(id) {
+  return `${id}@${OFFICE_EMAIL_DOMAIN}`;
+}
+
+function ensureAgentCapabilities(agent) {
+  if (!agent.managed) return agent;
+  agent.email = agent.email || makeAgentEmail(agent.id);
+  agent.capabilities = { ...(agent.capabilities || {}), email: true };
+  agent.llm = agent.llm || { provider: 'ollama', model: OLLAMA_MODEL };
+  return agent;
 }
 
 function buildAgentPrompt(agent, text) {
@@ -171,6 +206,84 @@ async function askOllama(agent, text) {
   return String(data.response || '').trim();
 }
 
+async function draftEmailWithAgent(agent, payload) {
+  const to = String(payload.to || '').trim();
+  const subject = String(payload.subject || '').trim();
+  const brief = String(payload.brief || payload.body || '').trim();
+  const prompt = [
+    'Draft an email for this office agent.',
+    `Agent: ${agent.name}`,
+    `Role: ${agent.roleName || agent.role}`,
+    `Job: ${agent.job || agent.role}`,
+    `Personality: ${agent.personality || 'Helpful and concise.'}`,
+    `Recipient: ${to || 'unspecified'}`,
+    `Subject: ${subject || 'unspecified'}`,
+    `Brief: ${brief || 'No brief provided.'}`,
+    '',
+    'Return only the email body. Keep it professional, concise, and useful. Include a clear next step.'
+  ].join('\n');
+  const draft = await askOllama(agent, prompt);
+  if (!draft.trim()) throw new Error('Ollama returned an empty email draft');
+  return draft;
+}
+
+function smtpEnabled() {
+  return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+}
+
+function getTransporter() {
+  if (!smtpEnabled()) return null;
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: process.env.SMTP_SECURE === '1' || process.env.SMTP_SECURE === 'true',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    }
+  });
+}
+
+async function sendEmail(agent, payload) {
+  const to = String(payload.to || '').trim();
+  const subject = String(payload.subject || '').trim();
+  const body = String(payload.body || '').trim();
+  if (!to || !subject || !body) {
+    const error = new Error('Email requires to, subject, and body');
+    error.statusCode = 400;
+    throw error;
+  }
+  const message = {
+    id: `email-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    agentId: agent.id,
+    agentName: agent.name,
+    from: agent.email,
+    to,
+    subject,
+    body,
+    status: smtpEnabled() ? 'sending' : 'recorded',
+    transport: smtpEnabled() ? 'smtp' : 'local-outbox',
+    createdAt: new Date().toISOString()
+  };
+  const transporter = getTransporter();
+  if (transporter) {
+    const result = await transporter.sendMail({
+      from: process.env.SMTP_FROM || `"${agent.name}" <${process.env.SMTP_USER}>`,
+      to,
+      subject,
+      text: body,
+      replyTo: agent.email.includes('@virtual-office.local') ? undefined : agent.email
+    });
+    message.status = 'sent';
+    message.smtpMessageId = result.messageId;
+    message.sentAt = new Date().toISOString();
+  }
+  emailStore.messages.unshift(message);
+  emailStore.messages = emailStore.messages.slice(0, 500);
+  await saveEmailStore();
+  return message;
+}
+
 function createAgent(payload = {}) {
   const name = String(payload.name || `AI Person ${spawnedAgents.length + 1}`).trim();
   const roleName = String(payload.roleName || 'Office Manager').trim();
@@ -198,6 +311,8 @@ function createAgent(payload = {}) {
     x: Number(payload.x || 500),
     y: Number(payload.y || 115),
     managed: true,
+    email: payload.email || makeAgentEmail(id),
+    capabilities: { email: true },
     llm: { provider: 'ollama', model: payload.model || OLLAMA_MODEL }
   };
 }
@@ -268,12 +383,72 @@ app.get('/api/llm/health', async (_req, res) => {
 
 app.post('/api/agents', async (req, res, next) => {
   try {
-    const agent = createAgent(req.body || {});
+    const agent = ensureAgentCapabilities(createAgent(req.body || {}));
     spawnedAgents.unshift(agent);
     await saveSpawnedAgents();
     activityLog.push(logEntry(`${agent.name} spawned as ${agent.roleName}`));
     broadcast({ type: 'activity', ...snapshot() });
     res.status(201).json({ ok: true, agent, ...snapshot() });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/agents/:id/emails', (req, res) => {
+  const agent = findAgent(req.params.id);
+  if (!agent) {
+    res.status(404).json({ error: 'Agent not found' });
+    return;
+  }
+  if (!agent.managed || !agent.capabilities?.email) {
+    res.status(403).json({ error: 'Email is only enabled for spawned agents' });
+    return;
+  }
+  const messages = emailStore.messages.filter(message => message.agentId === agent.id);
+  res.json({ ok: true, agentId: agent.id, email: agent.email, smtpEnabled: smtpEnabled(), messages });
+});
+
+app.post('/api/agents/:id/email/draft', async (req, res) => {
+  const agent = findAgent(req.params.id);
+  if (!agent) {
+    res.status(404).json({ error: 'Agent not found' });
+    return;
+  }
+  if (!agent.managed || !agent.capabilities?.email) {
+    res.status(403).json({ error: 'Email is only enabled for spawned agents' });
+    return;
+  }
+  try {
+    const body = await draftEmailWithAgent(agent, req.body || {});
+    res.json({ ok: true, body });
+  } catch (error) {
+    const brief = String(req.body?.brief || '').trim();
+    res.json({
+      ok: true,
+      body: `Hello,\n\nThank you for reaching out. I captured the request${brief ? `: ${brief}` : ''}.\n\nThe next step is for us to confirm the goal, timeline, decision maker, budget range, and any files or links we should review.\n\nBest,\n${agent.name}`,
+      llmError: error.message
+    });
+  }
+});
+
+app.post('/api/agents/:id/email/send', async (req, res, next) => {
+  try {
+    const agent = findAgent(req.params.id);
+    if (!agent) {
+      res.status(404).json({ error: 'Agent not found' });
+      return;
+    }
+    if (!agent.managed || !agent.capabilities?.email) {
+      res.status(403).json({ error: 'Email is only enabled for spawned agents' });
+      return;
+    }
+    const message = await sendEmail(agent, req.body || {});
+    agent.status = 'emailing';
+    agent.bubble = `Email ${message.status === 'sent' ? 'sent' : 'saved'} to ${message.to}`;
+    agent.bubbleUntil = Date.now() + 9000;
+    activityLog.push(logEntry(`${agent.name} ${message.status === 'sent' ? 'sent email' : 'recorded email'} to ${message.to}`));
+    broadcast({ type: 'activity', ...snapshot() });
+    res.json({ ok: true, message });
   } catch (error) {
     next(error);
   }
@@ -308,7 +483,7 @@ app.post('/api/agents/:id/chat', async (req, res) => {
 
 app.use((error, _req, res, _next) => {
   console.error(error);
-  res.status(500).json({ error: 'Server error' });
+  res.status(error.statusCode || 500).json({ error: error.statusCode ? error.message : 'Server error' });
 });
 
 wss.on('connection', ws => {
@@ -335,7 +510,9 @@ setInterval(() => {
 
 await ensureConfig();
 await ensureAgents();
+await ensureEmails();
 server.listen(PORT, () => {
   console.log(`Virtual Office Node server running at http://localhost:${PORT}`);
   console.log(`Ollama: ${OLLAMA_BASE_URL} model ${OLLAMA_MODEL}`);
+  console.log(`Email: ${smtpEnabled() ? 'SMTP enabled' : 'local outbox mode'}`);
 });

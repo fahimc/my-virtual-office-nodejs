@@ -1,6 +1,7 @@
 node_modules/
 data/office-config.json
 data/agents.json
+data/emails.json
 .env
 *.log
 
