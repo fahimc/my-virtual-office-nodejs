@@ -82,6 +82,7 @@ export class WebsiteBuildWorkflow {
         : undefined;
 
       await this.projectMemory.update(project.id, { status: 'copy' });
+      await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'copy' });
       await this.workflowRuntime.emit(run, 'copy.started', {});
       const copy = await this.agentRuntime.execute('copy', { structuredBrief: project.structuredBrief, designDirection: design.direction }, { projectId: project.id, workflowRunId: run.id }) as { copy: string };
       await this.saveArtifact(project.id, 'copy', 'Website copy', copy, 'copy');
@@ -92,6 +93,7 @@ export class WebsiteBuildWorkflow {
       let qaResult: { passed: boolean; issues: string[]; summary: string } | undefined;
       for (let attempt = 1; attempt <= 2 && !qaPassed; attempt += 1) {
         await this.projectMemory.update(project.id, { status: 'build' });
+        await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: `build_attempt_${attempt}` });
         await this.workflowRuntime.emit(run, 'build.started', { attempt });
         const codingTask = await this.claimCompanyTask(project.id, 'coding', 'builder');
         const codexRun = this.companyOS
@@ -128,6 +130,7 @@ export class WebsiteBuildWorkflow {
         await this.workflowRuntime.emit(run, 'build.completed', build);
 
         await this.projectMemory.update(project.id, { status: 'qa' });
+        await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: `qa_attempt_${attempt}` });
         await this.workflowRuntime.emit(run, 'qa.started', { attempt });
         qaResult = await this.agentRuntime.execute('qa', { previewSummary: build.summary, attempt }, { projectId: project.id, workflowRunId: run.id }) as { passed: boolean; issues: string[]; summary: string };
         await this.saveArtifact(project.id, 'qa_report', `QA attempt ${attempt}`, qaResult, 'qa');
@@ -151,6 +154,7 @@ export class WebsiteBuildWorkflow {
       if (!qaPassed) throw new Error('QA failed after maximum retry count');
 
       await this.projectMemory.update(project.id, { status: 'preview' });
+      await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'preview' });
       const delivery = await this.agentRuntime.execute('delivery', { projectId: project.id, qaSummary: qaResult?.summary || '' }, { projectId: project.id, workflowRunId: run.id }) as { previewUrl: string; summary: string };
       await this.saveArtifact(project.id, 'preview', 'Preview build', delivery, 'delivery', delivery.previewUrl);
       if (this.designWorkflow) await this.designWorkflow.postBuildReview(project.id, delivery.previewUrl);

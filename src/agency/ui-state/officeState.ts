@@ -32,7 +32,7 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
       prototypePreview: buildPrototypePreviewState(designPanel.prototype)
     },
     developerStudio: buildDeveloperStudioState(data, project?.id),
-    taskBoard: buildTaskBoardState(project ? data.companyTasks.filter(task => task.projectId === project.id) : data.companyTasks),
+    taskBoard: buildTaskBoardState(project ? data.companyTasks.filter(task => task.projectId === project.id) : []),
     company: {
       codexTasks: project ? data.codexTasks.filter(task => task.projectId === project.id) : data.codexTasks,
       githubPullRequests: project ? data.githubPullRequests.filter(item => item.projectId === project.id) : data.githubPullRequests,

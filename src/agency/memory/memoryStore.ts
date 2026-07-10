@@ -104,24 +104,36 @@ export class MemoryStore {
   constructor(private readonly filePath: string) {}
 
   async read(): Promise<AgencyStoreData> {
+    await this.updateChain.catch(() => undefined);
+    return this.readFromDisk();
+  }
+
+  private async readFromDisk(): Promise<AgencyStoreData> {
     await fs.mkdir(path.dirname(this.filePath), { recursive: true });
-    try {
-      return { ...emptyStore(), ...JSON.parse(await fs.readFile(this.filePath, 'utf8')) };
-    } catch {
-      const initial = emptyStore();
-      await this.write(initial);
-      return initial;
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      try {
+        return normalizeStore(JSON.parse(await fs.readFile(this.filePath, 'utf8')));
+      } catch (error) {
+        if (isMissingFileError(error)) {
+          const initial = emptyStore();
+          await this.write(initial);
+          return initial;
+        }
+        if (attempt === 4) throw error;
+        await delay(25 * (attempt + 1));
+      }
     }
+    return emptyStore();
   }
 
   async write(data: AgencyStoreData): Promise<void> {
     await fs.mkdir(path.dirname(this.filePath), { recursive: true });
-    await fs.writeFile(this.filePath, JSON.stringify(data, null, 2));
+    await fs.writeFile(this.filePath, JSON.stringify(normalizeStore(data), null, 2));
   }
 
   async update(mutator: (data: AgencyStoreData) => void | Promise<void>): Promise<AgencyStoreData> {
     const run = async () => {
-      const data = await this.read();
+      const data = await this.readFromDisk();
       await mutator(data);
       await this.write(data);
       return data;
@@ -138,4 +150,24 @@ export function createId(prefix: string): string {
 
 export function nowIso(): string {
   return new Date().toISOString();
+}
+
+function normalizeStore(data: Partial<AgencyStoreData>): AgencyStoreData {
+  const base = emptyStore();
+  return {
+    ...base,
+    ...data,
+    design: {
+      ...base.design,
+      ...(data.design || {})
+    }
+  };
+}
+
+function isMissingFileError(error: unknown): boolean {
+  return Boolean(error && typeof error === 'object' && 'code' in error && (error as { code?: string }).code === 'ENOENT');
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
