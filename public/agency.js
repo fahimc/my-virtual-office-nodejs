@@ -300,12 +300,28 @@
   }
 
   function renderArtifacts(artifacts) {
-    els.artifacts.innerHTML = artifacts.slice(-6).reverse().map(item => `
-      <div>
-        <b>${item.title}</b>
-        <span>${item.type} - <a href="${item.url || `/api/agency/artifact/${item.id}`}" target="_blank" rel="noreferrer">Open</a></span>
-      </div>
-    `).join('');
+    if (!artifacts.length) {
+      els.artifacts.innerHTML = '';
+      return;
+    }
+    const recent = artifacts.slice(-12).reverse();
+    els.artifacts.innerHTML = `
+      <details class="resources-panel">
+        <summary>
+          <span><b>Resources</b><small>${artifacts.length} saved artifacts</small></span>
+          <i data-lucide="chevron-down"></i>
+        </summary>
+        <div class="resources-list">
+          ${recent.map(item => `
+            <a class="resource-link" href="${item.url || `/api/agency/artifact/${item.id}`}" target="_blank" rel="noreferrer">
+              <b>${item.title}</b>
+              <span>${item.type}</span>
+            </a>
+          `).join('')}
+        </div>
+      </details>
+    `;
+    refreshIcons();
   }
 
   function renderApproval(approvals) {
@@ -407,26 +423,31 @@
           <div class="creative-direction-review-list">
             ${(design.creativeDirections || []).map((option, index) => `
               <article class="creative-direction-review-card">
+                <div class="creative-direction-card-header">
+                  <div class="creative-direction-title">
+                    <b>${option.name}</b>
+                    <span>${option.targetEmotion || 'Direction'}</span>
+                  </div>
+                  <button type="button" class="approve-direction-option" data-index="${index}"><i data-lucide="check"></i><span>Approve</span></button>
+                </div>
                 <div class="concept-preview-frame">
                   <iframe title="${option.name} visual concept" src="/design-concepts/${state.projectId}/${option.id}/" loading="lazy"></iframe>
                 </div>
-                <div class="creative-direction-title">
-                  <b>${option.name}</b>
-                  <span>${option.targetEmotion || 'Direction'}</span>
-                </div>
                 <p>${option.summary}</p>
                 <div class="design-token-row">${(option.palette || []).map(color => `<i class="design-swatch" title="${color.name}: ${color.hex}" style="background:${color.hex}"></i>`).join('')}</div>
-                <dl>
-                  <dt>Typography</dt><dd>${option.typography ? `${option.typography.heading} / ${option.typography.body}` : 'Defined in direction'}</dd>
-                  <dt>Layout</dt><dd>${option.layoutStyle || ''}</dd>
-                  <dt>Imagery</dt><dd>${option.imageryStyle || ''}</dd>
-                  <dt>Best for</dt><dd>${option.bestFor || ''}</dd>
-                  <dt>Risks</dt><dd>${(option.risks || []).join(', ') || 'None flagged'}</dd>
-                </dl>
-                <small>${option.rationale || ''}</small>
+                <details class="direction-details">
+                  <summary>Review design rationale and risks</summary>
+                  <dl>
+                    <dt>Typography</dt><dd>${option.typography ? `${option.typography.heading} / ${option.typography.body}` : 'Defined in direction'}</dd>
+                    <dt>Layout</dt><dd>${option.layoutStyle || ''}</dd>
+                    <dt>Imagery</dt><dd>${option.imageryStyle || ''}</dd>
+                    <dt>Best for</dt><dd>${option.bestFor || ''}</dd>
+                    <dt>Risks</dt><dd>${(option.risks || []).join(', ') || 'None flagged'}</dd>
+                    <dt>Rationale</dt><dd>${option.rationale || ''}</dd>
+                  </dl>
+                </details>
                 <div class="creative-direction-actions">
                   <a href="/design-concepts/${state.projectId}/${option.id}/" target="_blank" rel="noreferrer">Open full design</a>
-                  <button type="button" class="approve-direction-option" data-index="${index}"><i data-lucide="check"></i><span>Approve this direction</span></button>
                 </div>
               </article>
             `).join('')}
@@ -468,12 +489,21 @@
           <b>Builder Handoff</b>
           <span>${design.handoff ? design.handoff.handoffSummary : 'Not handed off yet'}</span>
         </div>
-        <div class="design-studio-card">
-          <b>Artifacts</b>
-          <span>${design.artifactCount || 0} design artifacts saved</span>
-          <div class="design-artifact-links">
-            ${designArtifacts.slice(-8).reverse().map(artifact => `<a href="${artifact.url || `/api/agency/artifact/${artifact.id}`}" target="_blank" rel="noreferrer">${artifact.title}</a>`).join('')}
-          </div>
+        <div class="design-studio-card design-studio-card-wide">
+          <details class="resources-panel compact">
+            <summary>
+              <span><b>Design Resources</b><small>${design.artifactCount || 0} saved artifacts</small></span>
+              <i data-lucide="chevron-down"></i>
+            </summary>
+            <div class="resources-list">
+              ${designArtifacts.slice(-14).reverse().map(artifact => `
+                <a class="resource-link" href="${artifact.url || `/api/agency/artifact/${artifact.id}`}" target="_blank" rel="noreferrer">
+                  <b>${artifact.title}</b>
+                  <span>${artifact.type}</span>
+                </a>
+              `).join('')}
+            </div>
+          </details>
         </div>
       </div>
     `;
