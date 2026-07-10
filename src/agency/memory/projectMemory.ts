@@ -7,7 +7,7 @@ export class ProjectMemory {
 
   async create(customerId: string, originalBrief: string, structuredBrief: StructuredBrief): Promise<Project> {
     const timestamp = nowIso();
-    const title = structuredBrief.businessSummary.slice(0, 70) || 'Website project';
+    const title = projectTitle(originalBrief, structuredBrief);
     const project: Project = {
       id: createId('project'),
       customerId,
@@ -40,4 +40,11 @@ export class ProjectMemory {
     });
     return updated!;
   }
+}
+
+function projectTitle(originalBrief: string, structuredBrief: StructuredBrief): string {
+  const explicit = originalBrief.match(/project name\s*\n+\s*\*\*?([^*\n]+)\*\*?/i) || originalBrief.match(/project name\s*[:\-]\s*([^\n]+)/i);
+  const candidate = explicit?.[1] || structuredBrief.businessSummary.split(':')[0] || 'Website project';
+  const cleaned = candidate.replace(/[#*_`>]/g, '').replace(/\s+/g, ' ').trim();
+  return cleaned.slice(0, 70) || 'Website project';
 }

@@ -370,6 +370,24 @@
   color: #eaf1fb;
 }
 
+.concept-preview-frame {
+  height: 220px;
+  overflow: hidden;
+  border: 1px solid #334260;
+  border-radius: 8px;
+  background: #f8fafc;
+  margin-bottom: 10px;
+}
+
+.concept-preview-frame iframe {
+  width: 1440px;
+  height: 900px;
+  border: 0;
+  transform: scale(.24);
+  transform-origin: top left;
+  pointer-events: none;
+}
+
 .creative-direction-title {
   display: flex;
   align-items: center;
@@ -411,6 +429,22 @@
   color: #dce7f7;
 }
 
+.creative-direction-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.creative-direction-actions a {
+  color: #bfdbfe;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .creative-direction-review-card button {
   min-height: 36px;
   border: 1px solid #40506f;
@@ -422,7 +456,6 @@
   align-items: center;
   gap: 8px;
   padding: 0 12px;
-  margin-top: 10px;
 }
 
 .design-review-panel textarea {

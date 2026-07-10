@@ -407,6 +407,9 @@
           <div class="creative-direction-review-list">
             ${(design.creativeDirections || []).map((option, index) => `
               <article class="creative-direction-review-card">
+                <div class="concept-preview-frame">
+                  <iframe title="${option.name} visual concept" src="/design-concepts/${state.projectId}/${option.id}/" loading="lazy"></iframe>
+                </div>
                 <div class="creative-direction-title">
                   <b>${option.name}</b>
                   <span>${option.targetEmotion || 'Direction'}</span>
@@ -421,7 +424,10 @@
                   <dt>Risks</dt><dd>${(option.risks || []).join(', ') || 'None flagged'}</dd>
                 </dl>
                 <small>${option.rationale || ''}</small>
-                <button type="button" class="approve-direction-option" data-index="${index}"><i data-lucide="check"></i><span>Approve this direction</span></button>
+                <div class="creative-direction-actions">
+                  <a href="/design-concepts/${state.projectId}/${option.id}/" target="_blank" rel="noreferrer">Open full design</a>
+                  <button type="button" class="approve-direction-option" data-index="${index}"><i data-lucide="check"></i><span>Approve this direction</span></button>
+                </div>
               </article>
             `).join('')}
           </div>

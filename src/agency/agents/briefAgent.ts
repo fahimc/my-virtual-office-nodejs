@@ -36,20 +36,80 @@ export const briefAgent: AgentDefinition<{ originalBrief: string }, StructuredBr
 
 export function structureBriefHeuristically(originalBrief: string): StructuredBrief {
   const lower = originalBrief.toLowerCase();
+  const projectName = extractProjectName(originalBrief);
+  const isEcommerce = /(ecommerce|e-commerce|shop|checkout|basket|cart|product|add to basket|mixed case|subscription)/i.test(originalBrief);
+  const isFoodDrink = /(fruit|drink|juice|cafe|restaurant|bakery|menu|flavour|flavor|bottle)/i.test(originalBrief);
+  const pages = extractPages(originalBrief, isEcommerce);
+  const features = [
+    isEcommerce ? 'Product catalogue and ecommerce checkout' : lower.includes('booking') ? 'Booking/contact workflow' : 'Lead capture form',
+    lower.includes('wholesale') ? 'Wholesale enquiry workflow' : lower.includes('stockist') ? 'Stockist finder or list' : 'Contact form routing',
+    lower.includes('email') || lower.includes('subscribe') ? 'Email signup integration' : undefined,
+    lower.includes('review') ? 'Reviews and trust signals' : undefined,
+    lower.includes('account') ? 'Customer account area' : undefined
+  ].filter((item): item is string => Boolean(item));
   return {
-    businessSummary: originalBrief.slice(0, 220) || 'New website project',
-    targetAudience: lower.includes('b2b') ? 'B2B buyers and decision makers' : 'Prospective customers',
-    pagesNeeded: ['Home', 'Services', 'About', 'Contact'],
-    featuresNeeded: [
-      lower.includes('booking') ? 'Booking/contact workflow' : 'Lead capture form',
-      lower.includes('crm') ? 'CRM integration plan' : 'Contact form routing'
-    ],
-    stylePreferences: lower.includes('premium') ? ['premium', 'clean', 'trustworthy'] : ['professional', 'clear', 'modern'],
-    contentRequirements: ['Hero message', 'Service descriptions', 'Trust signals', 'Call to action'],
+    businessSummary: summarizeBrief(originalBrief, projectName),
+    targetAudience: lower.includes('wholesale') || lower.includes('b2b') ? 'Retail customers, families, health-conscious buyers, and wholesale decision makers' : 'Prospective customers',
+    pagesNeeded: pages,
+    featuresNeeded: features,
+    stylePreferences: [
+      lower.includes('premium') ? 'premium' : undefined,
+      isFoodDrink ? 'vibrant' : 'professional',
+      lower.includes('colourful') || lower.includes('colorful') ? 'colourful' : undefined,
+      lower.includes('mobile') ? 'mobile-first' : undefined,
+      lower.includes('trust') ? 'trustworthy' : undefined,
+      'modern'
+    ].filter((item): item is string => Boolean(item)),
+    contentRequirements: isEcommerce
+      ? ['Homepage hero', 'Product cards', 'Benefits', 'Reviews', 'Wholesale CTA', 'Email signup', 'FAQ']
+      : ['Hero message', 'Service descriptions', 'Trust signals', 'Call to action'],
     assetsRequired: ['Logo', 'Brand colors', 'Images or image direction'],
-    technicalRequirements: ['Responsive layout', 'Accessible markup', 'Fast static preview'],
+    technicalRequirements: [
+      'Responsive layout',
+      'Accessible markup',
+      'Fast static preview',
+      ...(isEcommerce ? ['Ecommerce-ready product structure', 'Secure checkout plan'] : [])
+    ],
     assumptions: ['Single-language site', 'Client will provide final brand assets if not already available'],
     missingInformation: lower.length < 80 ? ['More detail on business goals and audience'] : [],
-    estimatedComplexity: lower.includes('crm') || lower.includes('booking') ? 'medium' : 'small'
+    estimatedComplexity: isEcommerce || lower.includes('crm') || lower.includes('booking') ? 'medium' : 'small'
   };
+}
+
+function extractProjectName(text: string): string {
+  const explicit = text.match(/project name\s*\n+\s*\*\*?([^*\n]+)\*\*?/i) || text.match(/project name\s*[:\-]\s*([^\n]+)/i);
+  if (explicit?.[1]) return cleanMarkdown(explicit[1]);
+  const brand = text.match(/\bfor\s+([A-Z][A-Za-z0-9&' ]{2,40})\b/) || text.match(/\b([A-Z][A-Za-z0-9&' ]{2,40})\s+is\s+a\b/);
+  return cleanMarkdown(brand?.[1] || 'New website project');
+}
+
+function summarizeBrief(text: string, projectName: string): string {
+  const overview = text.match(/business overview\s*\n+([\s\S]*?)(?:\n---|\n##|\n#|$)/i)?.[1];
+  const summary = cleanMarkdown(overview || text).replace(/\s+/g, ' ').trim();
+  return `${projectName}: ${summary.slice(0, 260) || 'Website project'}`;
+}
+
+function extractPages(text: string, isEcommerce: boolean): string[] {
+  const lower = text.toLowerCase();
+  const candidates = [
+    'Home',
+    isEcommerce ? 'Shop' : 'Services',
+    lower.includes('product') ? 'Product Detail' : undefined,
+    lower.includes('mixed case') ? 'Build a Mixed Case' : undefined,
+    'About',
+    lower.includes('ingredient') || lower.includes('nutrition') ? 'Ingredients and Nutrition' : undefined,
+    lower.includes('wholesale') ? 'Wholesale' : undefined,
+    lower.includes('stockist') ? 'Stockists' : undefined,
+    lower.includes('faq') || lower.includes('frequently asked') ? 'FAQ' : undefined,
+    'Contact'
+  ].filter((item): item is string => Boolean(item));
+  return [...new Set(candidates)].slice(0, 12);
+}
+
+function cleanMarkdown(value: string): string {
+  return value
+    .replace(/[#*_`>]/g, '')
+    .replace(/\[[^\]]+\]\([^)]+\)/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }

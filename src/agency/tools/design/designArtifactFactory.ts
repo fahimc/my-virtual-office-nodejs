@@ -84,6 +84,76 @@ export function createCompetitorResearch(brief: DesignBrief): CompetitorResearch
 }
 
 export function createCreativeDirections(brief: DesignBrief): CreativeDirection[] {
+  if (/(fruit|drink|juice|beverage|flavour|flavor|bottle|ecommerce|shop)/i.test(`${brief.projectGoal} ${brief.businessName} ${brief.businessType}`)) {
+    return [
+      {
+        id: 'juicy-commerce',
+        projectId: brief.projectId,
+        name: 'Juicy Commerce',
+        summary: 'A bright ecommerce direction with flavour-led product cards, bold rounded typography, and fruit-colour accents.',
+        targetEmotion: 'Fresh excitement',
+        brandPersonality: ['colourful', 'energetic', 'natural', 'friendly'],
+        bestFor: 'Consumer drink brands that need product desire and fast shopping actions.',
+        risks: ['Needs strong product imagery or illustrated bottle placeholders until photography arrives'],
+        palette: [{ name: 'Mango', hex: '#FFB703', usage: 'Hero accent' }, { name: 'Berry', hex: '#C026D3', usage: 'Flavour accent' }, { name: 'Leaf', hex: '#22C55E', usage: 'Natural proof' }, { name: 'Citrus', hex: '#F97316', usage: 'CTA warmth' }, { name: 'Cream', hex: '#FFF7E8', usage: 'Background' }, { name: 'Charcoal', hex: '#172033', usage: 'Text' }],
+        typography: { heading: 'Rounded bold display sans', body: 'Inter/system-ui', scale: '1.25 modular scale', notes: 'Large friendly headings with compact product-card labels' },
+        layoutStyle: 'Playful ecommerce grid with curved colour panels and sticky shopping CTAs',
+        sectionStyle: 'Cream background, rounded flavour cards, colour-coded product bands',
+        buttonStyle: 'Large pill buttons with charcoal text and fruit-colour fills',
+        cardStyle: 'Rounded product cards with bottle illustration, price, rating, and Add to Basket actions',
+        iconStyle: 'Simple ingredient and delivery line icons',
+        imageryStyle: 'Chilled bottles, fresh fruit, splashes, leaves, ice, and bright natural lighting',
+        animationStyle: 'Subtle bottle float and card hover lift under 180ms',
+        homepageStructure: ['Hero Shop', 'Flavour Range', 'Why Zestora', 'Mixed Case', 'Reviews', 'Wholesale', 'Email Signup'],
+        mobileApproach: 'Sticky basket CTA, swipeable product cards, large tap targets, concise hero',
+        rationale: 'Best fit for a colourful fruit drinks ecommerce launch where taste appeal and shopping clarity matter most.'
+      },
+      {
+        id: 'fresh-market',
+        projectId: brief.projectId,
+        name: 'Fresh Market',
+        summary: 'A natural retail direction with market-style freshness, ingredient proof, and strong stockist/wholesale pathways.',
+        targetEmotion: 'Natural trust',
+        brandPersonality: ['fresh', 'healthy', 'approachable', 'credible'],
+        bestFor: 'Brands balancing consumer sales with retail and hospitality stockist growth.',
+        risks: ['Can feel less playful if product colour is not used generously'],
+        palette: [{ name: 'Leaf', hex: '#16A34A', usage: 'Natural proof' }, { name: 'Sun', hex: '#FACC15', usage: 'Highlights' }, { name: 'Tomato', hex: '#EF4444', usage: 'CTA accent' }, { name: 'Mint', hex: '#DCFCE7', usage: 'Background tint' }, { name: 'Ink', hex: '#102018', usage: 'Text' }],
+        typography: { heading: 'Warm bold sans', body: 'Inter/system-ui', scale: '1.2 modular scale', notes: 'Friendly headings with readable commerce copy' },
+        layoutStyle: 'Fresh editorial blocks with product rows, benefit strips, and retailer CTA bands',
+        sectionStyle: 'Light botanical bands with real-fruit proof moments',
+        buttonStyle: 'Rounded green primary buttons with warm highlight states',
+        cardStyle: 'Ingredient-led cards with soft borders and product badges',
+        iconStyle: 'Ingredient, recyclable, delivery, vegetarian icons',
+        imageryStyle: 'Fruit crates, bottles on tables, cafe shelves, gym fridges, everyday lifestyle scenes',
+        animationStyle: 'Gentle reveal and image hover only',
+        homepageStructure: ['Hero Story', 'Benefits', 'Flavour Range', 'Stockist CTA', 'Wholesale CTA', 'FAQ', 'Contact'],
+        mobileApproach: 'Put product benefits and shop CTA within first two scrolls',
+        rationale: 'Useful if trust, ingredient clarity, and future wholesale growth are as important as direct sales.'
+      },
+      {
+        id: 'bold-splash',
+        projectId: brief.projectId,
+        name: 'Bold Splash',
+        summary: 'A high-energy launch direction with dramatic colour fields, big bottle visuals, and campaign-style conversion sections.',
+        targetEmotion: 'Thirst and momentum',
+        brandPersonality: ['bold', 'fun', 'modern', 'confident'],
+        bestFor: 'A memorable launch site where the brand needs to stand out immediately.',
+        risks: ['Needs accessibility checks on every colour pairing'],
+        palette: [{ name: 'Electric Blue', hex: '#0EA5E9', usage: 'Contrast accent' }, { name: 'Watermelon', hex: '#FB7185', usage: 'Hero accent' }, { name: 'Mango', hex: '#F59E0B', usage: 'CTA' }, { name: 'Purple', hex: '#7C3AED', usage: 'Campaign blocks' }, { name: 'White', hex: '#FFFFFF', usage: 'Text panels' }, { name: 'Night', hex: '#111827', usage: 'Text' }],
+        typography: { heading: 'Extra-bold rounded display', body: 'Inter/system-ui', scale: '1.333 modular scale', notes: 'Punchy campaign headlines balanced with clear product details' },
+        layoutStyle: 'Campaign-led ecommerce layout with oversized hero, flavour tiles, and diagonal/curved bands',
+        sectionStyle: 'High-contrast colourful blocks and immersive flavour panels',
+        buttonStyle: 'Chunky high-contrast pill buttons',
+        cardStyle: 'Vivid cards with large product placeholders and clear purchase controls',
+        iconStyle: 'Bold simple icons and flavour badges',
+        imageryStyle: 'Bottle clusters, juice splashes, floating fruit, ice, and colour-coordinated backdrops',
+        animationStyle: 'Small floating fruit and card lift, no motion required for comprehension',
+        homepageStructure: ['Hero Splash', 'Shop Flavours', 'Build a Mixed Case', 'Social Proof', 'Wholesale', 'Subscribe'],
+        mobileApproach: 'Single-column campaign cards, sticky Shop CTA, compact product filters',
+        rationale: 'Strongest visual option when the brief asks visitors to feel thirsty and excited to try the drinks.'
+      }
+    ];
+  }
   return [
     {
       id: 'trust-first',
