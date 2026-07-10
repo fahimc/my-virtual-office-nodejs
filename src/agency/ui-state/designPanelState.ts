@@ -6,6 +6,7 @@ export function buildDesignPanelState(data: AgencyStoreData, projectId?: string)
   const selectedDirection = filter(data.design.selectedDirections).at(-1);
   const qaReports = filter(data.design.qaReports);
   const handoff = filter(data.design.handoffs).at(-1);
+  const artifacts = data.artifacts.filter(item => (!projectId || item.projectId === projectId) && item.path?.startsWith('project/design/'));
   const phase = handoff ? 'handoff_ready' : selectedDirection ? 'production_design' : creativeDirections.length ? 'creative_direction_approval' : filter(data.design.briefs).length ? 'discovery' : 'not_started';
   return {
     phase,
@@ -22,6 +23,13 @@ export function buildDesignPanelState(data: AgencyStoreData, projectId?: string)
     qaReport: qaReports.at(-1),
     postBuildReview: qaReports.filter(report => report.designArtifactIds.length === 0).at(-1),
     handoff,
-    artifactCount: data.artifacts.filter(item => (!projectId || item.projectId === projectId) && item.path?.startsWith('project/design/')).length
+    artifacts: artifacts.map(item => ({
+      id: item.id,
+      title: item.title,
+      type: item.type,
+      path: item.path,
+      url: item.url || `/api/agency/artifact/${item.id}`
+    })),
+    artifactCount: artifacts.length
   };
 }

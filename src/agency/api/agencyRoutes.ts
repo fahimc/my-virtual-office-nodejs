@@ -95,6 +95,36 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     res.json({ artifacts: state.artifacts });
   }));
 
+  router.get('/artifact/:id', route(async (req, res) => {
+    const data = await system.store.read();
+    const artifact = data.artifacts.find(item => item.id === req.params.id);
+    if (!artifact) return void res.status(404).send('Artifact not found');
+    const safeTitle = escapeHtml(artifact.title);
+    const body = escapeHtml(JSON.stringify(artifact.metadata, null, 2));
+    res.type('html').send(`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${safeTitle}</title>
+  <style>
+    body { margin: 0; background: #0b1020; color: #f8fafc; font-family: Inter, system-ui, sans-serif; }
+    main { max-width: 1040px; margin: 0 auto; padding: 32px; }
+    h1 { margin: 0 0 6px; font-size: 24px; }
+    p { margin: 0 0 18px; color: #aab8d0; }
+    pre { white-space: pre-wrap; overflow: auto; border: 1px solid #334260; border-radius: 8px; background: #10192b; padding: 18px; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>${safeTitle}</h1>
+    <p>${escapeHtml(artifact.type)}${artifact.path ? ` - ${escapeHtml(artifact.path)}` : ''}</p>
+    <pre>${body}</pre>
+  </main>
+</body>
+</html>`);
+  }));
+
   router.post('/approval/:id/approve', route(async (req, res) => {
     const approval = await system.approvalWorkflow.approve(req.params.id);
     if (approval.type === 'design_options') {
@@ -260,4 +290,13 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   }));
 
   return router;
+}
+
+function escapeHtml(value: unknown): string {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }

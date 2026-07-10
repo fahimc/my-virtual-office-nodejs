@@ -342,6 +342,102 @@
   margin-top: 8px;
 }
 
+.design-review-panel {
+  border: 1px solid #40506f;
+  border-radius: 8px;
+  background: #0e1728;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.design-review-panel h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.creative-direction-review-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.creative-direction-review-card {
+  border: 1px solid #394966;
+  border-left: 4px solid #ffd43b;
+  border-radius: 8px;
+  background: #121d31;
+  padding: 10px;
+  color: #eaf1fb;
+}
+
+.creative-direction-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.creative-direction-title b {
+  color: #fff;
+  font-size: 14px;
+}
+
+.creative-direction-title span,
+.creative-direction-review-card small {
+  color: #aebbd2;
+  line-height: 1.35;
+}
+
+.creative-direction-review-card p {
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.creative-direction-review-card dl {
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  gap: 5px 8px;
+  margin: 10px 0;
+  font-size: 12px;
+}
+
+.creative-direction-review-card dt {
+  color: #8fb4ff;
+  font-weight: 700;
+}
+
+.creative-direction-review-card dd {
+  margin: 0;
+  color: #dce7f7;
+}
+
+.creative-direction-review-card button {
+  min-height: 36px;
+  border: 1px solid #40506f;
+  border-radius: 6px;
+  background: #1c2940;
+  color: #f4f8ff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  margin-top: 10px;
+}
+
+.design-review-panel textarea {
+  width: 100%;
+  min-height: 76px;
+  margin-top: 10px;
+  border: 1px solid #334260;
+  border-radius: 6px;
+  background: #0b1020;
+  color: #f3f7ff;
+  padding: 10px;
+  font: inherit;
+  resize: vertical;
+}
+
 .design-studio-card {
   border-left: 3px solid #8b5cf6;
   background: #121b2d;
@@ -352,6 +448,18 @@
 .design-studio-card b {
   display: block;
   color: #fff;
+}
+
+.design-artifact-links {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.design-artifact-links a {
+  color: #bfdbfe;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .design-token-row {

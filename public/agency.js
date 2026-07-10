@@ -247,6 +247,15 @@
       renderOfficeState(result.officeState);
       if (result.workflow.status === 'completed') clearInterval(state.pollTimer);
     } catch (error) {
+      if (state.projectId) {
+        try {
+          const result = await api(`/project/${state.projectId}`);
+          renderOfficeState(result.officeState);
+          return;
+        } catch {
+          // Fall through to visible status below.
+        }
+      }
       els.projectStatus.textContent = error.message;
     }
   }
@@ -294,7 +303,7 @@
     els.artifacts.innerHTML = artifacts.slice(-6).reverse().map(item => `
       <div>
         <b>${item.title}</b>
-        <span>${item.type}${item.url ? ` - <a href="${item.url}" target="_blank" rel="noreferrer">Preview</a>` : ''}</span>
+        <span>${item.type} - <a href="${item.url || `/api/agency/artifact/${item.id}`}" target="_blank" rel="noreferrer">Open</a></span>
       </div>
     `).join('');
   }
@@ -385,8 +394,43 @@
     els.designPhase.textContent = (design.phase || 'not_started').replaceAll('_', ' ');
     const selected = design.selectedDirection;
     const direction = (design.creativeDirections || []).find(item => selected && item.id === selected.selectedDirectionId) || (design.creativeDirections || [])[0];
+    const pendingDesignApproval = (design.approvals || [])[0];
+    const designArtifacts = design.artifacts || [];
     const tokenColors = design.tokens && design.tokens.colours ? Object.values(design.tokens.colours).slice(0, 8) : [];
     els.designStudioBody.innerHTML = `
+      ${pendingDesignApproval && (design.creativeDirections || []).length ? `
+        <section class="design-review-panel">
+          <div class="agency-panel-heading">
+            <h4>Creative Directions To Review</h4>
+            <span>${(design.creativeDirections || []).length} options</span>
+          </div>
+          <div class="creative-direction-review-list">
+            ${(design.creativeDirections || []).map((option, index) => `
+              <article class="creative-direction-review-card">
+                <div class="creative-direction-title">
+                  <b>${option.name}</b>
+                  <span>${option.targetEmotion || 'Direction'}</span>
+                </div>
+                <p>${option.summary}</p>
+                <div class="design-token-row">${(option.palette || []).map(color => `<i class="design-swatch" title="${color.name}: ${color.hex}" style="background:${color.hex}"></i>`).join('')}</div>
+                <dl>
+                  <dt>Typography</dt><dd>${option.typography ? `${option.typography.heading} / ${option.typography.body}` : 'Defined in direction'}</dd>
+                  <dt>Layout</dt><dd>${option.layoutStyle || ''}</dd>
+                  <dt>Imagery</dt><dd>${option.imageryStyle || ''}</dd>
+                  <dt>Best for</dt><dd>${option.bestFor || ''}</dd>
+                  <dt>Risks</dt><dd>${(option.risks || []).join(', ') || 'None flagged'}</dd>
+                </dl>
+                <small>${option.rationale || ''}</small>
+                <button type="button" class="approve-direction-option" data-index="${index}"><i data-lucide="check"></i><span>Approve this direction</span></button>
+              </article>
+            `).join('')}
+          </div>
+          <textarea id="designStudioFeedback" placeholder="Request changes to the design directions"></textarea>
+          <div class="agency-actions">
+            <button id="requestDesignStudioChanges" type="button"><i data-lucide="message-square"></i><span>Request design changes</span></button>
+          </div>
+        </section>
+      ` : ''}
       <div class="design-studio-grid">
         <div class="design-studio-card">
           <b>Creative Direction</b>
@@ -421,9 +465,23 @@
         <div class="design-studio-card">
           <b>Artifacts</b>
           <span>${design.artifactCount || 0} design artifacts saved</span>
+          <div class="design-artifact-links">
+            ${designArtifacts.slice(-8).reverse().map(artifact => `<a href="${artifact.url || `/api/agency/artifact/${artifact.id}`}" target="_blank" rel="noreferrer">${artifact.title}</a>`).join('')}
+          </div>
         </div>
       </div>
     `;
+    if (pendingDesignApproval) {
+      els.designStudioBody.querySelectorAll('.approve-direction-option').forEach(button => {
+        button.addEventListener('click', () => {
+          const option = (design.creativeDirections || [])[Number(button.dataset.index || 0)];
+          approveDesignOptions(pendingDesignApproval, option);
+        });
+      });
+      const requestButton = document.getElementById('requestDesignStudioChanges');
+      if (requestButton) requestButton.addEventListener('click', () => requestChanges(pendingDesignApproval.id, document.getElementById('designStudioFeedback')?.value || ''));
+    }
+    refreshIcons();
   }
 
   function renderDeveloperStudio(developer) {
@@ -510,18 +568,18 @@
     renderOfficeState(result.officeState);
   }
 
-  async function approveDesignOptions(approval) {
+  async function approveDesignOptions(approval, explicitSelection) {
     const checked = document.querySelector('input[name="designOption"]:checked');
     const options = approval.payload && Array.isArray(approval.payload.designOptions) ? approval.payload.designOptions : [];
-    const selectedDesignOption = options[Number(checked ? checked.value : 0)] || options[0];
+    const selectedDesignOption = explicitSelection || options[Number(checked ? checked.value : 0)] || options[0];
     setReception('Design Approved', 'Design Agent', 'Design direction approved. The agency is now moving into copy, build, QA, and preview.');
     const result = await api(`/approval/${approval.id}/approve`, { method: 'POST', body: { selectedDesignOption } });
     renderOfficeState(result.officeState);
     if (state.workflowRunId) startPolling();
   }
 
-  async function requestChanges(id) {
-    const feedback = document.getElementById('changeFeedback').value.trim();
+  async function requestChanges(id, feedbackOverride) {
+    const feedback = String(feedbackOverride || document.getElementById('changeFeedback')?.value || '').trim();
     if (!feedback) return;
     setReception('Changes Requested', 'Client Success Agent', 'Feedback received. The agency is converting it into tasks and resuming the build workflow.');
     const result = await api(`/approval/${id}/request-changes`, { method: 'POST', body: { feedback } });
