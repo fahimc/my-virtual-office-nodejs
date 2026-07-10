@@ -99,6 +99,8 @@ const emptyStore = (): AgencyStoreData => ({
 });
 
 export class MemoryStore {
+  private updateChain: Promise<unknown> = Promise.resolve();
+
   constructor(private readonly filePath: string) {}
 
   async read(): Promise<AgencyStoreData> {
@@ -118,10 +120,15 @@ export class MemoryStore {
   }
 
   async update(mutator: (data: AgencyStoreData) => void | Promise<void>): Promise<AgencyStoreData> {
-    const data = await this.read();
-    await mutator(data);
-    await this.write(data);
-    return data;
+    const run = async () => {
+      const data = await this.read();
+      await mutator(data);
+      await this.write(data);
+      return data;
+    };
+    const next = this.updateChain.then(run, run);
+    this.updateChain = next.catch(() => undefined);
+    return next;
   }
 }
 

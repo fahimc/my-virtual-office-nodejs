@@ -180,13 +180,16 @@ export class WebsiteBuildWorkflow {
       await this.workflowRuntime.emit(run, 'preview.created', delivery);
       await this.workflowRuntime.emit(run, 'approval.requested', { approval });
     } catch (error) {
-      await this.projectMemory.update(run.projectId, { status: 'failed' });
-      await this.workflowRuntime.patch(run.id, {
-        status: 'failed',
-        error: error instanceof Error ? error.message : String(error),
-        currentStep: 'failed'
-      });
-      await this.workflowRuntime.emit(run, 'workflow.failed', { error: error instanceof Error ? error.message : String(error) });
+      const message = error instanceof Error ? error.message : String(error);
+      await Promise.allSettled([
+        this.projectMemory.update(run.projectId, { status: 'failed' }),
+        this.workflowRuntime.patch(run.id, {
+          status: 'failed',
+          error: message,
+          currentStep: 'failed'
+        }),
+        this.workflowRuntime.emit(run, 'workflow.failed', { error: message })
+      ]);
     }
   }
 

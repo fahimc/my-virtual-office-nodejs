@@ -33,6 +33,7 @@ export class LocalJobQueue {
     } catch (error) {
       job.status = 'failed';
       job.error = error instanceof Error ? error.message : String(error);
+      console.error(`[jobQueue] ${job.name} failed: ${job.error}`);
     }
   }
 }
