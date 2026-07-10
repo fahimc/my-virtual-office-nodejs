@@ -50,6 +50,7 @@ import { screenshotReviewTool } from '../tools/design/screenshotReviewTool.js';
 import { accessibilityDesignTool } from '../tools/design/accessibilityDesignTool.js';
 import { visualQaTool } from '../tools/design/visualQaTool.js';
 import { designHandoffTool } from '../tools/design/designHandoffTool.js';
+import { DeveloperPlanningService } from '../tools/developer/developerPlanningService.js';
 import { QuoteService } from '../tools/billing/quoteService.js';
 import { InvoiceService } from '../tools/billing/invoiceService.js';
 import { PaymentStatusService } from '../tools/billing/paymentStatusService.js';
@@ -82,6 +83,7 @@ export class CompanyOS {
   readonly screenshots = new ScreenshotService();
   readonly deploymentApprovals: DeploymentApprovalService;
   readonly notifications: NotificationService;
+  readonly developerPlanning: DeveloperPlanningService;
   readonly quotes = new QuoteService();
   readonly invoices = new InvoiceService();
   readonly payments = new PaymentStatusService();
@@ -108,6 +110,7 @@ export class CompanyOS {
     this.previews = new PreviewService(store);
     this.deploymentApprovals = new DeploymentApprovalService(approvalService);
     this.notifications = new NotificationService(store);
+    this.developerPlanning = new DeveloperPlanningService(store, this.taskBoard, workspaceRoot);
     this.tools = [
       createCompanyEmailTool(this.emailDrafts, this.emailProvider),
       createCodexTool(this.codex),
@@ -149,6 +152,7 @@ export class CompanyOS {
       emailDrafts: data.emailDrafts.filter(item => !projectId || item.projectId === projectId),
       previews: data.previews.filter(item => !projectId || item.projectId === projectId),
       deployments: data.deployments.filter(item => !projectId || item.projectId === projectId),
+      implementationPlans: data.implementationPlans.filter(item => !projectId || item.projectId === projectId),
       design: {
         briefs: data.design.briefs.filter(item => !projectId || item.projectId === projectId),
         brandAudits: data.design.brandAudits.filter(item => !projectId || item.projectId === projectId),

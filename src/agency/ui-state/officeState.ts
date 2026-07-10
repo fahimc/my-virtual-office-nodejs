@@ -8,6 +8,7 @@ import { buildDesignPanelState } from './designPanelState.js';
 import { buildMoodboardState } from './moodboardState.js';
 import { buildDesignApprovalState } from './designApprovalState.js';
 import { buildPrototypePreviewState } from './prototypePreviewState.js';
+import { buildDeveloperStudioState } from './developerStudioState.js';
 
 export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRuntime, projectId?: string) {
   const data = await store.read();
@@ -30,6 +31,7 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
       approvals: buildDesignApprovalState(approvals),
       prototypePreview: buildPrototypePreviewState(designPanel.prototype)
     },
+    developerStudio: buildDeveloperStudioState(data, project?.id),
     taskBoard: buildTaskBoardState(project ? data.companyTasks.filter(task => task.projectId === project.id) : data.companyTasks),
     company: {
       codexTasks: project ? data.codexTasks.filter(task => task.projectId === project.id) : data.codexTasks,

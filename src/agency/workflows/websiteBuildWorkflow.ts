@@ -6,6 +6,8 @@ import type { WorkflowRuntime } from '../runtime/workflowRuntime.js';
 import { ApprovalService } from '../approvals/approvalService.js';
 import type { CompanyOS } from '../company/companyOS.js';
 import type { DesignWorkflow } from './designWorkflow.js';
+import type { DesignHandoff } from '../schemas/designHandoff.schema.js';
+import type { ImplementationPlan } from '../schemas/implementationPlan.schema.js';
 
 export class WebsiteBuildWorkflow {
   private readonly approvalService: ApprovalService;
@@ -74,6 +76,10 @@ export class WebsiteBuildWorkflow {
         });
         return;
       }
+      const designHandoff = await this.getDesignHandoff(project.id);
+      const implementationPlan = this.companyOS
+        ? await this.companyOS.developerPlanning.createImplementationPlan(project, designHandoff, run.id)
+        : undefined;
 
       await this.projectMemory.update(project.id, { status: 'copy' });
       await this.workflowRuntime.emit(run, 'copy.started', {});
@@ -93,7 +99,9 @@ export class WebsiteBuildWorkflow {
             projectId: project.id,
             repoPath: this.companyOS.config.defaultRepoPath,
             taskTitle: `Build website preview attempt ${attempt}`,
-            taskPrompt: `Implement the approved website using the design handoff when present.\n\nPlan: ${plan.summary}\n\nDesign: ${design.direction}\n\nCopy: ${copy.copy}`,
+            taskMode: attempt === 1 ? 'build_page_from_template' : 'fix_qa_design_issues',
+            implementationPlan,
+            taskPrompt: this.createCodexBuildPrompt({ plan, design, copy, designHandoff, implementationPlan, attempt }),
             agentId: 'builder'
           })
           : undefined;
@@ -208,6 +216,38 @@ export class WebsiteBuildWorkflow {
         approvalRequired: Boolean(template.approvalRequired)
       });
     }
+  }
+
+  private async getDesignHandoff(projectId: string): Promise<DesignHandoff | undefined> {
+    const data = await this.store.read();
+    return data.design.handoffs.filter(item => item.projectId === projectId).at(-1);
+  }
+
+  private createCodexBuildPrompt(input: {
+    plan: { tasks: string[]; summary: string };
+    design: { direction: string; sections: string[] };
+    copy: { copy: string };
+    designHandoff?: DesignHandoff;
+    implementationPlan?: ImplementationPlan;
+    attempt: number;
+  }) {
+    const { plan, design, copy, designHandoff, implementationPlan, attempt } = input;
+    return [
+      `Implementation attempt: ${attempt}.`,
+      'Build the approved website from reusable components and sections.',
+      'Start by inspecting package.json, existing UI/component folders, design-system folders, templates, and section components.',
+      implementationPlan ? `Use template: ${implementationPlan.templateSelected}. Reason: ${implementationPlan.templateReason}` : 'No implementation plan was available; inspect first and choose the smallest reusable strategy.',
+      implementationPlan ? `Components to create: ${implementationPlan.componentsToCreate.join(', ')}` : '',
+      implementationPlan ? `Sections to create: ${implementationPlan.sectionsToCreate.join(', ')}` : '',
+      designHandoff ? `Designer handoff summary: ${designHandoff.handoffSummary}` : 'Designer handoff missing; use approved design direction and structured brief conservatively.',
+      designHandoff ? `Design tokens: ${JSON.stringify(designHandoff.designTokens.exportedTailwindTheme || designHandoff.designTokens.exportedCssVariables || {})}` : '',
+      designHandoff ? `Accessibility requirements: ${designHandoff.accessibilityRequirements.join('; ')}` : '',
+      designHandoff ? `Implementation notes: ${designHandoff.implementationNotes.join('; ')}` : '',
+      `Project plan: ${plan.summary}`,
+      `Design direction: ${design.direction}`,
+      `Copy: ${copy.copy}`,
+      'Do not deploy live. Do not merge to main. Do not install a component library without approval.'
+    ].filter(Boolean).join('\n\n');
   }
 
   private async claimCompanyTask(projectId: string, type: 'coding' | 'qa' | 'design' | 'copy' | 'preview', agentId: string) {

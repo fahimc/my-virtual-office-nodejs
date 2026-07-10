@@ -15,6 +15,7 @@ export type ArtifactType =
   | 'design_handoff'
   | 'design_qa'
   | 'post_build_design_review'
+  | 'implementation_plan'
   | 'copy'
   | 'code'
   | 'qa_report'

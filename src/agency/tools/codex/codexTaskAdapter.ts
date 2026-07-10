@@ -1,3 +1,5 @@
+import type { CodexTaskMode, ImplementationPlan } from '../../schemas/implementationPlan.schema.js';
+
 export type CodexTaskStatus = 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
 
 export interface CodexTask {
@@ -7,6 +9,8 @@ export interface CodexTask {
   branchName: string;
   taskTitle: string;
   taskPrompt: string;
+  taskMode?: CodexTaskMode;
+  implementationPlanId?: string;
   allowedCommands: string[];
   disallowedCommands: string[];
   maxRuntimeMs: number;
@@ -36,6 +40,8 @@ export interface CodexRunInput {
   repoPath: string;
   taskTitle: string;
   taskPrompt: string;
+  taskMode?: CodexTaskMode;
+  implementationPlan?: ImplementationPlan;
   branchName?: string;
   agentId?: string;
 }

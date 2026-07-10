@@ -24,6 +24,7 @@ import type { ComponentSpec } from '../schemas/componentSpec.schema.js';
 import type { Prototype } from '../schemas/prototype.schema.js';
 import type { DesignHandoff } from '../schemas/designHandoff.schema.js';
 import type { DesignQaReport } from '../schemas/designQa.schema.js';
+import type { ImplementationPlan } from '../schemas/implementationPlan.schema.js';
 
 export interface AgencyStoreData {
   customers: Customer[];
@@ -40,6 +41,7 @@ export interface AgencyStoreData {
   githubPullRequests: GitHubPullRequestRecord[];
   previews: PreviewRecord[];
   deployments: DeploymentRecord[];
+  implementationPlans: ImplementationPlan[];
   notifications: Array<{ id: string; projectId?: string; type: string; title: string; message: string; read: boolean; createdAt: string }>;
   design: {
     briefs: DesignBrief[];
@@ -75,6 +77,7 @@ const emptyStore = (): AgencyStoreData => ({
   githubPullRequests: [],
   previews: [],
   deployments: [],
+  implementationPlans: [],
   notifications: [],
   design: {
     briefs: [],

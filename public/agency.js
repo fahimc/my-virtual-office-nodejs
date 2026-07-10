@@ -28,6 +28,8 @@
     taskBoard: document.getElementById('taskBoardPanel'),
     designPhase: document.getElementById('designPhase'),
     designStudioBody: document.getElementById('designStudioBody'),
+    developerPhase: document.getElementById('developerPhase'),
+    developerStudioBody: document.getElementById('developerStudioBody'),
     codexPanel: document.getElementById('codexPanel'),
     githubPanel: document.getElementById('githubPanel'),
     emailPanel: document.getElementById('emailPanel'),
@@ -357,6 +359,7 @@
   function renderCompany(officeState) {
     renderTaskBoard(officeState.taskBoard || []);
     renderDesignStudio(officeState.designStudio || {});
+    renderDeveloperStudio(officeState.developerStudio || {});
     const company = officeState.company || {};
     renderCodex(company.codexTasks || []);
     renderGitHub(company.githubPullRequests || []);
@@ -418,6 +421,48 @@
         <div class="design-studio-card">
           <b>Artifacts</b>
           <span>${design.artifactCount || 0} design artifacts saved</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderDeveloperStudio(developer) {
+    if (!els.developerStudioBody) return;
+    els.developerPhase.textContent = (developer.phase || 'not_started').replaceAll('_', ' ');
+    const plan = developer.plan;
+    if (!plan) {
+      els.developerStudioBody.innerHTML = '<div class="developer-empty">Waiting for approved design handoff before component and template planning.</div>';
+      return;
+    }
+    els.developerStudioBody.innerHTML = `
+      <div class="developer-studio-grid">
+        <div class="developer-studio-card">
+          <b>UI System</b>
+          <span>${plan.designSystemDetected} - ${plan.stylingSystemDetected}</span>
+          <small>${plan.componentLibraryDetected.join(', ')}</small>
+        </div>
+        <div class="developer-studio-card">
+          <b>Template</b>
+          <span>${plan.templateSelected}</span>
+          <small>${plan.templateReason}</small>
+        </div>
+        <div class="developer-studio-card">
+          <b>Reusable Components</b>
+          <span>${plan.reusableComponentsFound.join(', ') || 'No client-site components found yet'}</span>
+          <small>Create: ${plan.componentsToCreate.join(', ')}</small>
+        </div>
+        <div class="developer-studio-card">
+          <b>Sections</b>
+          <span>${plan.sectionsToCreate.join(', ')}</span>
+        </div>
+        <div class="developer-studio-card">
+          <b>Design Tokens</b>
+          <span>${plan.designTokensToApply.slice(0, 10).join(', ')}</span>
+        </div>
+        <div class="developer-studio-card">
+          <b>Validation</b>
+          <span>${plan.validationCommands.join(', ')}</span>
+          <small>${developer.completedTaskCount || 0}/${developer.taskCount || 0} developer tasks complete</small>
         </div>
       </div>
     `;

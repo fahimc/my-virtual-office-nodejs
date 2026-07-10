@@ -62,6 +62,25 @@ Codex is treated as a coding worker, not the company brain.
 
 By default `CODEX_ENABLE_EXEC` is off, so Codex runs in safe stub mode. Set `CODEX_ENABLE_EXEC=1` and `CODEX_EXECUTABLE=codex` to allow `codex exec`.
 
+## Developer Studio
+
+Before Builder Agent hands work to Codex, `DeveloperPlanningService` inspects the repo for an existing design system, component library, styling system, templates, reusable sections, Storybook, and approved prior patterns.
+
+The implementation plan records:
+
+- detected design system/component library/styling system
+- selected website template and reason
+- reusable components found
+- components and sections to create or adapt
+- Designer Agent tokens to apply
+- accessibility and responsive strategy
+- files to modify or avoid
+- validation commands and Codex task rules
+
+Current repo detection is intentionally conservative: this app is Express plus static HTML/CSS, so the Developer Agent plans client-site reusable components and templates without installing React, Tailwind, shadcn/ui, or another library unless approval is added later.
+
+Codex prompts now include a task mode such as `build_page_from_template`, `apply_design_tokens`, `create_reusable_component`, `adapt_existing_component`, or `fix_qa_design_issues`. Codex must inspect existing components first, avoid duplicates, preserve the selected design system, and use Designer Agent handoff tokens as source of truth.
+
 ## GitHub
 
 GitHub abstractions are provider-shaped and currently local/stubbed:

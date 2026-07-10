@@ -18,7 +18,9 @@ export class CodexToolService {
       repoPath: input.repoPath,
       branchName: input.branchName || createCodexBranchName(input.projectId, input.taskTitle),
       taskTitle: input.taskTitle,
-      taskPrompt: this.withAgencyInstructions(input.taskPrompt),
+      taskPrompt: this.withAgencyInstructions(input),
+      taskMode: input.taskMode,
+      implementationPlanId: input.implementationPlan?.id,
       allowedCommands: defaultCodexConfig.allowedCommands,
       disallowedCommands: defaultCodexConfig.disallowedCommands,
       maxRuntimeMs: defaultCodexConfig.defaultRuntimeMs,
@@ -62,11 +64,35 @@ export class CodexToolService {
     return result!;
   }
 
-  private withAgencyInstructions(prompt: string): string {
+  private withAgencyInstructions(input: CodexRunInput): string {
+    const plan = input.implementationPlan;
     return [
       'Follow project AGENTS.md instructions when present.',
       'Create or use a feature branch. Never push to main. Never deploy live. Never delete important files without approval.',
-      prompt
+      `Codex task mode: ${input.taskMode || 'build_page_from_template'}.`,
+      'Before creating new UI, inspect existing components, sections, templates, design-system files, and package dependencies.',
+      'Do not create duplicate components when a suitable one already exists.',
+      'Do not install a new component library without explicit approval.',
+      'Do not mix UI libraries unless the implementation plan explicitly requires it.',
+      'Use the Designer Agent handoff and design tokens as the source of truth. Do not bypass or invent around them.',
+      'Prefer reusable primitives and section components over one large page file.',
+      plan ? [
+        'Implementation plan:',
+        `- Design system detected: ${plan.designSystemDetected}`,
+        `- Component library detected: ${plan.componentLibraryDetected.join(', ')}`,
+        `- Styling system detected: ${plan.stylingSystemDetected}`,
+        `- Template selected: ${plan.templateSelected}`,
+        `- Template reason: ${plan.templateReason}`,
+        `- Reusable components found: ${plan.reusableComponentsFound.join(', ') || 'none'}`,
+        `- Components to create: ${plan.componentsToCreate.join(', ')}`,
+        `- Components to modify: ${plan.componentsToModify.join(', ') || 'none'}`,
+        `- Sections to create: ${plan.sectionsToCreate.join(', ')}`,
+        `- Design tokens to apply: ${plan.designTokensToApply.join(', ')}`,
+        `- Accessibility strategy: ${plan.accessibilityStrategy}`,
+        `- Responsive strategy: ${plan.responsiveStrategy}`,
+        `- Files to avoid: ${plan.filesToAvoid.join(', ')}`
+      ].join('\n') : '',
+      input.taskPrompt
     ].join('\n\n');
   }
 }

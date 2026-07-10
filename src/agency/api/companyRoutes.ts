@@ -61,6 +61,8 @@ export function createCompanyRouter(options: CreateAgencySystemOptions): Router 
       branchName: req.body.branchName,
       taskTitle: req.body.taskTitle || 'Agency coding task',
       taskPrompt: req.body.taskPrompt || '',
+      taskMode: req.body.taskMode || 'build_page_from_template',
+      implementationPlan: req.body.implementationPlan,
       agentId: req.body.agentId || 'builder'
     });
     res.json(result);
@@ -131,6 +133,18 @@ export function createCompanyRouter(options: CreateAgencySystemOptions): Router 
   }));
   router.post('/deployment/approve', route(async (req, res) => {
     res.redirect(307, '/api/agency/deployment/approve');
+  }));
+
+  router.post('/developer/:projectId/plan', route(async (req, res) => {
+    const project = await system.projectMemory.get(req.params.projectId);
+    if (!project) return void res.status(404).json({ error: 'project not found' });
+    const data = await system.store.read();
+    const handoff = data.design.handoffs.filter(item => item.projectId === project.id).at(-1);
+    const plan = await system.companyOS.developerPlanning.createImplementationPlan(project, handoff, project.currentWorkflowRunId);
+    res.json({ plan, officeState: await system.officeState(project.id) });
+  }));
+  router.get('/developer/:projectId/plan', route(async (req, res) => {
+    res.json({ plan: await system.companyOS.developerPlanning.latest(req.params.projectId) });
   }));
 
   router.get('/approvals', route(async (req, res) => {

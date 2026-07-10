@@ -50,7 +50,20 @@ export type DesignTaskType =
   | 'post_build_design_qa'
   | 'design_fix';
 
-export type AnyCompanyTaskType = CompanyTaskType | DesignTaskType;
+export type DeveloperTaskType =
+  | 'design_system_inspection'
+  | 'component_library_inspection'
+  | 'template_selection'
+  | 'design_token_mapping'
+  | 'component_creation'
+  | 'component_adaptation'
+  | 'section_template_creation'
+  | 'template_customisation'
+  | 'storybook_update'
+  | 'accessibility_component_pass'
+  | 'responsive_component_pass';
+
+export type AnyCompanyTaskType = CompanyTaskType | DesignTaskType | DeveloperTaskType;
 
 export type CompanyTaskPriority = 'low' | 'normal' | 'high' | 'urgent';
 
