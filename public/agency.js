@@ -46,6 +46,7 @@
     projectId: '',
     workflowRunId: '',
     renderedApprovalKey: '',
+    structuredBrief: null,
     pollTimer: null
   };
 
@@ -72,6 +73,16 @@
     els.briefForm.classList.add('hidden');
     els.structuredPanel.classList.add('hidden');
     els.actions.innerHTML = '';
+  }
+
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[char]);
   }
 
   function iconButton(label, icon, onClick) {
@@ -199,20 +210,87 @@
         }
       });
       state.workflowRunId = result.workflowRunId;
-      els.structuredEditor.value = JSON.stringify(result.structuredBrief, null, 2);
+      state.structuredBrief = result.structuredBrief;
+      renderStructuredBrief(result.structuredBrief);
       els.structuredPanel.classList.remove('hidden');
-      setReception('Brief Approval', 'Briefing Agent', 'Review, edit if needed, then approve the structured brief. The agency will work in the background after approval.');
+      setReception('Brief Approval', 'Briefing Agent', 'Review the project summary, adjust anything that is wrong, then approve it. The agency will work in the background after approval.');
     } catch (error) {
       setReception('Brief issue', 'Briefing Agent', error.message);
       els.briefForm.classList.remove('hidden');
     }
   });
 
+  function renderStructuredBrief(brief) {
+    const value = (key, fallback = '') => escapeHtml(brief?.[key] || fallback);
+    els.structuredEditor.innerHTML = `
+      <div class="brief-review-grid">
+        <label class="brief-review-field wide">
+          <span>Business summary</span>
+          <textarea data-brief-field="businessSummary">${value('businessSummary')}</textarea>
+        </label>
+        <label class="brief-review-field wide">
+          <span>Target audience</span>
+          <textarea data-brief-field="targetAudience">${value('targetAudience')}</textarea>
+        </label>
+        ${briefListField('Pages needed', 'pagesNeeded', brief)}
+        ${briefListField('Features needed', 'featuresNeeded', brief)}
+        ${briefListField('Style preferences', 'stylePreferences', brief)}
+        ${briefListField('Content needed', 'contentRequirements', brief)}
+        ${briefListField('Assets needed', 'assetsRequired', brief)}
+        ${briefListField('Technical requirements', 'technicalRequirements', brief)}
+        ${briefListField('Assumptions', 'assumptions', brief)}
+        ${briefListField('Open questions', 'missingInformation', brief)}
+        <label class="brief-review-field">
+          <span>Estimated complexity</span>
+          <select data-brief-field="estimatedComplexity">
+            ${['small', 'medium', 'large'].map(option => `<option value="${option}" ${brief?.estimatedComplexity === option ? 'selected' : ''}>${option}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+    `;
+  }
+
+  function briefListField(label, key, brief) {
+    const items = Array.isArray(brief?.[key]) ? brief[key] : [];
+    return `
+      <label class="brief-review-field">
+        <span>${escapeHtml(label)}</span>
+        <textarea data-brief-field="${key}" data-brief-list="true">${escapeHtml(items.join('\n'))}</textarea>
+      </label>
+    `;
+  }
+
+  function structuredBriefFromForm() {
+    const base = state.structuredBrief || {};
+    const read = key => els.structuredEditor.querySelector(`[data-brief-field="${key}"]`)?.value.trim() || '';
+    const readList = key => splitBriefList(read(key));
+    return {
+      businessSummary: read('businessSummary'),
+      targetAudience: read('targetAudience'),
+      pagesNeeded: readList('pagesNeeded'),
+      featuresNeeded: readList('featuresNeeded'),
+      stylePreferences: readList('stylePreferences'),
+      contentRequirements: readList('contentRequirements'),
+      assetsRequired: readList('assetsRequired'),
+      technicalRequirements: readList('technicalRequirements'),
+      assumptions: readList('assumptions'),
+      missingInformation: readList('missingInformation'),
+      estimatedComplexity: ['small', 'medium', 'large'].includes(read('estimatedComplexity')) ? read('estimatedComplexity') : base.estimatedComplexity || 'medium'
+    };
+  }
+
+  function splitBriefList(value) {
+    return String(value || '')
+      .split(/\n|,/)
+      .map(item => item.trim())
+      .filter(Boolean);
+  }
+
   els.approveBrief.addEventListener('click', async () => {
     hideInputs();
     setReception('Agency Working', 'Project Team', 'Brief approved. Agents are now working through planning, design, copy, build, QA, and preview.');
     try {
-      const structuredBrief = JSON.parse(els.structuredEditor.value);
+      const structuredBrief = structuredBriefFromForm();
       const result = await api('/brief/approve', { method: 'POST', body: { workflowRunId: state.workflowRunId, structuredBrief } });
       state.projectId = result.project.id;
       state.workflowRunId = result.workflowRunId;

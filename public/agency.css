@@ -142,7 +142,8 @@
 
 .agency-form input,
 .agency-form textarea,
-#structuredBriefEditor {
+.brief-review-field textarea,
+.brief-review-field select {
   width: 100%;
   border: 1px solid #334260;
   border-radius: 6px;
@@ -166,10 +167,41 @@
 }
 
 #structuredBriefEditor {
-  min-height: 220px;
   margin-top: 10px;
+}
+
+.brief-review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.brief-review-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  color: #b9c7dc;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.brief-review-field.wide {
+  grid-column: 1 / -1;
+}
+
+.brief-review-field textarea {
+  min-height: 92px;
   resize: vertical;
   line-height: 1.45;
+}
+
+.brief-review-field.wide textarea {
+  min-height: 82px;
+}
+
+.brief-review-field select {
+  min-height: 40px;
 }
 
 .agency-timeline {
