@@ -45,6 +45,7 @@
     customerId: '',
     projectId: '',
     workflowRunId: '',
+    renderedApprovalKey: '',
     pollTimer: null
   };
 
@@ -328,9 +329,13 @@
     const pending = approvals.find(item => item.status === 'pending');
     els.approval.classList.toggle('hidden', !pending);
     if (!pending) {
+      state.renderedApprovalKey = '';
       els.approval.innerHTML = '';
       return;
     }
+    const approvalKey = `${pending.id}:${pending.type}:${pending.status}`;
+    if (state.renderedApprovalKey === approvalKey && els.approval.children.length) return;
+    state.renderedApprovalKey = approvalKey;
     if (pending.type === 'deployment') {
       els.approval.innerHTML = `
         <h4>${pending.title}</h4>
@@ -413,6 +418,7 @@
     const pendingDesignApproval = (design.approvals || [])[0];
     const designArtifacts = design.artifacts || [];
     const tokenColors = design.tokens && design.tokens.colours ? Object.values(design.tokens.colours).slice(0, 8) : [];
+    const existingDesignFeedback = document.getElementById('designStudioFeedback')?.value || '';
     els.designStudioBody.innerHTML = `
       ${pendingDesignApproval && (design.creativeDirections || []).length ? `
         <section class="design-review-panel">
@@ -507,6 +513,8 @@
         </div>
       </div>
     `;
+    const restoredDesignFeedback = document.getElementById('designStudioFeedback');
+    if (restoredDesignFeedback && existingDesignFeedback) restoredDesignFeedback.value = existingDesignFeedback;
     if (pendingDesignApproval) {
       els.designStudioBody.querySelectorAll('.approve-direction-option').forEach(button => {
         button.addEventListener('click', () => {
