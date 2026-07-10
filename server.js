@@ -1,7 +1,7 @@
 import express from 'express';
 import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
-import { promises as fs } from 'fs';
+import { promises as fs, readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
@@ -17,6 +17,7 @@ const EMAILS_FILE = path.join(DATA_DIR, 'emails.json');
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'gemma4:e4b';
 const OFFICE_EMAIL_DOMAIN = process.env.OFFICE_EMAIL_DOMAIN || 'virtual-office.local';
+const PLACEHOLDER_MANIFEST = loadPlaceholderManifest();
 
 const app = express();
 const server = createServer(app);
@@ -530,6 +531,9 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
   const template = implementationPlan.templateSelected || inferTemplate(context);
   const content = buildTemplateContent(context, brief, template);
   const tokens = designTokensFromDirection(direction, context);
+  const profile = templateProfileFor(template, context, direction);
+  content.images = placeholderImagesFor(profile.imageCategory, 18);
+  content.profile = profile;
   const isConcept = Boolean(options.concept);
   return `<!doctype html>
 <html lang="en">
@@ -579,6 +583,12 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     .proof-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:34px; max-width:720px; }
     .proof-pill { border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.74); padding:13px 14px; font-weight:850; color:#1f2937; }
     .visual-stage { position:relative; min-height:560px; border-radius:42px; background:linear-gradient(145deg, color-mix(in srgb, var(--brand) 84%, white), color-mix(in srgb, var(--accent) 70%, white)); box-shadow:var(--shadow); overflow:hidden; }
+    .visual-stage.photo-stage { display:grid; place-items:end stretch; background:var(--ink); isolation:isolate; }
+    .visual-stage.photo-stage img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.78; transform:scale(1.04); animation:slowZoom 18s ease-in-out infinite alternate; }
+    .visual-stage.photo-stage:before { z-index:1; inset:0; width:auto; height:auto; right:auto; top:auto; background:linear-gradient(180deg, transparent, rgba(15,23,42,.88)); border-radius:0; }
+    .visual-stage.photo-stage:after { z-index:1; width:260px; height:260px; background:color-mix(in srgb, var(--brand) 55%, transparent); filter:blur(30px); right:-80px; bottom:-80px; left:auto; }
+    .stage-caption { position:relative; z-index:2; margin:24px; padding:22px; border-radius:26px; color:#fff; background:rgba(15,23,42,.62); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.18); }
+    .stage-caption p { color:rgba(255,255,255,.82); margin:8px 0 0; }
     .visual-stage:before,.visual-stage:after { content:""; position:absolute; border-radius:999px; background:rgba(255,255,255,.26); }
     .visual-stage:before { width:280px; height:280px; right:-80px; top:-50px; }
     .visual-stage:after { width:220px; height:220px; left:-70px; bottom:-50px; }
@@ -596,14 +606,35 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     .section-head p { max-width:520px; margin:0; }
     .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
     .product-card,.feature-card,.review-card,.panel { border:1px solid var(--line); border-radius:var(--radius); background:rgba(255,255,255,.88); box-shadow:0 16px 40px rgba(15,23,42,.07); }
+    .product-card,.feature-card,.review-card,.panel,.media-card { animation:riseIn .7s ease both; animation-delay:var(--delay,0ms); }
     .product-card { padding:18px; overflow:hidden; }
-    .product-visual { height:190px; border-radius:28px; background:linear-gradient(135deg, color-mix(in srgb, var(--flavour) 72%, #fff), #fff); display:grid; place-items:center; margin-bottom:16px; }
+    .product-visual { height:210px; border-radius:28px; background:linear-gradient(135deg, color-mix(in srgb, var(--flavour) 72%, #fff), #fff); display:grid; place-items:center; margin-bottom:16px; overflow:hidden; position:relative; }
+    .product-visual img { width:100%; height:100%; object-fit:cover; mix-blend-mode:multiply; opacity:.9; transition:transform 260ms ease; }
+    .product-card:hover .product-visual img { transform:scale(1.07); }
     .mini-bottle { width:58px; height:150px; border-radius:20px 20px 24px 24px; background:linear-gradient(180deg,#fff,var(--flavour)); border:2px solid rgba(255,255,255,.8); box-shadow:0 18px 34px rgba(15,23,42,.16); position:relative; }
     .mini-bottle:before { content:""; position:absolute; width:28px; height:28px; border-radius:8px 8px 4px 4px; background:var(--ink); top:-24px; left:50%; transform:translateX(-50%); }
     .price-row { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; }
     .price { font-weight:950; font-size:20px; }
     .tiny-button { border:0; border-radius:999px; background:var(--ink); color:#fff; padding:10px 12px; font-weight:850; }
     .feature-card,.review-card,.panel { padding:24px; }
+    .media-split { display:grid; grid-template-columns:minmax(0,.9fr) minmax(320px,1.1fr); gap:28px; align-items:stretch; }
+    .media-card { min-height:460px; border-radius:42px; overflow:hidden; position:relative; box-shadow:var(--shadow); background:var(--ink); }
+    .media-card img { width:100%; height:100%; object-fit:cover; display:block; }
+    .media-card .overlay { position:absolute; left:22px; right:22px; bottom:22px; padding:20px; border-radius:24px; background:rgba(255,255,255,.88); border:1px solid rgba(255,255,255,.5); }
+    .metric-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:22px; }
+    .metric { padding:18px; border-radius:22px; background:#fff; border:1px solid var(--line); }
+    .metric b { display:block; font-size:28px; }
+    .gallery { display:grid; grid-template-columns:1.1fr .9fr .9fr; grid-auto-rows:230px; gap:14px; }
+    .gallery figure { margin:0; border-radius:30px; overflow:hidden; position:relative; background:var(--soft); box-shadow:0 16px 36px rgba(15,23,42,.08); }
+    .gallery figure:first-child { grid-row:span 2; }
+    .gallery img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 320ms ease; }
+    .gallery figure:hover img { transform:scale(1.06); }
+    .gallery figcaption { position:absolute; left:14px; right:14px; bottom:14px; border-radius:18px; background:rgba(255,255,255,.88); padding:10px 12px; font-weight:900; }
+    .process { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; counter-reset:step; }
+    .process-card { counter-increment:step; padding:24px; border-radius:28px; background:linear-gradient(180deg,#fff,color-mix(in srgb,var(--soft) 50%,#fff)); border:1px solid var(--line); }
+    .process-card:before { content:counter(step, decimal-leading-zero); display:inline-grid; place-items:center; width:48px; height:48px; border-radius:16px; background:var(--ink); color:#fff; font-weight:950; margin-bottom:16px; }
+    .faq-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .faq-item { border:1px solid var(--line); border-radius:24px; background:#fff; padding:22px; }
     .icon { width:44px; height:44px; border-radius:16px; background:color-mix(in srgb, var(--accent) 22%, #fff); display:grid; place-items:center; margin-bottom:14px; font-weight:950; }
     .split { display:grid; grid-template-columns:minmax(0,.95fr) minmax(320px,1.05fr); gap:28px; align-items:center; }
     .case-builder { border-radius:36px; padding:28px; background:var(--ink); color:#fff; box-shadow:var(--shadow); }
@@ -616,7 +647,12 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     .newsletter input { border:0; min-height:48px; padding:0 18px; font:inherit; min-width:260px; outline:0; }
     footer { padding:44px 0; color:var(--muted); border-top:1px solid var(--line); }
     .concept-bar { position:fixed; right:18px; bottom:18px; z-index:50; border-radius:999px; background:var(--ink); color:#fff; padding:12px 16px; box-shadow:var(--shadow); font-weight:850; font-size:13px; }
-    @media (max-width:900px) { nav { display:none; } .hero,.split,.band,.newsletter { grid-template-columns:1fr; } .visual-stage { min-height:430px; } .proof-row,.grid { grid-template-columns:1fr; } .section { padding:62px 0; } h1 { font-size:clamp(42px,14vw,76px); } }
+    @keyframes riseIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes slowZoom { from { transform:scale(1.02); } to { transform:scale(1.12); } }
+    @keyframes floatBottle { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-12px) rotate(2deg); } }
+    .bottle { animation:floatBottle 5s ease-in-out infinite; animation-delay:var(--delay,0ms); }
+    @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+    @media (max-width:900px) { nav { display:none; } .hero,.split,.band,.newsletter,.media-split { grid-template-columns:1fr; } .visual-stage,.media-card { min-height:430px; } .proof-row,.grid,.metric-row,.process,.faq-grid,.gallery { grid-template-columns:1fr; } .gallery figure:first-child { grid-row:auto; } .section { padding:62px 0; } h1 { font-size:clamp(42px,14vw,76px); } }
   </style>
 </head>
 <body>
@@ -636,12 +672,13 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
         </div>
         <div class="proof-row">${content.proofs.map(item => `<div class="proof-pill">${escapeHtml(item)}</div>`).join('')}</div>
       </div>
-      ${renderProductStage(content)}
+      ${renderHeroVisual(content)}
     </section>
+    ${renderStorySection(content)}
     <section class="section soft" id="shop">
       <div class="container">
         <div class="section-head"><div><span class="eyebrow">${escapeHtml(content.productEyebrow)}</span><h2>${escapeHtml(content.productHeading)}</h2></div><p>${escapeHtml(content.productIntro)}</p></div>
-        <div class="grid">${content.products.map(renderProductCard).join('')}</div>
+        <div class="grid">${content.products.map((item, index) => renderProductCard(item, content.images[index + 4], index)).join('')}</div>
       </div>
     </section>
     <section class="section" id="why">
@@ -650,6 +687,7 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
         <div class="grid">${content.benefits.map((item, index) => `<article class="feature-card"><div class="icon">${index + 1}</div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p></article>`).join('')}</div>
       </div>
     </section>
+    ${renderGallerySection(content)}
     <section class="section" id="mixed-case">
       <div class="container split">
         <div>
@@ -665,12 +703,14 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
         </div>
       </div>
     </section>
+    ${renderProcessSection(content)}
     <section class="section soft" id="reviews">
       <div class="container">
         <div class="section-head"><div><span class="eyebrow">Trust signals</span><h2>${escapeHtml(content.reviewHeading)}</h2></div><p>${escapeHtml(content.reviewIntro)}</p></div>
         <div class="grid">${content.reviews.map(item => `<article class="review-card"><p>${escapeHtml(item.quote)}</p><strong>${escapeHtml(item.name)}</strong><br><span>${escapeHtml(item.meta)}</span></article>`).join('')}</div>
       </div>
     </section>
+    ${renderFaqSection(content)}
     <section class="section" id="wholesale">
       <div class="container">
         <div class="band">
@@ -750,6 +790,18 @@ function buildTemplateContent(context, brief, template) {
     primaryCta: isDrink ? 'Shop the Drinks' : 'Start a Project',
     secondaryCta: isDrink ? 'Build a Mixed Case' : 'See Services',
     proofs: isDrink ? ['Real fruit juice', 'No artificial colours', 'UK delivery'] : ['Responsive', 'Accessible', 'Built for conversion'],
+    metrics: isDrink ? [
+      ['6', 'launch flavours'],
+      ['24h', 'chilled dispatch window'],
+      ['100%', 'colourful shelf impact']
+    ] : [
+      ['3', 'clear service paths'],
+      ['48h', 'fast response target'],
+      ['AA', 'accessibility-minded layout']
+    ],
+    storyEyebrow: isDrink ? 'From fridge to first sip' : 'Built around the customer journey',
+    storyHeading: isDrink ? 'A bright shopping journey that makes every flavour easy to understand.' : 'A polished website journey with the right proof at the right moment.',
+    storyText: isDrink ? 'The page opens with appetite appeal, moves into flavour comparison, then gives wholesale buyers and retail customers separate paths without making the experience feel busy.' : 'The layout moves from a clear promise to services, proof, process, and contact so visitors always know why they should trust the business and what to do next.',
     productEyebrow: isDrink ? 'Flavour range' : 'Services',
     productHeading: isDrink ? 'Meet the flavour range' : 'Choose the support you need',
     productIntro: isDrink ? 'Explore the launch flavours, compare pack options, and find the drinks that fit your fridge, event, or next stock order.' : 'Clear service options help visitors understand what is available and take the next step with confidence.',
@@ -771,6 +823,22 @@ function buildTemplateContent(context, brief, template) {
     caseText: isDrink ? 'Create a mixed case with your favourite flavours, keep track of bottle counts, and add the full box to your basket in one tap.' : 'Choose the level of support that fits today, then add more services when the business is ready.',
     caseBuilderText: isDrink ? 'Pick six bottles, balance your flavours, and create a case that fits your fridge or event.' : 'Plan the next step around your goals, budget, and timeline.',
     caseCta: isDrink ? 'Build Your Case' : 'Get Started',
+    galleryEyebrow: isDrink ? 'Fresh moments' : 'Visual direction',
+    galleryHeading: isDrink ? 'Colour, chill, pour, repeat.' : 'A richer visual system for modern visitors.',
+    galleryCaptions: isDrink ? ['Fresh ingredients', 'Cold shelf impact', 'Mixed case moments', 'Wholesale-ready'] : ['Clear first impression', 'Human proof', 'Useful details', 'Conversion moments'],
+    processEyebrow: isDrink ? 'How it works' : 'Simple process',
+    processHeading: isDrink ? 'From flavour pick to doorstep delivery.' : 'From first enquiry to a sharper website.',
+    processSteps: isDrink ? [
+      ['Choose flavours', 'Pick single flavours or start with a mixed case.'],
+      ['Build your box', 'Balance favourites, seasonal specials, and discovery bottles.'],
+      ['Checkout clearly', 'See delivery, pack sizes, and key product details before payment.'],
+      ['Restock easily', 'Join the launch list or ask about wholesale cases.']
+    ] : [
+      ['Share the goal', 'Explain the business, audience, offer, and current blockers.'],
+      ['Shape the direction', 'Align the page structure, messaging, visuals, and conversion path.'],
+      ['Launch with proof', 'Publish a clear experience that earns trust quickly.'],
+      ['Improve over time', 'Use feedback and analytics to sharpen the next version.']
+    ],
     reviewHeading: isDrink ? 'Proof that tastes like a repeat order' : 'Trust and proof',
     reviewIntro: isDrink ? 'Customer quotes and product proof help new shoppers feel confident before checkout.' : 'Real proof, helpful details, and direct calls to action help visitors move from interest to enquiry.',
     reviews: isDrink ? [
@@ -789,6 +857,17 @@ function buildTemplateContent(context, brief, template) {
     newsletterHeading: isDrink ? 'Get the juicy updates.' : 'Stay in the loop',
     newsletterText: isDrink ? 'Get launch discounts, new flavour drops, competitions and product updates straight to your inbox.' : 'Get useful updates, offers, and practical guidance straight to your inbox.',
     newsletterCta: isDrink ? 'Join the Fruit List' : 'Subscribe',
+    faqs: isDrink ? [
+      ['Can I build a mixed case?', 'Yes. The shopping flow is designed around choosing different flavours and reviewing the case before checkout.'],
+      ['Do you support wholesale orders?', 'Yes. Shops, cafes, gyms and event buyers can use the wholesale enquiry path.'],
+      ['Are final ingredients confirmed?', 'The page is ready for final product claims once the client supplies approved ingredient and nutrition details.'],
+      ['Is the site mobile-first?', 'Yes. Product cards, case building, and enquiry actions are designed for quick thumb-friendly browsing.']
+    ] : [
+      ['What happens after I enquire?', 'The team reviews your goals and replies with the best next step.'],
+      ['Can the website grow later?', 'Yes. The structure supports new pages, services, testimonials, and campaign sections.'],
+      ['Is it suitable for mobile visitors?', 'Yes. The page prioritises readable copy, clear actions, and touch-friendly sections.'],
+      ['Can the copy be edited?', 'Yes. The preview is structured so content can be refined before launch.']
+    ],
     footerText: isDrink ? `${brand} - real-fruit refreshment, mixed cases, and wholesale enquiries.` : `${brand} - practical support for better websites, clearer offers, and stronger enquiries.`
   };
 }
@@ -812,16 +891,123 @@ function designTokensFromDirection(direction, context) {
   };
 }
 
+function loadPlaceholderManifest() {
+  try {
+    return JSON.parse(readFileSync(path.join(__dirname, 'public', 'placeholders', 'manifest.json'), 'utf8'));
+  } catch {
+    return { categories: {} };
+  }
+}
+
+function templateProfileFor(template, context, direction) {
+  const text = `${template} ${context.businessType} ${context.originalBrief} ${direction?.name || ''}`.toLowerCase();
+  if (/(drink|juice|fruit|beverage|shop|ecommerce|product|checkout)/.test(text)) {
+    return { name: 'Commerce editorial', imageCategory: 'food-drink', sourceInspiration: 'Start Bootstrap Shop Homepage + Landing Page', motion: 'float-and-reveal' };
+  }
+  if (/(software|saas|dashboard|platform|subscription)/.test(text)) {
+    return { name: 'SaaS product launch', imageCategory: 'saas', sourceInspiration: 'Start Bootstrap Landing Page', motion: 'soft-rise' };
+  }
+  if (/(portfolio|photographer|creator|designer)/.test(text)) {
+    return { name: 'Portfolio showcase', imageCategory: 'portfolio', sourceInspiration: 'Start Bootstrap Freelancer', motion: 'gallery-focus' };
+  }
+  if (/(restaurant|cafe|food)/.test(text)) {
+    return { name: 'Hospitality local', imageCategory: 'restaurant', sourceInspiration: 'Start Bootstrap Creative', motion: 'warm-editorial' };
+  }
+  if (/(clinic|health|wellness)/.test(text)) {
+    return { name: 'Wellness service', imageCategory: 'healthcare', sourceInspiration: 'Start Bootstrap Business Frontpage', motion: 'calm-proof' };
+  }
+  if (/(salon|beauty|spa)/.test(text)) {
+    return { name: 'Beauty booking', imageCategory: 'beauty', sourceInspiration: 'Start Bootstrap Creative', motion: 'polished-reveal' };
+  }
+  if (/(real estate|house|property)/.test(text)) {
+    return { name: 'Property showcase', imageCategory: 'real-estate', sourceInspiration: 'Start Bootstrap Landing Page', motion: 'image-led' };
+  }
+  if (/(plumber|electrician|builder|trade|construction)/.test(text)) {
+    return { name: 'Trades lead-gen', imageCategory: 'trades', sourceInspiration: 'Start Bootstrap Business Frontpage', motion: 'proof-first' };
+  }
+  return { name: 'Agency service', imageCategory: 'agency', sourceInspiration: 'Start Bootstrap Agency + Creative', motion: 'editorial-rise' };
+}
+
+function placeholderImagesFor(category, count = 12) {
+  const categories = PLACEHOLDER_MANIFEST.categories || {};
+  const selected = categories[category] || [];
+  const fallback = categories.agency || categories['local-business'] || Object.values(categories).flat() || [];
+  const pool = selected.length ? selected : fallback;
+  return pool.slice(0, count);
+}
+
+function imageUrl(image) {
+  return image?.file || '';
+}
+
+function renderHeroVisual(content) {
+  const heroImage = content.images?.[0];
+  if (heroImage) {
+    return `<div class="visual-stage photo-stage" aria-label="${escapeHtml(content.brand)} hero visual">
+      <img src="${escapeHtml(imageUrl(heroImage))}" alt="">
+      <div class="stage-caption">
+        <strong>${escapeHtml(content.profile.name)}</strong>
+        <p>${escapeHtml(content.storyText)}</p>
+      </div>
+    </div>`;
+  }
+  return renderProductStage(content);
+}
+
+function renderStorySection(content) {
+  const image = content.images?.[1];
+  return `<section class="section" id="story">
+    <div class="container media-split">
+      <div>
+        <span class="eyebrow">${escapeHtml(content.storyEyebrow)}</span>
+        <h2>${escapeHtml(content.storyHeading)}</h2>
+        <p>${escapeHtml(content.storyText)}</p>
+        <div class="metric-row">${content.metrics.map(([value, label]) => `<div class="metric"><b>${escapeHtml(value)}</b><span>${escapeHtml(label)}</span></div>`).join('')}</div>
+      </div>
+      <div class="media-card">${image ? `<img src="${escapeHtml(imageUrl(image))}" alt="">` : renderProductStage(content)}<div class="overlay"><strong>${escapeHtml(content.profile.sourceInspiration)}</strong><p>${escapeHtml(content.profile.motion)} motion system</p></div></div>
+    </div>
+  </section>`;
+}
+
+function renderGallerySection(content) {
+  const images = (content.images || []).slice(2, 6);
+  if (!images.length) return '';
+  return `<section class="section soft" id="gallery">
+    <div class="container">
+      <div class="section-head"><div><span class="eyebrow">${escapeHtml(content.galleryEyebrow)}</span><h2>${escapeHtml(content.galleryHeading)}</h2></div><p>${escapeHtml(content.storyText)}</p></div>
+      <div class="gallery">${images.map((image, index) => `<figure style="--delay:${index * 80}ms"><img src="${escapeHtml(imageUrl(image))}" alt=""><figcaption>${escapeHtml(content.galleryCaptions[index] || content.brand)}</figcaption></figure>`).join('')}</div>
+    </div>
+  </section>`;
+}
+
+function renderProcessSection(content) {
+  return `<section class="section" id="process">
+    <div class="container">
+      <div class="section-head"><div><span class="eyebrow">${escapeHtml(content.processEyebrow)}</span><h2>${escapeHtml(content.processHeading)}</h2></div><p>${escapeHtml(content.caseText)}</p></div>
+      <div class="process">${content.processSteps.map(([title, text], index) => `<article class="process-card" style="--delay:${index * 80}ms"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(text)}</p></article>`).join('')}</div>
+    </div>
+  </section>`;
+}
+
+function renderFaqSection(content) {
+  return `<section class="section" id="faq">
+    <div class="container">
+      <div class="section-head"><div><span class="eyebrow">Questions</span><h2>Good to know before you start.</h2></div><p>${escapeHtml(content.newsletterText)}</p></div>
+      <div class="faq-grid">${content.faqs.map(([question, answer]) => `<article class="faq-item"><h3>${escapeHtml(question)}</h3><p>${escapeHtml(answer)}</p></article>`).join('')}</div>
+    </div>
+  </section>`;
+}
+
 function renderProductStage(content) {
   return `<div class="visual-stage" aria-label="${escapeHtml(content.brand)} product visual">
     <div class="fruit one"></div><div class="fruit two"></div><div class="fruit three"></div>
-    <div class="bottle-row">${content.products.slice(0, 4).map((item, index) => `<div class="bottle" data-label="${escapeHtml(item.short)}" style="--flavour:${item.color}; height:${270 + index * 14}px"></div>`).join('')}</div>
+    <div class="bottle-row">${content.products.slice(0, 4).map((item, index) => `<div class="bottle" data-label="${escapeHtml(item.short)}" style="--flavour:${item.color}; height:${270 + index * 14}px; --delay:${index * 170}ms"></div>`).join('')}</div>
   </div>`;
 }
 
-function renderProductCard(item) {
-  return `<article class="product-card" style="--flavour:${item.color}">
-    <div class="product-visual"><div class="mini-bottle"></div></div>
+function renderProductCard(item, image, index = 0) {
+  return `<article class="product-card" style="--flavour:${item.color}; --delay:${index * 80}ms">
+    <div class="product-visual">${image ? `<img src="${escapeHtml(imageUrl(image))}" alt="">` : '<div class="mini-bottle"></div>'}</div>
     <h3>${escapeHtml(item.name)}</h3>
     <p>${escapeHtml(item.desc)}</p>
     <div class="price-row"><span class="price">${escapeHtml(item.price)}</span><button class="tiny-button" type="button">Add</button></div>

@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "npm run build && node server.js",
     "dev": "npm run build && node --watch server.js",
-    "check": "npm run build && node --check server.js && node --check public/app.js && node --check public/agency.js"
+    "check": "npm run build && node --check server.js && node --check public/app.js && node --check public/agency.js",
+    "assets:placeholders": "node scripts/download-placeholder-images.mjs"
   },
   "dependencies": {
     "express": "^4.19.2",
