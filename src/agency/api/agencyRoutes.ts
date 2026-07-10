@@ -111,6 +111,8 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
               selectedDesignOption: req.body.selectedDesignOption || (approval.payload.designOptions as unknown[] | undefined)?.[0]
             }
           });
+          const selectedDesignOption = req.body.selectedDesignOption || (approval.payload.designOptions as unknown[] | undefined)?.[0];
+          if (selectedDesignOption) await system.designWorkflow.completeAfterApproval(approval.projectId, selectedDesignOption, approval.id);
           await queueWebsiteBuild(workflowRunId);
         }
       }
@@ -162,6 +164,94 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
       await system.companyOS.emailApprovals.requestSendApproval(draft);
     }
     res.json({ deployed, liveUrl, officeState: await system.officeState(projectId), companyState: await system.companyState(projectId) });
+  }));
+
+  router.post('/design/start', route(async (req, res) => {
+    const projectId = String(req.body.projectId || '');
+    const project = await system.projectMemory.get(projectId);
+    if (!project) return void res.status(404).json({ error: 'project not found' });
+    const data = await system.store.read();
+    const customer = data.customers.find(item => item.id === project.customerId);
+    if (!customer) return void res.status(404).json({ error: 'customer not found' });
+    const workflowRunId = project.currentWorkflowRunId || (await system.workflowRuntime.create('designWorkflow', { projectId }, projectId)).id;
+    const result = await system.designWorkflow.start(project, customer, workflowRunId);
+    res.json({ result, officeState: await system.officeState(projectId) });
+  }));
+
+  router.get('/design/:projectId/status', route(async (req, res) => {
+    const state = await system.officeState(req.params.projectId);
+    res.json({ designStudio: state.designStudio });
+  }));
+
+  router.get('/design/:projectId/artifacts', route(async (req, res) => {
+    const data = await system.store.read();
+    res.json({ artifacts: data.artifacts.filter(item => item.projectId === req.params.projectId && item.path?.startsWith('project/design/')) });
+  }));
+
+  router.post('/design/:projectId/creative-directions', route(async (req, res) => {
+    const state = await system.officeState(req.params.projectId);
+    res.json({ creativeDirections: state.designStudio.creativeDirections });
+  }));
+
+  router.post('/design/:projectId/select-direction', route(async (req, res) => {
+    const direction = req.body.direction || req.body.selectedDirection;
+    if (!direction) return void res.status(400).json({ error: 'direction is required' });
+    const result = await system.designWorkflow.completeAfterApproval(req.params.projectId, direction, req.body.approvalId);
+    res.json({ result, officeState: await system.officeState(req.params.projectId) });
+  }));
+
+  router.post('/design/:projectId/wireframes', route(async (req, res) => {
+    const state = await system.officeState(req.params.projectId);
+    res.json({ wireframes: state.designStudio.wireframes });
+  }));
+
+  router.post('/design/:projectId/tokens', route(async (req, res) => {
+    const state = await system.officeState(req.params.projectId);
+    res.json({ tokens: state.designStudio.tokens });
+  }));
+
+  router.post('/design/:projectId/prototype', route(async (req, res) => {
+    const state = await system.officeState(req.params.projectId);
+    res.json({ prototype: state.designStudio.prototype });
+  }));
+
+  router.post('/design/:projectId/qa', route(async (req, res) => {
+    const report = await system.designWorkflow.postBuildReview(req.params.projectId, req.body.previewUrl);
+    res.json({ report });
+  }));
+
+  router.post('/design/:projectId/approve', route(async (req, res) => {
+    const pending = (await system.store.read()).approvals.find(item => item.projectId === req.params.projectId && item.type === 'design_options' && item.status === 'pending');
+    if (!pending) return void res.status(404).json({ error: 'No pending design approval' });
+    req.params.id = pending.id;
+    const approval = await system.approvalWorkflow.approve(pending.id);
+    const selected = req.body.selectedDirection || (pending.payload.designOptions as unknown[] | undefined)?.[0];
+    if (selected) await system.designWorkflow.completeAfterApproval(req.params.projectId, selected, approval.id);
+    res.json({ approval, officeState: await system.officeState(req.params.projectId) });
+  }));
+
+  router.post('/design/:projectId/request-changes', route(async (req, res) => {
+    const task = await system.companyOS.taskBoard.createTask({
+      projectId: req.params.projectId,
+      title: 'Design changes requested',
+      description: String(req.body.feedback || 'Design changes requested'),
+      type: 'design_fix',
+      priority: 'high',
+      assignedAgentId: 'design',
+      createdByAgentId: 'client-success',
+      input: req.body || {}
+    });
+    res.json({ task });
+  }));
+
+  router.get('/design/:projectId/handoff', route(async (req, res) => {
+    const state = await system.officeState(req.params.projectId);
+    res.json({ handoff: state.designStudio.handoff });
+  }));
+
+  router.post('/design/:projectId/post-build-review', route(async (req, res) => {
+    const report = await system.designWorkflow.postBuildReview(req.params.projectId, req.body.previewUrl);
+    res.json({ report, officeState: await system.officeState(req.params.projectId) });
   }));
 
   router.get('/office-state', route(async (req, res) => {

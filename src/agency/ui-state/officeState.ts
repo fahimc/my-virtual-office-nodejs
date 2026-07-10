@@ -4,6 +4,10 @@ import { buildAgentPresence } from './agentPresence.js';
 import { buildProjectTimeline } from './projectTimeline.js';
 import { buildTaskBoardState } from './taskBoardState.js';
 import { buildApprovalPanelState } from './approvalPanelState.js';
+import { buildDesignPanelState } from './designPanelState.js';
+import { buildMoodboardState } from './moodboardState.js';
+import { buildDesignApprovalState } from './designApprovalState.js';
+import { buildPrototypePreviewState } from './prototypePreviewState.js';
 
 export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRuntime, projectId?: string) {
   const data = await store.read();
@@ -11,6 +15,7 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
   const artifacts = project ? data.artifacts.filter(item => item.projectId === project.id) : [];
   const approvals = project ? data.approvals.filter(item => item.projectId === project.id) : [];
   const workflow = project?.currentWorkflowRunId ? data.workflows.find(item => item.id === project.currentWorkflowRunId) : data.workflows.at(-1);
+  const designPanel = buildDesignPanelState(data, project?.id);
   return {
     project,
     workflow,
@@ -19,6 +24,12 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
     artifacts,
     approvals,
     approvalCenter: buildApprovalPanelState(approvals),
+    designStudio: {
+      ...designPanel,
+      moodboard: buildMoodboardState(designPanel.creativeDirections),
+      approvals: buildDesignApprovalState(approvals),
+      prototypePreview: buildPrototypePreviewState(designPanel.prototype)
+    },
     taskBoard: buildTaskBoardState(project ? data.companyTasks.filter(task => task.projectId === project.id) : data.companyTasks),
     company: {
       codexTasks: project ? data.codexTasks.filter(task => task.projectId === project.id) : data.codexTasks,

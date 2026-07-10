@@ -13,6 +13,17 @@ import type { GitHubBranchRecord, GitHubPullRequestRecord } from '../schemas/git
 import type { DeploymentRecord, PreviewRecord } from '../schemas/deployment.schema.js';
 import type { CompanyTask } from '../tools/taskboard/taskBoardTypes.js';
 import type { CodexTask } from '../tools/codex/codexTaskAdapter.js';
+import type { DesignBrief } from '../schemas/designBrief.schema.js';
+import type { BrandAudit } from '../schemas/brandAudit.schema.js';
+import type { CompetitorResearch } from '../schemas/competitorResearch.schema.js';
+import type { CreativeDirection, SelectedDirection } from '../schemas/creativeDirection.schema.js';
+import type { Sitemap } from '../schemas/sitemap.schema.js';
+import type { Wireframe } from '../schemas/wireframe.schema.js';
+import type { DesignTokens } from '../schemas/designTokens.schema.js';
+import type { ComponentSpec } from '../schemas/componentSpec.schema.js';
+import type { Prototype } from '../schemas/prototype.schema.js';
+import type { DesignHandoff } from '../schemas/designHandoff.schema.js';
+import type { DesignQaReport } from '../schemas/designQa.schema.js';
 
 export interface AgencyStoreData {
   customers: Customer[];
@@ -30,6 +41,22 @@ export interface AgencyStoreData {
   previews: PreviewRecord[];
   deployments: DeploymentRecord[];
   notifications: Array<{ id: string; projectId?: string; type: string; title: string; message: string; read: boolean; createdAt: string }>;
+  design: {
+    briefs: DesignBrief[];
+    brandAudits: BrandAudit[];
+    competitorResearch: CompetitorResearch[];
+    creativeDirections: CreativeDirection[];
+    selectedDirections: SelectedDirection[];
+    sitemaps: Sitemap[];
+    wireframes: Wireframe[];
+    tokens: DesignTokens[];
+    componentSpecs: ComponentSpec[];
+    prototypes: Prototype[];
+    handoffs: DesignHandoff[];
+    qaReports: DesignQaReport[];
+    brandMemory: Array<{ customerId: string; projectId?: string; key: string; value: unknown; updatedAt: string }>;
+    visualPreferenceMemory: Array<{ customerId: string; preference: string; sourceProjectId?: string; approved: boolean; updatedAt: string }>;
+  };
   briefHistory: Array<{ customerId: string; projectId: string; originalBrief: string; structuredBrief?: StructuredBrief; createdAt: string }>;
 }
 
@@ -49,6 +76,22 @@ const emptyStore = (): AgencyStoreData => ({
   previews: [],
   deployments: [],
   notifications: [],
+  design: {
+    briefs: [],
+    brandAudits: [],
+    competitorResearch: [],
+    creativeDirections: [],
+    selectedDirections: [],
+    sitemaps: [],
+    wireframes: [],
+    tokens: [],
+    componentSpecs: [],
+    prototypes: [],
+    handoffs: [],
+    qaReports: [],
+    brandMemory: [],
+    visualPreferenceMemory: []
+  },
   briefHistory: []
 });
 

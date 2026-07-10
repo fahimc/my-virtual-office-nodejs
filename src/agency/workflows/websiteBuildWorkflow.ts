@@ -5,6 +5,7 @@ import type { AgentRuntime } from '../runtime/agentRuntime.js';
 import type { WorkflowRuntime } from '../runtime/workflowRuntime.js';
 import { ApprovalService } from '../approvals/approvalService.js';
 import type { CompanyOS } from '../company/companyOS.js';
+import type { DesignWorkflow } from './designWorkflow.js';
 
 export class WebsiteBuildWorkflow {
   private readonly approvalService: ApprovalService;
@@ -14,7 +15,8 @@ export class WebsiteBuildWorkflow {
     private readonly projectMemory: ProjectMemory,
     private readonly agentRuntime: AgentRuntime,
     private readonly workflowRuntime: WorkflowRuntime,
-    private readonly companyOS?: CompanyOS
+    private readonly companyOS?: CompanyOS,
+    private readonly designWorkflow?: DesignWorkflow
   ) {
     this.approvalService = new ApprovalService(store);
   }
@@ -52,23 +54,24 @@ export class WebsiteBuildWorkflow {
         await this.workflowRuntime.emit(run, 'design.completed', design);
       }
       if (!state.designOptionsApproved) {
-        const designOptions = this.createDesignOptions(project.structuredBrief.businessSummary, design);
-        await this.saveArtifact(project.id, 'design_options', 'Design options', { options: designOptions }, 'design');
-        const approval = await this.approvalService.request({
-          projectId: project.id,
-          type: 'design_options',
-          title: 'Choose a design direction',
-          description: 'Review these design options before the agency starts copy and build work.',
-          requestedByAgentId: 'design',
-          payload: { workflowRunId: run.id, designOptions }
-        });
+        const customer = (await this.store.read()).customers.find(item => item.id === project.customerId);
+        if (!customer) throw new Error(`Customer not found for project ${project.id}`);
+        const designGate = this.designWorkflow
+          ? await this.designWorkflow.start(project, customer, run.id)
+          : { directions: this.createDesignOptions(project.structuredBrief.businessSummary, design), approval: await this.approvalService.request({
+            projectId: project.id,
+            type: 'design_options',
+            title: 'Choose a design direction',
+            description: 'Review these design options before the agency starts copy and build work.',
+            requestedByAgentId: 'design',
+            payload: { workflowRunId: run.id, designOptions: this.createDesignOptions(project.structuredBrief.businessSummary, design) }
+          }) };
         await this.projectMemory.update(project.id, { status: 'awaiting_approval' });
         await this.workflowRuntime.patch(run.id, {
           status: 'waiting_for_user',
           currentStep: 'design_options_approval',
-          state: { ...state, plan, design, designOptions, approvalId: approval.id }
+          state: { ...state, plan, design, designOptions: designGate.directions, approvalId: designGate.approval.id }
         });
-        await this.workflowRuntime.emit(run, 'approval.requested', { approval });
         return;
       }
 
@@ -90,7 +93,7 @@ export class WebsiteBuildWorkflow {
             projectId: project.id,
             repoPath: this.companyOS.config.defaultRepoPath,
             taskTitle: `Build website preview attempt ${attempt}`,
-            taskPrompt: `Implement the approved website plan.\n\nPlan: ${plan.summary}\n\nDesign: ${design.direction}\n\nCopy: ${copy.copy}`,
+            taskPrompt: `Implement the approved website using the design handoff when present.\n\nPlan: ${plan.summary}\n\nDesign: ${design.direction}\n\nCopy: ${copy.copy}`,
             agentId: 'builder'
           })
           : undefined;
@@ -142,6 +145,7 @@ export class WebsiteBuildWorkflow {
       await this.projectMemory.update(project.id, { status: 'preview' });
       const delivery = await this.agentRuntime.execute('delivery', { projectId: project.id, qaSummary: qaResult?.summary || '' }, { projectId: project.id, workflowRunId: run.id }) as { previewUrl: string; summary: string };
       await this.saveArtifact(project.id, 'preview', 'Preview build', delivery, 'delivery', delivery.previewUrl);
+      if (this.designWorkflow) await this.designWorkflow.postBuildReview(project.id, delivery.previewUrl);
       await this.projectMemory.update(project.id, { previewUrl: delivery.previewUrl, status: 'awaiting_approval' });
       await this.completeCompanyTask(project.id, 'preview', delivery as unknown as Record<string, unknown>);
       if (this.companyOS) {

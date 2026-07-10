@@ -31,6 +31,25 @@ import { createPreviewTool } from '../tools/preview/previewTool.js';
 import { createCompanyDeploymentTool } from '../tools/deployment/deploymentTool.js';
 import { DeploymentApprovalService } from '../tools/deployment/deploymentApprovalService.js';
 import { NotificationService } from '../tools/notifications/notificationService.js';
+import { designBriefTool } from '../tools/design/designBriefTool.js';
+import { brandAuditTool } from '../tools/design/brandAuditTool.js';
+import { competitorResearchTool } from '../tools/design/competitorResearchTool.js';
+import { moodboardTool } from '../tools/design/moodboardTool.js';
+import { creativeDirectionTool } from '../tools/design/creativeDirectionTool.js';
+import { sitemapTool } from '../tools/design/sitemapTool.js';
+import { wireframeTool } from '../tools/design/wireframeTool.js';
+import { designTokenTool } from '../tools/design/designTokenTool.js';
+import { paletteTool } from '../tools/design/paletteTool.js';
+import { typographyTool } from '../tools/design/typographyTool.js';
+import { componentSpecTool } from '../tools/design/componentSpecTool.js';
+import { prototypeTool } from '../tools/design/prototypeTool.js';
+import { figmaTool } from '../tools/design/figmaTool.js';
+import { penpotTool } from '../tools/design/penpotTool.js';
+import { storybookTool } from '../tools/design/storybookTool.js';
+import { screenshotReviewTool } from '../tools/design/screenshotReviewTool.js';
+import { accessibilityDesignTool } from '../tools/design/accessibilityDesignTool.js';
+import { visualQaTool } from '../tools/design/visualQaTool.js';
+import { designHandoffTool } from '../tools/design/designHandoffTool.js';
 import { QuoteService } from '../tools/billing/quoteService.js';
 import { InvoiceService } from '../tools/billing/invoiceService.js';
 import { PaymentStatusService } from '../tools/billing/paymentStatusService.js';
@@ -95,7 +114,26 @@ export class CompanyOS {
       codexReviewTool,
       createCompanyGitHubTool(this.githubBranches, this.githubPullRequests),
       createPreviewTool(this.previews),
-      createCompanyDeploymentTool(store)
+      createCompanyDeploymentTool(store),
+      designBriefTool,
+      brandAuditTool,
+      competitorResearchTool,
+      moodboardTool,
+      creativeDirectionTool,
+      sitemapTool,
+      wireframeTool,
+      designTokenTool,
+      paletteTool,
+      typographyTool,
+      componentSpecTool,
+      prototypeTool,
+      figmaTool,
+      penpotTool,
+      storybookTool,
+      screenshotReviewTool,
+      accessibilityDesignTool,
+      visualQaTool,
+      designHandoffTool
     ];
   }
 
@@ -111,6 +149,20 @@ export class CompanyOS {
       emailDrafts: data.emailDrafts.filter(item => !projectId || item.projectId === projectId),
       previews: data.previews.filter(item => !projectId || item.projectId === projectId),
       deployments: data.deployments.filter(item => !projectId || item.projectId === projectId),
+      design: {
+        briefs: data.design.briefs.filter(item => !projectId || item.projectId === projectId),
+        brandAudits: data.design.brandAudits.filter(item => !projectId || item.projectId === projectId),
+        competitorResearch: data.design.competitorResearch.filter(item => !projectId || item.projectId === projectId),
+        creativeDirections: data.design.creativeDirections.filter(item => !projectId || item.projectId === projectId),
+        selectedDirections: data.design.selectedDirections.filter(item => !projectId || item.projectId === projectId),
+        sitemaps: data.design.sitemaps.filter(item => !projectId || item.projectId === projectId),
+        wireframes: data.design.wireframes.filter(item => !projectId || item.projectId === projectId),
+        tokens: data.design.tokens.filter(item => !projectId || item.projectId === projectId),
+        componentSpecs: data.design.componentSpecs.filter(item => !projectId || item.projectId === projectId),
+        prototypes: data.design.prototypes.filter(item => !projectId || item.projectId === projectId),
+        handoffs: data.design.handoffs.filter(item => !projectId || item.projectId === projectId),
+        qaReports: data.design.qaReports.filter(item => !projectId || item.projectId === projectId)
+      },
       notifications: data.notifications.filter(item => !projectId || item.projectId === projectId),
       approvals: data.approvals.filter(item => !projectId || item.projectId === projectId),
       audit: data.audits.filter(item => !projectId || item.projectId === projectId).slice(-100).reverse()

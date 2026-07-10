@@ -26,6 +26,8 @@
     artifacts: document.getElementById('artifactList'),
     approval: document.getElementById('approvalPanel'),
     taskBoard: document.getElementById('taskBoardPanel'),
+    designPhase: document.getElementById('designPhase'),
+    designStudioBody: document.getElementById('designStudioBody'),
     codexPanel: document.getElementById('codexPanel'),
     githubPanel: document.getElementById('githubPanel'),
     emailPanel: document.getElementById('emailPanel'),
@@ -354,6 +356,7 @@
 
   function renderCompany(officeState) {
     renderTaskBoard(officeState.taskBoard || []);
+    renderDesignStudio(officeState.designStudio || {});
     const company = officeState.company || {};
     renderCodex(company.codexTasks || []);
     renderGitHub(company.githubPullRequests || []);
@@ -373,6 +376,51 @@
         `).join('')}
       </section>
     `).join('');
+  }
+
+  function renderDesignStudio(design) {
+    els.designPhase.textContent = (design.phase || 'not_started').replaceAll('_', ' ');
+    const selected = design.selectedDirection;
+    const direction = (design.creativeDirections || []).find(item => selected && item.id === selected.selectedDirectionId) || (design.creativeDirections || [])[0];
+    const tokenColors = design.tokens && design.tokens.colours ? Object.values(design.tokens.colours).slice(0, 8) : [];
+    els.designStudioBody.innerHTML = `
+      <div class="design-studio-grid">
+        <div class="design-studio-card">
+          <b>Creative Direction</b>
+          <span>${direction ? `${direction.name}: ${direction.summary}` : 'Awaiting design discovery'}</span>
+          <div class="design-token-row">${direction ? direction.palette.map(color => `<i class="design-swatch" title="${color.name}" style="background:${color.hex}"></i>`).join('') : ''}</div>
+        </div>
+        <div class="design-studio-card">
+          <b>Sitemap</b>
+          <span>${design.sitemap ? design.sitemap.pages.map(page => page.title).join(', ') : 'Not created yet'}</span>
+        </div>
+        <div class="design-studio-card">
+          <b>Wireframes</b>
+          <span>${design.wireframes ? design.wireframes.mobileLayout : 'Not created yet'}</span>
+        </div>
+        <div class="design-studio-card">
+          <b>Design Tokens</b>
+          <span>${design.tokens ? 'Theme ready for Builder Agent' : 'Not created yet'}</span>
+          <div class="design-token-row">${tokenColors.map(color => `<i class="design-swatch" style="background:${color}"></i>`).join('')}</div>
+        </div>
+        <div class="design-studio-card">
+          <b>Prototype</b>
+          <span>${design.prototypePreview?.previewUrl ? `<a href="${design.prototypePreview.previewUrl}" target="_blank" rel="noreferrer">Open prototype</a>` : 'Prototype pending'}</span>
+        </div>
+        <div class="design-studio-card">
+          <b>Design QA</b>
+          <span>${design.qaReport ? (design.qaReport.passed ? 'Passed' : 'Needs fixes') : 'Not reviewed yet'}</span>
+        </div>
+        <div class="design-studio-card">
+          <b>Builder Handoff</b>
+          <span>${design.handoff ? design.handoff.handoffSummary : 'Not handed off yet'}</span>
+        </div>
+        <div class="design-studio-card">
+          <b>Artifacts</b>
+          <span>${design.artifactCount || 0} design artifacts saved</span>
+        </div>
+      </div>
+    `;
   }
 
   function renderCodex(tasks) {

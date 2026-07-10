@@ -34,6 +34,7 @@ import { WebsiteBuildWorkflow } from './workflows/websiteBuildWorkflow.js';
 import { ApprovalWorkflow } from './workflows/approvalWorkflow.js';
 import { DeploymentWorkflow } from './workflows/deploymentWorkflow.js';
 import { AgencyWorkflow } from './workflows/agencyWorkflow.js';
+import { DesignWorkflow } from './workflows/designWorkflow.js';
 import { buildOfficeState } from './ui-state/officeState.js';
 import { CompanyOS } from './company/companyOS.js';
 
@@ -84,7 +85,8 @@ export function createAgencySystem(options: CreateAgencySystemOptions) {
   ].forEach(tool => toolRegistry.register(tool));
 
   const intakeWorkflow = new IntakeWorkflow(store, customerMemory, projectMemory, agentRuntime, workflowRuntime);
-  const websiteBuildWorkflow = new WebsiteBuildWorkflow(store, projectMemory, agentRuntime, workflowRuntime, companyOS);
+  const designWorkflow = new DesignWorkflow(store, approvalService, companyOS, workflowRuntime);
+  const websiteBuildWorkflow = new WebsiteBuildWorkflow(store, projectMemory, agentRuntime, workflowRuntime, companyOS, designWorkflow);
   const approvalWorkflow = new ApprovalWorkflow(store);
   const deploymentWorkflow = new DeploymentWorkflow(projectMemory, workflowRuntime);
   const agencyWorkflow = new AgencyWorkflow(intakeWorkflow, websiteBuildWorkflow);
@@ -103,6 +105,7 @@ export function createAgencySystem(options: CreateAgencySystemOptions) {
     companyOS,
     jobQueue,
     resumeService,
+    designWorkflow,
     intakeWorkflow,
     websiteBuildWorkflow,
     approvalWorkflow,
