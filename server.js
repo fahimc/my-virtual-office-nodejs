@@ -536,7 +536,7 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(content.brand)} - ${escapeHtml(isConcept ? direction.name : 'Preview')}</title>
+  <title>${escapeHtml(content.brand)} - ${escapeHtml(isConcept ? direction.name : 'Website')}</title>
   <style>
     :root {
       color-scheme: light;
@@ -627,7 +627,7 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
   <main>
     <section class="container hero">
       <div>
-        <span class="eyebrow">${escapeHtml(direction.name)} design concept</span>
+        <span class="eyebrow">${escapeHtml(content.heroEyebrow)}</span>
         <h1>${escapeHtml(content.headline)}</h1>
         <p class="lead">${escapeHtml(content.subhead)}</p>
         <div class="actions">
@@ -640,27 +640,27 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     </section>
     <section class="section soft" id="shop">
       <div class="container">
-        <div class="section-head"><div><span class="eyebrow">Product system</span><h2>${escapeHtml(content.productHeading)}</h2></div><p>${escapeHtml(content.productIntro)}</p></div>
+        <div class="section-head"><div><span class="eyebrow">${escapeHtml(content.productEyebrow)}</span><h2>${escapeHtml(content.productHeading)}</h2></div><p>${escapeHtml(content.productIntro)}</p></div>
         <div class="grid">${content.products.map(renderProductCard).join('')}</div>
       </div>
     </section>
     <section class="section" id="why">
       <div class="container">
-        <div class="section-head"><div><span class="eyebrow">Reusable components</span><h2>${escapeHtml(content.benefitHeading)}</h2></div><p>${escapeHtml(content.benefitIntro)}</p></div>
+        <div class="section-head"><div><span class="eyebrow">${escapeHtml(content.benefitEyebrow)}</span><h2>${escapeHtml(content.benefitHeading)}</h2></div><p>${escapeHtml(content.benefitIntro)}</p></div>
         <div class="grid">${content.benefits.map((item, index) => `<article class="feature-card"><div class="icon">${index + 1}</div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p></article>`).join('')}</div>
       </div>
     </section>
     <section class="section" id="mixed-case">
       <div class="container split">
         <div>
-          <span class="eyebrow">Template section</span>
+          <span class="eyebrow">${escapeHtml(content.caseEyebrow)}</span>
           <h2>${escapeHtml(content.caseHeading)}</h2>
           <p>${escapeHtml(content.caseText)}</p>
           <div class="actions"><a class="button primary" href="#shop">${escapeHtml(content.caseCta)}</a><a class="button secondary" href="#contact">Ask a question</a></div>
         </div>
         <div class="case-builder">
           <h3>Build your case</h3>
-          <p>Visual interaction plan for the production build.</p>
+          <p>${escapeHtml(content.caseBuilderText)}</p>
           <div class="case-grid">${content.products.slice(0, 6).map(item => `<div class="case-slot" style="background:${item.color}22">${escapeHtml(item.short)}</div>`).join('')}</div>
         </div>
       </div>
@@ -682,7 +682,7 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     <section class="section" id="contact">
       <div class="container split">
         <div>
-          <span class="eyebrow">Client approval preview</span>
+          <span class="eyebrow">${escapeHtml(content.newsletterEyebrow)}</span>
           <h2>${escapeHtml(content.newsletterHeading)}</h2>
           <p>${escapeHtml(content.newsletterText)}</p>
         </div>
@@ -690,8 +690,7 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
       </div>
     </section>
   </main>
-  <footer><div class="container">${escapeHtml(content.brand)} - ${escapeHtml(template)} built from the agency template system, component sections, and ${escapeHtml(direction.name)} design tokens.</div></footer>
-  ${isConcept ? `<div class="concept-bar">Visual concept for approval: ${escapeHtml(direction.name)}</div>` : ''}
+  <footer><div class="container">${escapeHtml(content.footerText)}</div></footer>
 </body>
 </html>`;
 }
@@ -728,16 +727,16 @@ function inferTemplate(context) {
 function buildTemplateContent(context, brief, template) {
   const isDrink = /(fruit|drink|juice|beverage|flavour|flavor|bottle|mixed case)/i.test(context.originalBrief);
   const products = isDrink ? [
-    { name: 'Mango Burst', short: 'Mango', color: '#FFB703', desc: 'Smooth tropical mango with a rich, naturally sweet finish.', price: 'from £2.49' },
-    { name: 'Strawberry Splash', short: 'Strawberry', color: '#FB7185', desc: 'Bright strawberry refreshment with a clean juicy finish.', price: 'from £2.49' },
-    { name: 'Tropical Twist', short: 'Tropical', color: '#F97316', desc: 'Pineapple, passion fruit, mango and orange in one vivid bottle.', price: 'from £2.79' },
-    { name: 'Berry Blast', short: 'Berry', color: '#A855F7', desc: 'A bold mixed berry drink with a crisp, refreshing edge.', price: 'from £2.79' },
-    { name: 'Orange Sunrise', short: 'Orange', color: '#FB923C', desc: 'Smooth citrus flavour for breakfast, lunchboxes and sunny breaks.', price: 'from £2.49' },
-    { name: 'Watermelon Wave', short: 'Watermelon', color: '#22C55E', desc: 'Light watermelon, apple and lime for warmer days.', price: 'from £2.49' }
+    { name: 'Mango Burst', short: 'Mango', color: '#FFB703', desc: 'Smooth tropical mango with a rich, naturally sweet finish.', price: 'from GBP 2.49' },
+    { name: 'Strawberry Splash', short: 'Strawberry', color: '#FB7185', desc: 'Bright strawberry refreshment with a clean juicy finish.', price: 'from GBP 2.49' },
+    { name: 'Tropical Twist', short: 'Tropical', color: '#F97316', desc: 'Pineapple, passion fruit, mango and orange in one vivid bottle.', price: 'from GBP 2.79' },
+    { name: 'Berry Blast', short: 'Berry', color: '#A855F7', desc: 'A bold mixed berry drink with a crisp, refreshing edge.', price: 'from GBP 2.79' },
+    { name: 'Orange Sunrise', short: 'Orange', color: '#FB923C', desc: 'Smooth citrus flavour for breakfast, lunchboxes and sunny breaks.', price: 'from GBP 2.49' },
+    { name: 'Watermelon Wave', short: 'Watermelon', color: '#22C55E', desc: 'Light watermelon, apple and lime for warmer days.', price: 'from GBP 2.49' }
   ] : [
-    { name: 'Strategy', short: 'Plan', color: '#2563EB', desc: 'Clear planning and a conversion-focused page structure.', price: 'Core' },
-    { name: 'Design', short: 'Design', color: '#7C3AED', desc: 'A polished visual system built from approved design tokens.', price: 'Core' },
-    { name: 'Build', short: 'Build', color: '#16A34A', desc: 'Reusable responsive sections and accessible components.', price: 'Core' }
+    { name: 'Strategy Session', short: 'Plan', color: '#2563EB', desc: 'A focused session to clarify goals, offers, audiences, and next steps.', price: 'Popular' },
+    { name: 'Launch Website', short: 'Site', color: '#7C3AED', desc: 'A polished website built to present the offer clearly and capture enquiries.', price: 'Core' },
+    { name: 'Growth Support', short: 'Grow', color: '#16A34A', desc: 'Ongoing improvements for content, conversion, and customer communication.', price: 'Add-on' }
   ];
   const pages = context.pages.length ? context.pages : template === 'ecommerceTemplate' ? ['Home', 'Shop', 'Mixed Case', 'About', 'Wholesale', 'Contact'] : ['Home', 'Services', 'About', 'Contact'];
   const brand = context.brand;
@@ -745,45 +744,52 @@ function buildTemplateContent(context, brief, template) {
     brand,
     brandInitial: brand.slice(0, 1).toUpperCase(),
     nav: pages.slice(0, 5),
+    heroEyebrow: isDrink ? 'Fresh fruit drinks' : 'Professional services',
     headline: isDrink ? 'Fruit flavour that hits differently.' : cleanText(brief.businessSummary || `${brand} website`).slice(0, 80),
     subhead: isDrink ? 'Discover refreshing real-fruit drinks, colourful flavour packs, mixed cases, and wholesale options for shops, cafes, gyms and events.' : context.summary,
     primaryCta: isDrink ? 'Shop the Drinks' : 'Start a Project',
     secondaryCta: isDrink ? 'Build a Mixed Case' : 'See Services',
     proofs: isDrink ? ['Real fruit juice', 'No artificial colours', 'UK delivery'] : ['Responsive', 'Accessible', 'Built for conversion'],
-    productHeading: isDrink ? 'Meet the flavour range' : 'Reusable section system',
-    productIntro: isDrink ? 'Each card is a reusable product component with flavour colour, price, proof, and purchase action built into the template.' : 'Reusable sections keep the client site maintainable instead of one-off page code.',
+    productEyebrow: isDrink ? 'Flavour range' : 'Services',
+    productHeading: isDrink ? 'Meet the flavour range' : 'Choose the support you need',
+    productIntro: isDrink ? 'Explore the launch flavours, compare pack options, and find the drinks that fit your fridge, event, or next stock order.' : 'Clear service options help visitors understand what is available and take the next step with confidence.',
     products,
-    benefitHeading: isDrink ? 'Why customers choose Zestora' : 'Built from a real component system',
-    benefitIntro: isDrink ? 'The design turns product benefits into quick visual proof moments across desktop and mobile.' : 'The preview uses template sections, component cards, tokens, and responsive rules.',
+    benefitEyebrow: isDrink ? 'Why Zestora' : 'Why choose us',
+    benefitHeading: isDrink ? 'Why customers choose Zestora' : 'Why customers choose us',
+    benefitIntro: isDrink ? 'Every section is shaped around simple product proof: flavour, freshness, convenience, and trust before checkout.' : 'The page makes the offer easy to scan, supports quick decisions, and guides visitors toward enquiry.',
     benefits: isDrink ? [
-      { title: 'Real fruit character', text: 'Benefit cards explain fruit flavour, ingredient principles, and the final proof claims that need client confirmation.' },
-      { title: 'Ecommerce-ready cards', text: 'Product cards include flavour, pack options, pricing, ratings, and Add to Basket actions.' },
+      { title: 'Real fruit character', text: 'Bright flavour notes, clear ingredients, and simple product proof help shoppers choose quickly.' },
+      { title: 'Easy to shop', text: 'Product cards make flavour, pack options, pricing, ratings, and basket actions easy to compare.' },
       { title: 'Wholesale pathway', text: 'Retailers and hospitality buyers get a direct enquiry route without distracting consumer shoppers.' }
     ] : [
-      { title: 'Design tokens', text: 'Colours, spacing, radius, and component variants are mapped from the approved handoff.' },
-      { title: 'Section templates', text: 'Hero, services, proof, CTA, FAQ, and contact sections are reusable.' },
-      { title: 'QA-ready', text: 'The layout is built to check responsiveness, accessibility, and visual consistency.' }
+      { title: 'Clear offer', text: 'Visitors can understand the service, benefits, and next step without hunting through the page.' },
+      { title: 'Trust first', text: 'Proof points, testimonials, and practical details support confident enquiries.' },
+      { title: 'Mobile friendly', text: 'The experience is designed for quick reading and simple action on every screen size.' }
     ],
-    caseHeading: isDrink ? 'Can’t pick one? Try them all.' : 'A flexible page system',
-    caseText: isDrink ? 'The mixed-case builder is planned as a mobile-first visual flow with live bottle counts and clear add-to-basket behaviour.' : 'The selected template adapts content into reusable sections rather than hardcoded page chunks.',
-    caseCta: isDrink ? 'Build Your Case' : 'View Components',
+    caseEyebrow: isDrink ? 'Mix and match' : 'Flexible support',
+    caseHeading: isDrink ? "Can't pick one? Try them all." : 'Start small, then grow',
+    caseText: isDrink ? 'Create a mixed case with your favourite flavours, keep track of bottle counts, and add the full box to your basket in one tap.' : 'Choose the level of support that fits today, then add more services when the business is ready.',
+    caseBuilderText: isDrink ? 'Pick six bottles, balance your flavours, and create a case that fits your fridge or event.' : 'Plan the next step around your goals, budget, and timeline.',
+    caseCta: isDrink ? 'Build Your Case' : 'Get Started',
     reviewHeading: isDrink ? 'Proof that tastes like a repeat order' : 'Trust and proof',
-    reviewIntro: isDrink ? 'Review cards and product proof make the site feel credible before checkout.' : 'Trust sections are designed into the template.',
+    reviewIntro: isDrink ? 'Customer quotes and product proof help new shoppers feel confident before checkout.' : 'Real proof, helpful details, and direct calls to action help visitors move from interest to enquiry.',
     reviews: isDrink ? [
       { quote: 'Bright, refreshing, and not too sweet. Mango Burst disappeared from the fridge in a day.', name: 'Aisha R.', meta: 'Purchased Mango Burst' },
       { quote: 'The mixed case is ideal for events. Every flavour has its own moment.', name: 'Ben M.', meta: 'Discovery box customer' },
       { quote: 'Exactly the kind of colourful drink our cafe fridge needed.', name: 'Hannah P.', meta: 'Wholesale buyer' }
     ] : [
-      { quote: 'Clear, polished, and easy to act on.', name: 'Client review', meta: 'Preview approval' },
-      { quote: 'The page structure makes the offer obvious.', name: 'QA note', meta: 'Conversion check' },
-      { quote: 'Reusable components keep future changes simple.', name: 'Builder note', meta: 'Handoff' }
+      { quote: 'Clear, polished, and easy to act on.', name: 'Sarah K.', meta: 'Client' },
+      { quote: 'The offer finally feels simple to explain.', name: 'James R.', meta: 'Founder' },
+      { quote: 'We started getting better enquiries within the first week.', name: 'Priya M.', meta: 'Director' }
     ],
-    wholesaleHeading: isDrink ? 'Want to stock Zestora?' : 'Ready for approval',
-    wholesaleText: isDrink ? 'A dedicated wholesale CTA gives shops, cafes, restaurants, gyms and distributors a direct path to enquire about pricing, cases and samples.' : 'Approve this preview in the virtual office or request focused changes.',
-    wholesaleCta: isDrink ? 'Make a Wholesale Enquiry' : 'Approve Preview',
+    wholesaleHeading: isDrink ? 'Want to stock Zestora?' : 'Ready to talk?',
+    wholesaleText: isDrink ? 'Shops, cafes, restaurants, gyms and distributors can enquire about pricing, cases, samples and launch availability.' : 'Send a few details and get a practical next step for the website, campaign, or service package.',
+    wholesaleCta: isDrink ? 'Make a Wholesale Enquiry' : 'Book a Call',
+    newsletterEyebrow: isDrink ? 'Launch list' : 'Updates',
     newsletterHeading: isDrink ? 'Get the juicy updates.' : 'Stay in the loop',
-    newsletterText: isDrink ? 'A reusable signup section captures launch discounts, new flavours, competitions and product updates.' : 'Client update and contact forms are built as reusable components.',
-    newsletterCta: isDrink ? 'Join the Fruit List' : 'Subscribe'
+    newsletterText: isDrink ? 'Get launch discounts, new flavour drops, competitions and product updates straight to your inbox.' : 'Get useful updates, offers, and practical guidance straight to your inbox.',
+    newsletterCta: isDrink ? 'Join the Fruit List' : 'Subscribe',
+    footerText: isDrink ? `${brand} - real-fruit refreshment, mixed cases, and wholesale enquiries.` : `${brand} - practical support for better websites, clearer offers, and stronger enquiries.`
   };
 }
 
