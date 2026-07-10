@@ -2,6 +2,7 @@ import type { ApprovalRiskLevel, ApprovalType } from '../schemas/approval.schema
 
 const riskByType: Record<ApprovalType, ApprovalRiskLevel> = {
   preview: 'low',
+  design_options: 'low',
   deployment: 'high',
   external_email: 'medium',
   domain_change: 'critical',

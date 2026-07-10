@@ -34,17 +34,43 @@ export class WebsiteBuildWorkflow {
     if (!project?.structuredBrief) throw new Error(`Project missing structured brief: ${run.projectId}`);
     try {
       await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'planning' });
-      const plan = await this.agentRuntime.execute('planner', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { tasks: string[]; summary: string };
-      await this.saveArtifact(project.id, 'plan', 'Project plan', plan, 'planner');
-      await this.createTaskPlan(project.id, run.id, plan.tasks);
-      await this.workflowRuntime.emit(run, 'plan.created', plan);
+      const latestRun = await this.workflowRuntime.get(workflowRunId);
+      const state = latestRun?.state || run.state;
+      const plan = state.plan as { tasks: string[]; summary: string } | undefined || await this.agentRuntime.execute('planner', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { tasks: string[]; summary: string };
+      if (!state.plan) {
+        await this.saveArtifact(project.id, 'plan', 'Project plan', plan, 'planner');
+        await this.createTaskPlan(project.id, run.id, plan.tasks);
+        await this.workflowRuntime.emit(run, 'plan.created', plan);
+      }
 
       await this.projectMemory.update(project.id, { status: 'design' });
       await this.workflowRuntime.emit(run, 'design.started', {});
-      const design = await this.agentRuntime.execute('design', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { direction: string; sections: string[] };
-      await this.saveArtifact(project.id, 'design', 'Design direction', design, 'design');
-      await this.completeCompanyTask(project.id, 'design', { design });
-      await this.workflowRuntime.emit(run, 'design.completed', design);
+      const design = state.design as { direction: string; sections: string[] } | undefined || await this.agentRuntime.execute('design', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { direction: string; sections: string[] };
+      if (!state.design) {
+        await this.saveArtifact(project.id, 'design', 'Design direction', design, 'design');
+        await this.completeCompanyTask(project.id, 'design', { design });
+        await this.workflowRuntime.emit(run, 'design.completed', design);
+      }
+      if (!state.designOptionsApproved) {
+        const designOptions = this.createDesignOptions(project.structuredBrief.businessSummary, design);
+        await this.saveArtifact(project.id, 'design_options', 'Design options', { options: designOptions }, 'design');
+        const approval = await this.approvalService.request({
+          projectId: project.id,
+          type: 'design_options',
+          title: 'Choose a design direction',
+          description: 'Review these design options before the agency starts copy and build work.',
+          requestedByAgentId: 'design',
+          payload: { workflowRunId: run.id, designOptions }
+        });
+        await this.projectMemory.update(project.id, { status: 'awaiting_approval' });
+        await this.workflowRuntime.patch(run.id, {
+          status: 'waiting_for_user',
+          currentStep: 'design_options_approval',
+          state: { ...state, plan, design, designOptions, approvalId: approval.id }
+        });
+        await this.workflowRuntime.emit(run, 'approval.requested', { approval });
+        return;
+      }
 
       await this.projectMemory.update(project.id, { status: 'copy' });
       await this.workflowRuntime.emit(run, 'copy.started', {});
@@ -217,7 +243,36 @@ export class WebsiteBuildWorkflow {
     });
   }
 
-  private async saveArtifact(projectId: string, type: 'plan' | 'design' | 'copy' | 'code' | 'qa_report' | 'preview', title: string, metadata: Record<string, unknown>, createdByAgentId: string, url?: string) {
+  private createDesignOptions(businessSummary: string, design: { direction: string; sections: string[] }) {
+    return [
+      {
+        id: 'trust-first',
+        name: 'Trust First',
+        summary: 'A calm, credibility-led direction with clear service proof and direct lead capture.',
+        palette: ['deep navy', 'white', 'soft blue', 'success green'],
+        bestFor: 'Service businesses that need confidence and clarity quickly.',
+        sections: design.sections
+      },
+      {
+        id: 'premium-editorial',
+        name: 'Premium Editorial',
+        summary: 'A more spacious, polished layout with stronger storytelling and case-study style sections.',
+        palette: ['charcoal', 'warm white', 'muted gold', 'slate'],
+        bestFor: 'Brands that want to feel established, premium, and selective.',
+        sections: ['Hero story', ...design.sections.filter(section => section !== 'Hero')]
+      },
+      {
+        id: 'conversion-studio',
+        name: 'Conversion Studio',
+        summary: 'A sharper sales-led layout focused on offer clarity, benefits, proof, and booking/contact actions.',
+        palette: ['graphite', 'white', 'electric blue', 'coral accent'],
+        bestFor: 'Projects where leads and measurable conversion matter most.',
+        sections: ['Hero offer', 'Benefits', 'Services', 'Proof', 'Process', 'Contact']
+      }
+    ].map(option => ({ ...option, businessFit: businessSummary.slice(0, 140) }));
+  }
+
+  private async saveArtifact(projectId: string, type: 'plan' | 'design' | 'design_options' | 'copy' | 'code' | 'qa_report' | 'preview', title: string, metadata: Record<string, unknown>, createdByAgentId: string, url?: string) {
     await this.store.update(data => {
       data.artifacts.push({
         id: createId('artifact'),

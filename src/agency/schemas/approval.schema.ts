@@ -1,5 +1,6 @@
 export type ApprovalType =
   | 'preview'
+  | 'design_options'
   | 'deployment'
   | 'external_email'
   | 'domain_change'

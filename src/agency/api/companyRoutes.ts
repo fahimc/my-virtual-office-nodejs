@@ -114,7 +114,7 @@ export function createCompanyRouter(options: CreateAgencySystemOptions): Router 
   router.post('/preview/create', route(async (req, res) => {
     const preview = await system.companyOS.previews.create({
       projectId: req.body.projectId,
-      url: req.body.url || `http://localhost:3000/previews/${req.body.projectId}`,
+      url: req.body.url || `/previews/${req.body.projectId}/`,
       provider: req.body.provider || 'local',
       screenshotPaths: [],
       createdByAgentId: req.body.agentId || 'delivery'

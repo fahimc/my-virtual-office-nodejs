@@ -347,6 +347,47 @@
   font-size: 13px;
 }
 
+.design-option-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.design-option-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 9px;
+  border: 1px solid #334260;
+  border-radius: 7px;
+  background: #10192b;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.design-option-card input {
+  grid-row: 1 / 4;
+  margin-top: 2px;
+}
+
+.design-option-card b {
+  color: #fff;
+}
+
+.design-option-card span,
+.design-option-card small {
+  color: #c7d4e8;
+  line-height: 1.35;
+}
+
+.design-option-card small {
+  color: #9fb1cf;
+}
+
+.design-option-card:has(input:checked) {
+  border-color: #ffd43b;
+  background: #18243a;
+}
+
 .resume-overlay {
   position: absolute;
   z-index: 20;

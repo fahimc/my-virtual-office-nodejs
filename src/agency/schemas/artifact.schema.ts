@@ -1,4 +1,4 @@
-export type ArtifactType = 'plan' | 'design' | 'copy' | 'code' | 'qa_report' | 'preview' | 'deployment';
+export type ArtifactType = 'plan' | 'design' | 'design_options' | 'copy' | 'code' | 'qa_report' | 'preview' | 'deployment';
 
 export interface Artifact {
   id: string;

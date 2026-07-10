@@ -97,7 +97,24 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
 
   router.post('/approval/:id/approve', route(async (req, res) => {
     const approval = await system.approvalWorkflow.approve(req.params.id);
-    if (approval.type === 'preview') {
+    if (approval.type === 'design_options') {
+      const workflowRunId = String(approval.payload.workflowRunId || '');
+      if (workflowRunId) {
+        const run = await system.workflowRuntime.get(workflowRunId);
+        if (run) {
+          await system.workflowRuntime.patch(workflowRunId, {
+            status: 'running',
+            currentStep: 'design_options_approved',
+            state: {
+              ...run.state,
+              designOptionsApproved: true,
+              selectedDesignOption: req.body.selectedDesignOption || (approval.payload.designOptions as unknown[] | undefined)?.[0]
+            }
+          });
+          await queueWebsiteBuild(workflowRunId);
+        }
+      }
+    } else if (approval.type === 'preview') {
       await system.websiteBuildWorkflow.prepareDeployment(approval.projectId);
       const run = (await system.store.read()).workflows.find(item => item.projectId === approval.projectId)?.id;
       if (run) await system.workflowRuntime.emit({ id: run, projectId: approval.projectId, workflowName: 'websiteBuildWorkflow', status: 'running', currentStep: 'approval_approved', state: {}, createdAt: '', updatedAt: '' }, 'approval.approved', { approvalId: approval.id });

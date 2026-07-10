@@ -12,7 +12,7 @@ export function createPreviewTool(previews: PreviewService): ToolDefinition<{ pr
     execute(input) {
       return previews.create({
         projectId: input.projectId,
-        url: input.url || `http://localhost:3000/previews/${input.projectId}`,
+        url: input.url || `/previews/${input.projectId}/`,
         provider: 'local',
         screenshotPaths: [],
         createdByAgentId: input.agentId || 'delivery'
