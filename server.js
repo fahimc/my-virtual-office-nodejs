@@ -23,6 +23,12 @@ const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
 app.use(express.json({ limit: '2mb' }));
+try {
+  const { createAgencyRouter } = await import('./dist/agency/api/agencyRoutes.js');
+  app.use('/api/agency', createAgencyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+} catch (error) {
+  console.warn('Agency API is not available until TypeScript is built:', error.message);
+}
 app.use(express.static(path.join(__dirname, 'public')));
 
 const defaultSpawnedAgents = [

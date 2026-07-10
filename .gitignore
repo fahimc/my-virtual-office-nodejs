@@ -1,7 +1,10 @@
 node_modules/
+dist/
 data/office-config.json
 data/agents.json
 data/emails.json
+data/agency-store.json
+data/agency-audit.json
 .env
 *.log
 

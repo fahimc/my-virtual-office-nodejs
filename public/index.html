@@ -5,14 +5,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Virtual Office Node</title>
   <link rel="stylesheet" href="/styles.css?v=agent-email-1">
+  <link rel="stylesheet" href="/agency.css?v=agency-os-1">
   <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script defer src="/app.js?v=agent-email-1"></script>
+  <script defer src="/agency.js?v=agency-os-1"></script>
 </head>
 <body>
   <main class="shell">
     <section class="office-pane">
       <div class="canvas-wrap">
         <canvas id="officeCanvas" width="1000" height="740" aria-label="Virtual office canvas"></canvas>
+        <section class="agency-console" id="agencyConsole" aria-label="AI agency workflow console">
+          <header class="agency-header">
+            <div>
+              <span class="agency-kicker">AI Web Agency</span>
+              <h2>Project Intake</h2>
+            </div>
+            <strong id="agencyStep">Reception</strong>
+          </header>
+          <div class="agency-reception">
+            <div class="agent-badge"><i data-lucide="concierge-bell"></i></div>
+            <div>
+              <h3 id="receptionTitle">Client Concierge</h3>
+              <p id="receptionMessage">Starting the agency workflow...</p>
+            </div>
+          </div>
+          <div class="agency-actions" id="agencyActions"></div>
+          <form class="agency-form hidden" id="agencyEmailForm">
+            <label>Email address<input id="agencyEmail" type="email" autocomplete="email" required placeholder="client@example.com"></label>
+            <button type="submit"><i data-lucide="arrow-right"></i><span>Continue</span></button>
+          </form>
+          <form class="agency-form agency-customer-form hidden" id="agencyCustomerForm">
+            <div class="agency-form-grid">
+              <label>Name<input id="customerName" autocomplete="name" required></label>
+              <label>Business name<input id="businessName" autocomplete="organization" required></label>
+              <label>Phone<input id="customerPhone" autocomplete="tel"></label>
+              <label>Current website<input id="existingWebsite" autocomplete="url" placeholder="https://"></label>
+              <label>Business type<input id="businessType" placeholder="SaaS, local service, ecommerce..." required></label>
+              <label>Notes<textarea id="customerNotes" placeholder="Brand preferences, constraints, contact preference"></textarea></label>
+            </div>
+            <button type="submit"><i data-lucide="save"></i><span>Save details</span></button>
+          </form>
+          <form class="agency-form hidden" id="agencyBriefForm">
+            <label>Website brief<textarea id="agencyBrief" required placeholder="Tell us what you need built, who it is for, and any style or feature preferences."></textarea></label>
+            <button type="submit"><i data-lucide="send"></i><span>Submit brief</span></button>
+          </form>
+          <section class="structured-brief hidden" id="structuredBriefPanel">
+            <div class="agency-panel-heading">
+              <h3>Structured Brief</h3>
+              <span>Review before the agency starts</span>
+            </div>
+            <textarea id="structuredBriefEditor"></textarea>
+            <div class="agency-actions right">
+              <button id="approveBrief" type="button"><i data-lucide="check"></i><span>Approve brief</span></button>
+            </div>
+          </section>
+        </section>
+        <section class="agency-workspace" id="agencyWorkspace" aria-label="Agency project dashboard">
+          <div class="agency-panel-heading">
+            <h3>Office Progress</h3>
+            <span id="projectStatus">Waiting for intake</span>
+          </div>
+          <ol class="agency-timeline" id="agencyTimeline"></ol>
+          <div class="agency-grid">
+            <section>
+              <h4>Agents</h4>
+              <div class="agent-presence-list" id="agentPresence"></div>
+            </section>
+            <section>
+              <h4>Activity</h4>
+              <ol class="agent-activity-list" id="agentActivity"></ol>
+            </section>
+          </div>
+          <section class="artifact-list" id="artifactList"></section>
+          <section class="approval-panel hidden" id="approvalPanel"></section>
+        </section>
+        <div class="resume-overlay hidden" id="resumeOverlay">
+          <div>
+            <h3>The agency paused while working on your project.</h3>
+            <p id="resumeIssue">Workflow state is recoverable.</p>
+            <button id="resumeWorkflow" type="button"><i data-lucide="refresh-cw"></i><span>Resume</span></button>
+          </div>
+        </div>
         <div class="floating-panel hidden" id="agentPanel">
           <div class="panel-title">
             <span id="agentTitle">Agent</span>
