@@ -25,7 +25,9 @@ const wss = new WebSocketServer({ server });
 app.use(express.json({ limit: '2mb' }));
 try {
   const { createAgencyRouter } = await import('./dist/agency/api/agencyRoutes.js');
+  const { createCompanyRouter } = await import('./dist/agency/api/companyRoutes.js');
   app.use('/api/agency', createAgencyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+  app.use('/api/company', createCompanyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
 } catch (error) {
   console.warn('Agency API is not available until TypeScript is built:', error.message);
 }

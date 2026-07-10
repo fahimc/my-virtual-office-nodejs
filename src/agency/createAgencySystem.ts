@@ -27,12 +27,15 @@ import { builderAgent } from './agents/builderAgent.js';
 import { qaAgent } from './agents/qaAgent.js';
 import { deliveryAgent } from './agents/deliveryAgent.js';
 import { clientSuccessAgent } from './agents/clientSuccessAgent.js';
+import { opsAgent } from './agents/opsAgent.js';
+import { financeAgent } from './agents/financeAgent.js';
 import { IntakeWorkflow } from './workflows/intakeWorkflow.js';
 import { WebsiteBuildWorkflow } from './workflows/websiteBuildWorkflow.js';
 import { ApprovalWorkflow } from './workflows/approvalWorkflow.js';
 import { DeploymentWorkflow } from './workflows/deploymentWorkflow.js';
 import { AgencyWorkflow } from './workflows/agencyWorkflow.js';
 import { buildOfficeState } from './ui-state/officeState.js';
+import { CompanyOS } from './company/companyOS.js';
 
 export interface CreateAgencySystemOptions {
   dataDir: string;
@@ -62,8 +65,12 @@ export function createAgencySystem(options: CreateAgencySystemOptions) {
     builderAgent,
     qaAgent,
     deliveryAgent,
-    clientSuccessAgent
+    clientSuccessAgent,
+    opsAgent,
+    financeAgent
   ].forEach(agent => agentRuntime.register(agent));
+
+  const companyOS = new CompanyOS(store, approvalService, auditLog, options.workspaceRoot);
 
   [
     browserTool,
@@ -72,11 +79,12 @@ export function createAgencySystem(options: CreateAgencySystemOptions) {
     emailTool,
     createFileTool(options.workspaceRoot),
     githubTool,
-    screenshotTool
+    screenshotTool,
+    ...companyOS.tools
   ].forEach(tool => toolRegistry.register(tool));
 
   const intakeWorkflow = new IntakeWorkflow(store, customerMemory, projectMemory, agentRuntime, workflowRuntime);
-  const websiteBuildWorkflow = new WebsiteBuildWorkflow(store, projectMemory, agentRuntime, workflowRuntime);
+  const websiteBuildWorkflow = new WebsiteBuildWorkflow(store, projectMemory, agentRuntime, workflowRuntime, companyOS);
   const approvalWorkflow = new ApprovalWorkflow(store);
   const deploymentWorkflow = new DeploymentWorkflow(projectMemory, workflowRuntime);
   const agencyWorkflow = new AgencyWorkflow(intakeWorkflow, websiteBuildWorkflow);
@@ -92,6 +100,7 @@ export function createAgencySystem(options: CreateAgencySystemOptions) {
     auditLog,
     approvalService,
     toolRegistry,
+    companyOS,
     jobQueue,
     resumeService,
     intakeWorkflow,
@@ -99,7 +108,8 @@ export function createAgencySystem(options: CreateAgencySystemOptions) {
     approvalWorkflow,
     deploymentWorkflow,
     agencyWorkflow,
-    officeState: (projectId?: string) => buildOfficeState(store, agentRuntime, projectId)
+    officeState: (projectId?: string) => buildOfficeState(store, agentRuntime, projectId),
+    companyState: (projectId?: string) => companyOS.state(projectId)
   };
 }
 

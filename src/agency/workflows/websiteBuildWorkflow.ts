@@ -4,6 +4,7 @@ import type { ProjectMemory } from '../memory/projectMemory.js';
 import type { AgentRuntime } from '../runtime/agentRuntime.js';
 import type { WorkflowRuntime } from '../runtime/workflowRuntime.js';
 import { ApprovalService } from '../approvals/approvalService.js';
+import type { CompanyOS } from '../company/companyOS.js';
 
 export class WebsiteBuildWorkflow {
   private readonly approvalService: ApprovalService;
@@ -12,7 +13,8 @@ export class WebsiteBuildWorkflow {
     private readonly store: MemoryStore,
     private readonly projectMemory: ProjectMemory,
     private readonly agentRuntime: AgentRuntime,
-    private readonly workflowRuntime: WorkflowRuntime
+    private readonly workflowRuntime: WorkflowRuntime,
+    private readonly companyOS?: CompanyOS
   ) {
     this.approvalService = new ApprovalService(store);
   }
@@ -34,18 +36,21 @@ export class WebsiteBuildWorkflow {
       await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'planning' });
       const plan = await this.agentRuntime.execute('planner', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { tasks: string[]; summary: string };
       await this.saveArtifact(project.id, 'plan', 'Project plan', plan, 'planner');
+      await this.createTaskPlan(project.id, run.id, plan.tasks);
       await this.workflowRuntime.emit(run, 'plan.created', plan);
 
       await this.projectMemory.update(project.id, { status: 'design' });
       await this.workflowRuntime.emit(run, 'design.started', {});
       const design = await this.agentRuntime.execute('design', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { direction: string; sections: string[] };
       await this.saveArtifact(project.id, 'design', 'Design direction', design, 'design');
+      await this.completeCompanyTask(project.id, 'design', { design });
       await this.workflowRuntime.emit(run, 'design.completed', design);
 
       await this.projectMemory.update(project.id, { status: 'copy' });
       await this.workflowRuntime.emit(run, 'copy.started', {});
       const copy = await this.agentRuntime.execute('copy', { structuredBrief: project.structuredBrief, designDirection: design.direction }, { projectId: project.id, workflowRunId: run.id }) as { copy: string };
       await this.saveArtifact(project.id, 'copy', 'Website copy', copy, 'copy');
+      await this.completeCompanyTask(project.id, 'copy', { copy });
       await this.workflowRuntime.emit(run, 'copy.completed', copy);
 
       let qaPassed = false;
@@ -53,6 +58,34 @@ export class WebsiteBuildWorkflow {
       for (let attempt = 1; attempt <= 2 && !qaPassed; attempt += 1) {
         await this.projectMemory.update(project.id, { status: 'build' });
         await this.workflowRuntime.emit(run, 'build.started', { attempt });
+        const codingTask = await this.claimCompanyTask(project.id, 'coding', 'builder');
+        const codexRun = this.companyOS
+          ? await this.companyOS.codex.run({
+            projectId: project.id,
+            repoPath: this.companyOS.config.defaultRepoPath,
+            taskTitle: `Build website preview attempt ${attempt}`,
+            taskPrompt: `Implement the approved website plan.\n\nPlan: ${plan.summary}\n\nDesign: ${design.direction}\n\nCopy: ${copy.copy}`,
+            agentId: 'builder'
+          })
+          : undefined;
+        if (this.companyOS && codexRun) {
+          await this.companyOS.githubBranches.create({
+            projectId: project.id,
+            repo: 'my-virtual-office-nodejs',
+            branchName: codexRun.task.branchName,
+            baseBranch: this.companyOS.config.defaultBaseBranch,
+            createdByAgentId: 'builder'
+          });
+          await this.companyOS.githubPullRequests.create({
+            projectId: project.id,
+            repo: 'my-virtual-office-nodejs',
+            branchName: codexRun.task.branchName,
+            title: codexRun.task.taskTitle,
+            body: codexRun.result.summary,
+            createdByAgentId: 'builder'
+          });
+          if (codingTask) await this.companyOS.taskBoard.completeTask(codingTask.id, { codexTaskId: codexRun.task.id, result: codexRun.result });
+        }
         const build = await this.agentRuntime.execute('builder', { plan: plan.summary, design: design.direction, copy: copy.copy }, { projectId: project.id, workflowRunId: run.id }) as { files: unknown[]; summary: string };
         await this.saveArtifact(project.id, 'code', `Build attempt ${attempt}`, build, 'builder');
         await this.workflowRuntime.emit(run, 'build.completed', build);
@@ -62,6 +95,20 @@ export class WebsiteBuildWorkflow {
         qaResult = await this.agentRuntime.execute('qa', { previewSummary: build.summary, attempt }, { projectId: project.id, workflowRunId: run.id }) as { passed: boolean; issues: string[]; summary: string };
         await this.saveArtifact(project.id, 'qa_report', `QA attempt ${attempt}`, qaResult, 'qa');
         qaPassed = qaResult.passed;
+        if (qaPassed) {
+          await this.completeCompanyTask(project.id, 'qa', qaResult as unknown as Record<string, unknown>);
+        } else if (this.companyOS) {
+          await this.companyOS.taskBoard.createTask({
+            projectId: project.id,
+            title: `Fix QA issues from attempt ${attempt}`,
+            description: qaResult.issues.join('\n') || qaResult.summary,
+            type: 'coding',
+            priority: 'high',
+            assignedAgentId: 'builder',
+            createdByAgentId: 'qa',
+            input: { qaResult }
+          });
+        }
         await this.workflowRuntime.emit(run, qaPassed ? 'qa.passed' : 'qa.failed', qaResult);
       }
       if (!qaPassed) throw new Error('QA failed after maximum retry count');
@@ -70,6 +117,15 @@ export class WebsiteBuildWorkflow {
       const delivery = await this.agentRuntime.execute('delivery', { projectId: project.id, qaSummary: qaResult?.summary || '' }, { projectId: project.id, workflowRunId: run.id }) as { previewUrl: string; summary: string };
       await this.saveArtifact(project.id, 'preview', 'Preview build', delivery, 'delivery', delivery.previewUrl);
       await this.projectMemory.update(project.id, { previewUrl: delivery.previewUrl, status: 'awaiting_approval' });
+      await this.completeCompanyTask(project.id, 'preview', delivery as unknown as Record<string, unknown>);
+      if (this.companyOS) {
+        await this.companyOS.notifications.notify({
+          projectId: project.id,
+          type: 'preview_ready',
+          title: 'Preview ready for approval',
+          message: 'The delivery agent created a preview and requested approval.'
+        });
+      }
       const approval = await this.approvalService.request({
         projectId: project.id,
         type: 'preview',
@@ -94,6 +150,47 @@ export class WebsiteBuildWorkflow {
       });
       await this.workflowRuntime.emit(run, 'workflow.failed', { error: error instanceof Error ? error.message : String(error) });
     }
+  }
+
+  private async createTaskPlan(projectId: string, workflowRunId: string, plannedTasks: string[]) {
+    if (!this.companyOS) return;
+    const existing = await this.companyOS.taskBoard.listTasks(projectId);
+    if (existing.some(task => task.type === 'coding')) return;
+    const templates = [
+      { type: 'planning' as const, title: 'Create project plan', agent: 'planner' },
+      { type: 'design' as const, title: 'Create design direction', agent: 'design' },
+      { type: 'copy' as const, title: 'Write website copy', agent: 'copy' },
+      { type: 'coding' as const, title: 'Implement website preview with Codex', agent: 'builder' },
+      { type: 'qa' as const, title: 'Review build, PR, screenshots, and content', agent: 'qa' },
+      { type: 'preview' as const, title: 'Create client preview', agent: 'delivery' },
+      { type: 'deployment' as const, title: 'Prepare live deployment approval', agent: 'delivery', approvalRequired: true },
+      { type: 'email' as const, title: 'Draft client completion email', agent: 'client-success', approvalRequired: true }
+    ];
+    for (const template of templates) {
+      await this.companyOS.taskBoard.createTask({
+        projectId,
+        title: template.title,
+        description: plannedTasks.join('\n') || template.title,
+        type: template.type,
+        assignedAgentId: template.agent,
+        createdByAgentId: 'planner',
+        input: { workflowRunId },
+        approvalRequired: Boolean(template.approvalRequired)
+      });
+    }
+  }
+
+  private async claimCompanyTask(projectId: string, type: 'coding' | 'qa' | 'design' | 'copy' | 'preview', agentId: string) {
+    if (!this.companyOS) return undefined;
+    const task = (await this.companyOS.taskBoard.listTasks(projectId)).find(item => item.type === type && item.status !== 'done');
+    if (!task) return undefined;
+    return this.companyOS.taskBoard.claimTask(task.id, agentId);
+  }
+
+  private async completeCompanyTask(projectId: string, type: 'design' | 'copy' | 'qa' | 'preview', output: Record<string, unknown>) {
+    if (!this.companyOS) return;
+    const task = (await this.companyOS.taskBoard.listTasks(projectId)).find(item => item.type === type && item.status !== 'done');
+    if (task) await this.companyOS.taskBoard.completeTask(task.id, output);
   }
 
   async handleChanges(projectId: string, feedback: string): Promise<{ workflowRunId: string }> {

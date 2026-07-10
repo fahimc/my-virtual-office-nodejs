@@ -2,6 +2,8 @@ import type { AgentRuntime } from '../runtime/agentRuntime.js';
 import type { MemoryStore } from '../memory/memoryStore.js';
 import { buildAgentPresence } from './agentPresence.js';
 import { buildProjectTimeline } from './projectTimeline.js';
+import { buildTaskBoardState } from './taskBoardState.js';
+import { buildApprovalPanelState } from './approvalPanelState.js';
 
 export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRuntime, projectId?: string) {
   const data = await store.read();
@@ -16,6 +18,14 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
     timeline: buildProjectTimeline(project, artifacts),
     artifacts,
     approvals,
+    approvalCenter: buildApprovalPanelState(approvals),
+    taskBoard: buildTaskBoardState(project ? data.companyTasks.filter(task => task.projectId === project.id) : data.companyTasks),
+    company: {
+      codexTasks: project ? data.codexTasks.filter(task => task.projectId === project.id) : data.codexTasks,
+      githubPullRequests: project ? data.githubPullRequests.filter(item => item.projectId === project.id) : data.githubPullRequests,
+      emailDrafts: project ? data.emailDrafts.filter(item => item.projectId === project.id) : data.emailDrafts,
+      notifications: project ? data.notifications.filter(item => item.projectId === project.id) : data.notifications
+    },
     activity: data.tasks.slice(-20).map(task => ({
       title: task.title,
       status: task.status,

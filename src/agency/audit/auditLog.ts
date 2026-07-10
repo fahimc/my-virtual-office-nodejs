@@ -5,7 +5,8 @@ export class AuditLogger {
   constructor(private readonly store: MemoryStore) {}
 
   async log(entry: Omit<AuditLog, 'id' | 'createdAt'>): Promise<AuditLog> {
-    const audit: AuditLog = { id: createId('audit'), createdAt: nowIso(), ...entry };
+    const timestamp = nowIso();
+    const audit: AuditLog = { id: createId('audit'), timestamp, createdAt: timestamp, ...entry };
     await this.store.update(data => {
       data.audits.push(audit);
       data.audits = data.audits.slice(-1000);

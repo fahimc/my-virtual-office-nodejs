@@ -8,6 +8,11 @@ import type { Artifact } from '../schemas/artifact.schema.js';
 import type { ApprovalRequest } from '../schemas/approval.schema.js';
 import type { WorkflowRun } from '../schemas/workflow.schema.js';
 import type { AuditLog } from '../schemas/audit.schema.js';
+import type { EmailDraft } from '../schemas/email.schema.js';
+import type { GitHubBranchRecord, GitHubPullRequestRecord } from '../schemas/github.schema.js';
+import type { DeploymentRecord, PreviewRecord } from '../schemas/deployment.schema.js';
+import type { CompanyTask } from '../tools/taskboard/taskBoardTypes.js';
+import type { CodexTask } from '../tools/codex/codexTaskAdapter.js';
 
 export interface AgencyStoreData {
   customers: Customer[];
@@ -17,6 +22,14 @@ export interface AgencyStoreData {
   approvals: ApprovalRequest[];
   workflows: WorkflowRun[];
   audits: AuditLog[];
+  companyTasks: CompanyTask[];
+  emailDrafts: EmailDraft[];
+  codexTasks: CodexTask[];
+  githubBranches: GitHubBranchRecord[];
+  githubPullRequests: GitHubPullRequestRecord[];
+  previews: PreviewRecord[];
+  deployments: DeploymentRecord[];
+  notifications: Array<{ id: string; projectId?: string; type: string; title: string; message: string; read: boolean; createdAt: string }>;
   briefHistory: Array<{ customerId: string; projectId: string; originalBrief: string; structuredBrief?: StructuredBrief; createdAt: string }>;
 }
 
@@ -28,6 +41,14 @@ const emptyStore = (): AgencyStoreData => ({
   approvals: [],
   workflows: [],
   audits: [],
+  companyTasks: [],
+  emailDrafts: [],
+  codexTasks: [],
+  githubBranches: [],
+  githubPullRequests: [],
+  previews: [],
+  deployments: [],
+  notifications: [],
   briefHistory: []
 });
 

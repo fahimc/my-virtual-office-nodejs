@@ -1,6 +1,7 @@
 import type { ApprovalRequest, ApprovalType } from '../schemas/approval.schema.js';
 import { createId, nowIso, type MemoryStore } from '../memory/memoryStore.js';
 import { AuditLogger } from '../audit/auditLog.js';
+import { approvalRiskFor } from './approvalPolicy.js';
 
 export class ApprovalRequiredError extends Error {
   constructor(public readonly approval: ApprovalRequest) {
@@ -20,6 +21,7 @@ export class ApprovalService {
       id: createId('approval'),
       status: 'pending',
       createdAt: nowIso(),
+      riskLevel: approvalRiskFor(input.type),
       ...input
     };
     await this.store.update(data => {
@@ -57,6 +59,8 @@ export class ApprovalService {
       if (!approval) throw new Error(`Approval not found: ${id}`);
       approval.status = status;
       approval.resolvedAt = nowIso();
+      approval.resolvedBy = String(payload.resolvedBy || 'user');
+      approval.decisionReason = typeof payload.decisionReason === 'string' ? payload.decisionReason : undefined;
       approval.payload = { ...approval.payload, resolution: payload };
       result = approval;
     });

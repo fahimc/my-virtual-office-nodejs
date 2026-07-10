@@ -1,15 +1,13 @@
 import express, { type Request, type Response, type Router } from 'express';
-import { createAgencySystem, type AgencySystem, type CreateAgencySystemOptions } from '../createAgencySystem.js';
+import type { CreateAgencySystemOptions } from '../createAgencySystem.js';
 import type { StructuredBrief } from '../schemas/brief.schema.js';
+import { getAgencySystem } from './agencySystemSingleton.js';
 
 type AsyncHandler = (req: Request, res: Response) => Promise<void>;
 
-let sharedSystem: AgencySystem | undefined;
-
 export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   const router = express.Router();
-  const system = sharedSystem ?? createAgencySystem(options);
-  sharedSystem = system;
+  const system = getAgencySystem(options);
 
   const route = (handler: AsyncHandler) => async (req: Request, res: Response) => {
     try {
@@ -132,7 +130,21 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     );
     const liveUrl = deployed.previewUrl || `https://live.example.com/${projectId}`;
     await system.deploymentWorkflow.complete(projectId, liveUrl);
-    res.json({ deployed, liveUrl, officeState: await system.officeState(projectId) });
+    const latest = await system.store.read();
+    const project = latest.projects.find(item => item.id === projectId);
+    const customer = project ? latest.customers.find(item => item.id === project.customerId) : undefined;
+    if (customer) {
+      const draft = await system.companyOS.emailDrafts.createDraft({
+        projectId,
+        customerId: customer.id,
+        to: [customer.email],
+        subject: `Your website project is ready`,
+        body: `Hi ${customer.name},\n\nYour website has been approved and deployed.\n\nLive URL: ${liveUrl}\n\nBest,\nClient Success`,
+        createdByAgentId: 'client-success'
+      });
+      await system.companyOS.emailApprovals.requestSendApproval(draft);
+    }
+    res.json({ deployed, liveUrl, officeState: await system.officeState(projectId), companyState: await system.companyState(projectId) });
   }));
 
   router.get('/office-state', route(async (req, res) => {

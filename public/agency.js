@@ -25,6 +25,11 @@
     activity: document.getElementById('agentActivity'),
     artifacts: document.getElementById('artifactList'),
     approval: document.getElementById('approvalPanel'),
+    taskBoard: document.getElementById('taskBoardPanel'),
+    codexPanel: document.getElementById('codexPanel'),
+    githubPanel: document.getElementById('githubPanel'),
+    emailPanel: document.getElementById('emailPanel'),
+    auditPanel: document.getElementById('auditPanel'),
     resumeOverlay: document.getElementById('resumeOverlay'),
     resumeIssue: document.getElementById('resumeIssue'),
     resumeWorkflow: document.getElementById('resumeWorkflow')
@@ -255,6 +260,7 @@
     renderActivity(officeState.activity || []);
     renderArtifacts(officeState.artifacts || []);
     renderApproval(officeState.approvals || []);
+    renderCompany(officeState);
     renderResume(officeState);
   }
 
@@ -321,6 +327,65 @@
       document.getElementById('pauseWorkflow').addEventListener('click', () => setReception('Paused', 'Client Concierge', 'The project is paused in the browser. Backend workflow state is unchanged.'));
     }
     refreshIcons();
+  }
+
+  function renderCompany(officeState) {
+    renderTaskBoard(officeState.taskBoard || []);
+    const company = officeState.company || {};
+    renderCodex(company.codexTasks || []);
+    renderGitHub(company.githubPullRequests || []);
+    renderEmail(company.emailDrafts || []);
+    renderAudit(officeState.activity || []);
+  }
+
+  function renderTaskBoard(columns) {
+    els.taskBoard.innerHTML = columns.filter(column => column.tasks.length || ['ready', 'in_progress', 'review', 'done', 'failed'].includes(column.status)).map(column => `
+      <section class="task-column">
+        <h5>${column.status.replaceAll('_', ' ')}</h5>
+        ${column.tasks.slice(0, 4).map(task => `
+          <div class="task-card" title="${task.description || ''}">
+            <b>${task.title}</b>
+            <small>${task.type} - ${task.assignedAgentId || 'unassigned'} ${task.approvalRequired ? '<span class="approval-badge">approval</span>' : ''}</small>
+          </div>
+        `).join('')}
+      </section>
+    `).join('');
+  }
+
+  function renderCodex(tasks) {
+    els.codexPanel.innerHTML = tasks.slice(-3).reverse().map(task => `
+      <div class="company-list-item">
+        <b>${task.taskTitle}</b><br>
+        <span>${task.status} - ${task.branchName}</span>
+      </div>
+    `).join('') || '<div class="company-list-item">No Codex runs yet</div>';
+  }
+
+  function renderGitHub(pullRequests) {
+    els.githubPanel.innerHTML = pullRequests.slice(-3).reverse().map(pr => `
+      <div class="company-list-item">
+        <b>${pr.title}</b><br>
+        <span>${pr.status} - <a href="${pr.url}" target="_blank" rel="noreferrer">PR</a></span>
+      </div>
+    `).join('') || '<div class="company-list-item">No pull requests yet</div>';
+  }
+
+  function renderEmail(drafts) {
+    els.emailPanel.innerHTML = drafts.slice(-3).reverse().map(draft => `
+      <div class="company-list-item">
+        <b>${draft.subject}</b><br>
+        <span>${draft.status} - ${draft.to.join(', ')}</span>
+      </div>
+    `).join('') || '<div class="company-list-item">No email drafts yet</div>';
+  }
+
+  function renderAudit(activity) {
+    els.auditPanel.innerHTML = activity.slice(-4).reverse().map(item => `
+      <div class="company-list-item">
+        <b>${item.agentId}</b><br>
+        <span>${item.title}</span>
+      </div>
+    `).join('') || '<div class="company-list-item">No audit activity yet</div>';
   }
 
   async function approvePreview(id) {

@@ -24,6 +24,61 @@ The first production-style flow is:
 7. Preview approval pauses the workflow.
 8. Deployment approval is a separate explicit gate.
 
+## Company OS Layer
+
+`src/agency/company/companyOS.ts` composes the company-level services:
+
+- task board and assignment/dependency services
+- email drafts and send-approval flow
+- Codex task runner abstraction
+- GitHub branch/PR/issue/project abstractions
+- preview/deployment services
+- notifications
+- audit and approval stores
+- scheduler, retry policy, server-side secrets provider, and tool execution runtime
+
+The new `/api/company/*` routes expose this layer for task board, email, Codex, GitHub, preview/deployment, approvals, audit, and workflow status.
+
+## Task Board
+
+Task board records live in `data/agency-store.json` under `companyTasks`.
+Planner-created tasks use these statuses:
+
+`backlog`, `ready`, `assigned`, `in_progress`, `blocked`, `review`, `changes_needed`, `approved`, `done`, `failed`, `cancelled`.
+
+The website build workflow now creates internal tasks for planning, design, copy, coding, QA, preview, deployment, and completion email. Agents claim and complete tasks as workflow stages run.
+
+## Codex
+
+Codex is treated as a coding worker, not the company brain.
+
+`CodexToolService` creates `CodexTask` records with:
+
+- repo path
+- branch name
+- focused task prompt
+- allowed/disallowed command policy
+- changed files/test/build result fields
+
+By default `CODEX_ENABLE_EXEC` is off, so Codex runs in safe stub mode. Set `CODEX_ENABLE_EXEC=1` and `CODEX_EXECUTABLE=codex` to allow `codex exec`.
+
+## GitHub
+
+GitHub abstractions are provider-shaped and currently local/stubbed:
+
+- branch records
+- pull request records
+- issue/project sync stubs
+- webhook handler stub
+
+The Builder Agent can create branches and PRs through the workflow. Merge approval is separate and uses `merge_pull_request`.
+
+## Email Approval
+
+Agents can create drafts without approval. Sending an external email requires a `send_email` approval.
+
+After explicit deployment approval, Client Success drafts a completion email and the app creates an email-send approval. The draft is not sent until approved.
+
 ## Adding An Agent
 
 1. Create `src/agency/agents/newAgent.ts`.
