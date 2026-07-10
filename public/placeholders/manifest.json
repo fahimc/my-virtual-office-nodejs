@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-10T22:33:06.371Z",
+  "generatedAt": "2026-07-10T22:36:21.751Z",
   "source": "Openverse API",
   "licenseFilter": "cc0",
   "note": "Downloaded thumbnails only. Review manifest entries before using final production assets.",
@@ -112,6 +112,78 @@
         "source": "WordPress Photo Directory",
         "originalUrl": "https://wordpress.org/photos/search/fruit/",
         "imageUrl": "https://pd.w.org/2026/06/1876a42eb6d0ce5d1.65619918-176x300.jpeg"
+      },
+      {
+        "file": "/placeholders/food-drink/food-drink-013.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/fruit/",
+        "imageUrl": "https://pd.w.org/2026/06/9366a3a927d287e29.23337667-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/food-drink/food-drink-014.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/fruit/",
+        "imageUrl": "https://pd.w.org/2026/06/9996a390be2564a64.29638470-226x300.jpg"
+      },
+      {
+        "file": "/placeholders/food-drink/food-drink-015.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/fruit/",
+        "imageUrl": "https://pd.w.org/2026/06/9536a38d505990ac2.24649422-289x300.jpeg"
+      },
+      {
+        "file": "/placeholders/food-drink/food-drink-016.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/fruit/",
+        "imageUrl": "https://pd.w.org/2026/06/4146a38f0fe2661a0.40149397-226x300.jpg"
+      },
+      {
+        "file": "/placeholders/food-drink/food-drink-017.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/fruit/",
+        "imageUrl": "https://pd.w.org/2026/06/7956a356bb49949d4.90400612-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/food-drink/food-drink-018.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/fruit/",
+        "imageUrl": "https://pd.w.org/2026/06/9946a36cbc3e92ad5.22887157-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/food-drink/food-drink-019.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/fruit/",
+        "imageUrl": "https://pd.w.org/2026/06/2296a378362370658.81257455-300x169.jpg"
+      },
+      {
+        "file": "/placeholders/food-drink/food-drink-020.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/fruit/",
+        "imageUrl": "https://pd.w.org/2026/06/176a2c46c87c4f74.82914791-226x300.jpg"
       }
     ],
     "ecommerce": [
@@ -305,6 +377,78 @@
         "source": "WordPress Photo Directory",
         "originalUrl": "https://wordpress.org/photos/search/computer/",
         "imageUrl": "https://pd.w.org/2025/09/28468b7212d8a9792.31622169-300x169.jpeg"
+      },
+      {
+        "file": "/placeholders/saas/saas-013.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/computer/",
+        "imageUrl": "https://pd.w.org/2025/08/20268998958cad6d8.71599061-300x225.jpg"
+      },
+      {
+        "file": "/placeholders/saas/saas-014.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/computer/",
+        "imageUrl": "https://pd.w.org/2025/08/214689465deabd018.91637389-169x300.jpg"
+      },
+      {
+        "file": "/placeholders/saas/saas-015.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/computer/",
+        "imageUrl": "https://pd.w.org/2025/08/3396894665b083b80.00463135-169x300.jpg"
+      },
+      {
+        "file": "/placeholders/saas/saas-016.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/computer/",
+        "imageUrl": "https://pd.w.org/2025/08/80868934263ac0e23.56762536-169x300.jpg"
+      },
+      {
+        "file": "/placeholders/saas/saas-017.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/computer/",
+        "imageUrl": "https://pd.w.org/2025/07/851686331d5afdd78.76131901-218x300.jpg"
+      },
+      {
+        "file": "/placeholders/saas/saas-018.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/computer/",
+        "imageUrl": "https://pd.w.org/2025/05/15268336104ceed07.71601408-300x200.jpg"
+      },
+      {
+        "file": "/placeholders/saas/saas-019.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/computer/",
+        "imageUrl": "https://pd.w.org/2025/05/8266833591a8aa554.24058887-300x200.jpg"
+      },
+      {
+        "file": "/placeholders/saas/saas-020.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/computer/",
+        "imageUrl": "https://pd.w.org/2025/03/17567dd65b44168e0.09537889-300x169.jpg"
       }
     ],
     "agency": [
@@ -415,6 +559,78 @@
         "source": "WordPress Photo Directory",
         "originalUrl": "https://wordpress.org/photos/search/office/",
         "imageUrl": "https://pd.w.org/2026/03/41269c6b2eee48e31.10154550-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/agency/agency-013.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/office/",
+        "imageUrl": "https://pd.w.org/2025/12/562693d0bdbc5b256.09228673-232x300.jpeg"
+      },
+      {
+        "file": "/placeholders/agency/agency-014.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/office/",
+        "imageUrl": "https://pd.w.org/2025/11/68469069a41093f38.07094825-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/agency/agency-015.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/office/",
+        "imageUrl": "https://pd.w.org/2025/10/11168f480a222e4f3.97361273-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/agency/agency-016.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/office/",
+        "imageUrl": "https://pd.w.org/2025/10/23568f482bbbd4792.24764793-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/agency/agency-017.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/office/",
+        "imageUrl": "https://pd.w.org/2025/10/88968e9e68de6c7e3.15311136-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/agency/agency-018.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/office/",
+        "imageUrl": "https://pd.w.org/2025/09/49068ba9c6cb3d430.29263617-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/agency/agency-019.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/office/",
+        "imageUrl": "https://pd.w.org/2025/09/36768b721b1d8afc6.57337564-169x300.jpeg"
+      },
+      {
+        "file": "/placeholders/agency/agency-020.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/office/",
+        "imageUrl": "https://pd.w.org/2025/08/19168a8378d266093.92007577-225x300.jpg"
       }
     ],
     "portfolio": [
@@ -525,6 +741,78 @@
         "source": "WordPress Photo Directory",
         "originalUrl": "https://wordpress.org/photos/search/camera/",
         "imageUrl": "https://pd.w.org/2026/06/7076a1f11697efd03.91023878-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/portfolio/portfolio-013.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/camera/",
+        "imageUrl": "https://pd.w.org/2026/06/4046a1f0f54e35429.34455607-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/portfolio/portfolio-014.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/camera/",
+        "imageUrl": "https://pd.w.org/2026/06/1796a1f0bf4ee29e5.69575019-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/portfolio/portfolio-015.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/camera/",
+        "imageUrl": "https://pd.w.org/2026/06/5726a1e884d570036.58838053-300x200.jpg"
+      },
+      {
+        "file": "/placeholders/portfolio/portfolio-016.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/camera/",
+        "imageUrl": "https://pd.w.org/2026/05/4146a19a0348ac370.27191539-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/portfolio/portfolio-017.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/camera/",
+        "imageUrl": "https://pd.w.org/2026/05/1376a198011afdc36.25349478-300x200.jpg"
+      },
+      {
+        "file": "/placeholders/portfolio/portfolio-018.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/camera/",
+        "imageUrl": "https://pd.w.org/2026/05/9166a197bbeeaeaf0.91712112-300x225.jpeg"
+      },
+      {
+        "file": "/placeholders/portfolio/portfolio-019.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/camera/",
+        "imageUrl": "https://pd.w.org/2026/05/656a193f22642863.91182077-300x200.jpg"
+      },
+      {
+        "file": "/placeholders/portfolio/portfolio-020.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/camera/",
+        "imageUrl": "https://pd.w.org/2026/05/7796a193d94367e96.12956019-300x200.jpg"
       }
     ],
     "local-business": [
@@ -736,6 +1024,78 @@
         "source": "WordPress Photo Directory",
         "originalUrl": "https://wordpress.org/photos/search/restaurant/",
         "imageUrl": "https://pd.w.org/2026/06/3836a2859cb4fbbb2.08093037-300x225.jpg"
+      },
+      {
+        "file": "/placeholders/restaurant/restaurant-013.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/restaurant/",
+        "imageUrl": "https://pd.w.org/2026/06/9406a285a49e8ec06.30634057-300x225.jpg"
+      },
+      {
+        "file": "/placeholders/restaurant/restaurant-014.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/restaurant/",
+        "imageUrl": "https://pd.w.org/2026/06/7766a285a68672d97.61980722-300x225.jpg"
+      },
+      {
+        "file": "/placeholders/restaurant/restaurant-015.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/restaurant/",
+        "imageUrl": "https://pd.w.org/2026/06/3716a285262933ac4.41846320-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/restaurant/restaurant-016.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/restaurant/",
+        "imageUrl": "https://pd.w.org/2026/06/786a23c4a40f27a3.46512334-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/restaurant/restaurant-017.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/restaurant/",
+        "imageUrl": "https://pd.w.org/2026/06/3246a2304b1e84430.30577145-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/restaurant/restaurant-018.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/restaurant/",
+        "imageUrl": "https://pd.w.org/2026/06/3586a2121dc2a7337.46075258-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/restaurant/restaurant-019.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/restaurant/",
+        "imageUrl": "https://pd.w.org/2026/06/596a1eef417a2268.34062429-300x200.jpg"
+      },
+      {
+        "file": "/placeholders/restaurant/restaurant-020.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/restaurant/",
+        "imageUrl": "https://pd.w.org/2026/05/7886a1c66516f27b0.99883865-225x300.jpg"
       }
     ],
     "healthcare": [
@@ -846,6 +1206,78 @@
         "source": "WordPress Photo Directory",
         "originalUrl": "https://wordpress.org/photos/search/health/",
         "imageUrl": "https://pd.w.org/2026/05/8446a15ca8a0c5821.32277295-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/healthcare/healthcare-013.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/health/",
+        "imageUrl": "https://pd.w.org/2026/05/3406a11a1bed89199.34283036-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/healthcare/healthcare-014.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/health/",
+        "imageUrl": "https://pd.w.org/2026/05/4316a1191a6c80754.31787088-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/healthcare/healthcare-015.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/health/",
+        "imageUrl": "https://pd.w.org/2026/05/3756a119202bca635.46775370-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/healthcare/healthcare-016.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/health/",
+        "imageUrl": "https://pd.w.org/2026/05/3526a0e91074c1eb8.03177684-169x300.jpg"
+      },
+      {
+        "file": "/placeholders/healthcare/healthcare-017.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/health/",
+        "imageUrl": "https://pd.w.org/2026/05/8966a0e2ca29a79f3.98288446-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/healthcare/healthcare-018.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/health/",
+        "imageUrl": "https://pd.w.org/2026/04/11969ec0e2ce3eb01.74030964-300x225.jpeg"
+      },
+      {
+        "file": "/placeholders/healthcare/healthcare-019.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/health/",
+        "imageUrl": "https://pd.w.org/2026/04/85669e49acbd1de25.75946607-200x300.jpeg"
+      },
+      {
+        "file": "/placeholders/healthcare/healthcare-020.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/health/",
+        "imageUrl": "https://pd.w.org/2026/04/30469dad796d98c71.96450022-225x300.jpg"
       }
     ],
     "fitness": [
@@ -994,6 +1426,78 @@
         "source": "WordPress Photo Directory",
         "originalUrl": "https://wordpress.org/photos/search/beauty/",
         "imageUrl": "https://pd.w.org/2026/07/136a44eb8973f1a6.00414924-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/beauty/beauty-013.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/beauty/",
+        "imageUrl": "https://pd.w.org/2026/07/2166a44ec163d2f28.23935713-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/beauty/beauty-014.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/beauty/",
+        "imageUrl": "https://pd.w.org/2026/06/7056a44093c1a0be9.46109317-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/beauty/beauty-015.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/beauty/",
+        "imageUrl": "https://pd.w.org/2026/06/7516a43e4cd08b575.82604571-300x225.jpeg"
+      },
+      {
+        "file": "/placeholders/beauty/beauty-016.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/beauty/",
+        "imageUrl": "https://pd.w.org/2026/06/2686a42b44eb58188.09690712-300x225.jpeg"
+      },
+      {
+        "file": "/placeholders/beauty/beauty-017.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/beauty/",
+        "imageUrl": "https://pd.w.org/2026/06/5786a41e5a0df2119.41510661-300x225.jpg"
+      },
+      {
+        "file": "/placeholders/beauty/beauty-018.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/beauty/",
+        "imageUrl": "https://pd.w.org/2026/06/3236a41d17982add9.05589375-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/beauty/beauty-019.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/beauty/",
+        "imageUrl": "https://pd.w.org/2026/06/9036a41cf6f169fa3.49779754-300x225.jpeg"
+      },
+      {
+        "file": "/placeholders/beauty/beauty-020.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/beauty/",
+        "imageUrl": "https://pd.w.org/2026/06/7216a41cea4200237.15023434-225x300.jpeg"
       }
     ],
     "real-estate": [
@@ -1104,6 +1608,78 @@
         "source": "WordPress Photo Directory",
         "originalUrl": "https://wordpress.org/photos/search/house/",
         "imageUrl": "https://pd.w.org/2026/06/5736a36cfa5c0bd38.56644101-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/real-estate/real-estate-013.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/house/",
+        "imageUrl": "https://pd.w.org/2026/06/9986a3421ceeb7364.91532507-226x300.jpg"
+      },
+      {
+        "file": "/placeholders/real-estate/real-estate-014.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/house/",
+        "imageUrl": "https://pd.w.org/2026/06/8116a3388001ebbe6.42667715-300x199.jpg"
+      },
+      {
+        "file": "/placeholders/real-estate/real-estate-015.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/house/",
+        "imageUrl": "https://pd.w.org/2026/06/1236a312e31a27145.45330870-225x300.jpg"
+      },
+      {
+        "file": "/placeholders/real-estate/real-estate-016.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/house/",
+        "imageUrl": "https://pd.w.org/2026/06/3506a2f8c88acf703.79615317-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/real-estate/real-estate-017.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/house/",
+        "imageUrl": "https://pd.w.org/2026/06/7206a2c29a29a4960.91863197-225x300.jpeg"
+      },
+      {
+        "file": "/placeholders/real-estate/real-estate-018.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/house/",
+        "imageUrl": "https://pd.w.org/2026/06/2756a2b94cc6bf057.62698702-300x175.jpg"
+      },
+      {
+        "file": "/placeholders/real-estate/real-estate-019.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/house/",
+        "imageUrl": "https://pd.w.org/2026/06/7886a2b825d07e4b4.46395825-300x225.jpg"
+      },
+      {
+        "file": "/placeholders/real-estate/real-estate-020.jpeg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/house/",
+        "imageUrl": "https://pd.w.org/2026/06/3716a2b7cb062c3d7.96271226-300x225.jpeg"
       }
     ],
     "trades": [
@@ -1214,6 +1790,78 @@
         "source": "WordPress Photo Directory",
         "originalUrl": "https://wordpress.org/photos/search/tools/",
         "imageUrl": "https://pd.w.org/2024/06/4136662eece7f2f67.35074301-300x225.jpg"
+      },
+      {
+        "file": "/placeholders/trades/trades-013.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/tools/",
+        "imageUrl": "https://pd.w.org/2024/05/27966437d76455679.49525659-300x200.jpg"
+      },
+      {
+        "file": "/placeholders/trades/trades-014.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/tools/",
+        "imageUrl": "https://pd.w.org/2024/04/6426620e6ca180174.24262441-300x200.jpg"
+      },
+      {
+        "file": "/placeholders/trades/trades-015.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/tools/",
+        "imageUrl": "https://pd.w.org/2024/02/59465c690cb6237b3.20229749-300x225.jpg"
+      },
+      {
+        "file": "/placeholders/trades/trades-016.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/tools/",
+        "imageUrl": "https://pd.w.org/2024/02/3865bfd4dd04e705.13383062-300x219.jpg"
+      },
+      {
+        "file": "/placeholders/trades/trades-017.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/tools/",
+        "imageUrl": "https://pd.w.org/2024/02/70965be863d7d5855.21745515-300x214.jpg"
+      },
+      {
+        "file": "/placeholders/trades/trades-018.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/tools/",
+        "imageUrl": "https://pd.w.org/2023/12/8656572fc9ee8a2f7.23362806-300x300.jpg"
+      },
+      {
+        "file": "/placeholders/trades/trades-019.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/tools/",
+        "imageUrl": "https://pd.w.org/2023/02/84363fd9ae60987a6.27242035-300x300.jpg"
+      },
+      {
+        "file": "/placeholders/trades/trades-020.jpg",
+        "title": "",
+        "creator": "",
+        "license": "CC0",
+        "source": "WordPress Photo Directory",
+        "originalUrl": "https://wordpress.org/photos/search/tools/",
+        "imageUrl": "https://pd.w.org/2022/10/395634db9be8f96f4.31461546-300x220.jpg"
       }
     ]
   }

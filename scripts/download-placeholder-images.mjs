@@ -18,7 +18,7 @@ const categories = [
 ];
 
 const root = path.resolve('public/placeholders');
-const perCategory = Number(process.env.PLACEHOLDER_IMAGES_PER_CATEGORY || 12);
+const perCategory = Number(process.env.PLACEHOLDER_IMAGES_PER_CATEGORY || 20);
 const licenseFilter = 'cc0';
 const userAgent = 'my-virtual-office-nodejs/1.0 (placeholder image downloader)';
 
