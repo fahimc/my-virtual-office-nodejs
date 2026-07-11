@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-theme="cupcake">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beauty Booking Editorial</title>
+  <link rel="stylesheet" href="/daisyui.css?v=template-gallery-1">
+  <style>
+    @keyframes agencyRiseIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes agencySlowZoom { from { transform:scale(1.02); } to { transform:scale(1.12); } }
+    .agency-rise-in { animation:agencyRiseIn .7s ease both; animation-delay:var(--delay,0ms); }
+    .agency-slow-zoom { animation:agencySlowZoom 18s ease-in-out infinite alternate; }
+    @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation:none !important; transition:none !important; } }
+  </style>
+</head>
+<body><main class="overflow-hidden">
+    <header class="navbar sticky top-0 z-30 border-b border-base-300 bg-base-100/85 px-4 backdrop-blur">
+      <div class="navbar-start"><a class="btn btn-ghost text-xl font-black" href="/template-gallery/">Luna Studio</a></div>
+      <nav class="navbar-end hidden gap-4 md:flex">
+        <a class="link link-hover" href="#editorial-hero">Editorial hero</a><a class="link link-hover" href="#treatment-cards">Treatment cards</a><a class="link link-hover" href="#gallery">Gallery</a><a class="link link-hover" href="#specialists">Specialists</a>
+        <a class="btn btn-primary rounded-full" href="#contact">Book treatment</a>
+      </nav>
+    </header>
+    <section class="hero min-h-[calc(100vh-4rem)] bg-base-100">
+      <div class="hero-content grid max-w-7xl gap-10 lg:grid-cols-[1fr_.9fr]">
+        <div>
+          <span class="badge badge-primary badge-lg mb-5">Beauty &amp; salon</span>
+          <h1 class="text-5xl font-black leading-none md:text-7xl xl:text-8xl">Soft-touch treatments with a polished booking flow.</h1>
+          <p class="py-6 text-xl leading-relaxed text-base-content/70">A premium salon site for services, portfolios, treatment menus, gift cards, and bookings.</p>
+          <div class="join">
+            <a class="btn btn-primary join-item rounded-full" href="#contact">Book treatment</a>
+            <a class="btn btn-outline join-item rounded-full" href="#sections">View menu</a>
+          </div>
+          <div class="stats stats-vertical mt-8 shadow lg:stats-horizontal">
+            <div class="stat"><div class="stat-value">18</div><div class="stat-desc">treatments</div></div><div class="stat"><div class="stat-value">5k+</div><div class="stat-desc">clients</div></div><div class="stat"><div class="stat-value">4.9</div><div class="stat-desc">rating</div></div>
+          </div>
+        </div>
+        <div class="relative min-h-[560px] overflow-hidden rounded-[2rem] shadow-2xl">
+          <img src="/placeholders/beauty/beauty-001.jpeg" alt="" class="absolute inset-0 h-full w-full object-cover agency-slow-zoom">
+          <div class="absolute inset-0 bg-gradient-to-t from-neutral/80 to-transparent"></div>
+          <div class="absolute bottom-6 left-6 right-6 rounded-box border border-white/20 bg-base-100/90 p-6 backdrop-blur">
+            <strong class="text-2xl">Beauty Booking Editorial</strong>
+            <p class="mt-2 text-base-content/70">Built with DaisyUI cards, buttons, stats, forms, badges, and responsive section patterns.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="sections" class="bg-base-200 py-20">
+      <div class="mx-auto w-[min(1180px,calc(100%-2rem))]">
+        <div class="mb-8 max-w-3xl">
+          <span class="badge badge-secondary badge-lg mb-4">Section system</span>
+          <h2 class="text-4xl font-black md:text-6xl">Reusable sections with a finished visual direction.</h2>
+        </div>
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <article id="editorial-hero" class="card bg-base-100 shadow-xl border border-base-300 agency-rise-in" style="--delay:0ms"><div class="card-body"><div class="badge badge-primary">1</div><h3 class="card-title">Editorial hero</h3><p>Composable DaisyUI section ready for brand, copy, and conversion adaptation.</p></div></article><article id="treatment-cards" class="card bg-base-100 shadow-xl border border-base-300 agency-rise-in" style="--delay:80ms"><div class="card-body"><div class="badge badge-primary">2</div><h3 class="card-title">Treatment cards</h3><p>Composable DaisyUI section ready for brand, copy, and conversion adaptation.</p></div></article><article id="gallery" class="card bg-base-100 shadow-xl border border-base-300 agency-rise-in" style="--delay:160ms"><div class="card-body"><div class="badge badge-primary">3</div><h3 class="card-title">Gallery</h3><p>Composable DaisyUI section ready for brand, copy, and conversion adaptation.</p></div></article><article id="specialists" class="card bg-base-100 shadow-xl border border-base-300 agency-rise-in" style="--delay:240ms"><div class="card-body"><div class="badge badge-primary">4</div><h3 class="card-title">Specialists</h3><p>Composable DaisyUI section ready for brand, copy, and conversion adaptation.</p></div></article>
+        </div>
+      </div>
+    </section>
+    <section class="py-20">
+      <div class="mx-auto grid w-[min(1180px,calc(100%-2rem))] gap-8 lg:grid-cols-[.8fr_1.2fr]">
+        <div>
+          <span class="badge badge-accent badge-lg mb-4">Visual system</span>
+          <h2 class="text-4xl font-black md:text-6xl">Image rhythm, proof, and action in one flow.</h2>
+          <p class="mt-5 text-lg text-base-content/70">The layout uses a brand palette, repeated cards, gallery moments, and clear calls to action so the page feels deliberate rather than assembled from loose blocks.</p>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <figure class="overflow-hidden rounded-box shadow-xl sm:row-span-2"><img src="/placeholders/beauty/beauty-002.jpg" alt="" class="h-full min-h-56 w-full object-cover transition duration-300 hover:scale-105"></figure><figure class="overflow-hidden rounded-box shadow-xl "><img src="/placeholders/beauty/beauty-003.jpeg" alt="" class="h-full min-h-56 w-full object-cover transition duration-300 hover:scale-105"></figure><figure class="overflow-hidden rounded-box shadow-xl "><img src="/placeholders/beauty/beauty-004.jpeg" alt="" class="h-full min-h-56 w-full object-cover transition duration-300 hover:scale-105"></figure><figure class="overflow-hidden rounded-box shadow-xl "><img src="/placeholders/beauty/beauty-005.jpeg" alt="" class="h-full min-h-56 w-full object-cover transition duration-300 hover:scale-105"></figure>
+        </div>
+      </div>
+    </section>
+    <section class="bg-base-200 py-20">
+      <div class="mx-auto w-[min(980px,calc(100%-2rem))]">
+        <span class="badge badge-primary badge-lg mb-4">Review notes</span>
+        <h2 class="mb-8 text-4xl font-black md:text-6xl">Built for agency review.</h2>
+        <div class="space-y-3"><div class="collapse collapse-arrow bg-base-100 border border-base-300"><input type="checkbox"><div class="collapse-title text-xl font-bold">Can this be adapted to another brand?</div><div class="collapse-content"><p>Yes. The layout uses DaisyUI components and design tokens, so colour, copy, imagery, and section order can be swapped cleanly.</p></div></div><div class="collapse collapse-arrow bg-base-100 border border-base-300"><input type="checkbox"><div class="collapse-title text-xl font-bold">Is this mobile friendly?</div><div class="collapse-content"><p>Yes. Sections are mobile-first and expand into larger grid layouts on desktop.</p></div></div><div class="collapse collapse-arrow bg-base-100 border border-base-300"><input type="checkbox"><div class="collapse-title text-xl font-bold">Can agents build from this?</div><div class="collapse-content"><p>Yes. The template is structured into reusable sections and component classes the Builder Agent can reuse.</p></div></div></div>
+      </div>
+    </section>
+    <section id="contact" class="hero bg-neutral py-20 text-neutral-content">
+      <div class="hero-content text-center">
+        <div class="max-w-3xl">
+          <h2 class="text-4xl font-black md:text-6xl">Ready to adapt this direction?</h2>
+          <p class="py-6 text-lg text-neutral-content/75">Use this as a starting point for Designer Agent handoff, Builder Agent implementation, and preview approval.</p>
+          <a class="btn btn-primary rounded-full" href="/template-gallery/">Back to gallery</a>
+        </div>
+      </div>
+    </section>
+  </main></body>
+</html>
