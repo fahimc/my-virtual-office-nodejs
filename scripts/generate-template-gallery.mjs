@@ -2,6 +2,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderHeroSection } from './template-hero-sections.mjs';
+import { enrichedPalettes, paletteCollection, paletteStyleBlock, recommendedPaletteForTemplate } from './color-palette-engine.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -452,6 +453,7 @@ for (const template of templates) {
 }
 
 await writeFile(path.join(outDir, 'design-references.json'), `${JSON.stringify(referenceManifest, null, 2)}\n`);
+await writeFile(path.join(outDir, 'palettes.json'), `${JSON.stringify({ ...paletteCollection, palettes: enrichedPalettes }, null, 2)}\n`);
 await writeFile(path.join(outDir, 'index.html'), renderGallery());
 
 console.log(`Generated ${templates.length} DaisyUI templates at /template-gallery/`);
@@ -483,6 +485,7 @@ function renderGallery() {
           <div class="join">
             <a class="btn btn-primary join-item rounded-full" href="#templates">Browse templates</a>
             <a class="btn btn-outline join-item rounded-full" href="/template-gallery/design-references.json">View references</a>
+            <a class="btn btn-outline join-item rounded-full" href="/template-gallery/palettes.json">View palettes</a>
           </div>
         </div>
       </div>
@@ -496,6 +499,7 @@ function renderGallery() {
 function renderTemplate(template) {
   const images = Array.from({ length: 8 }, (_, index) => imageFor(template, index));
   const features = template.sections.slice(0, 4);
+  const defaultPaletteId = recommendedPaletteForTemplate(template);
   const faqs = [
     ['Can this be adapted to another brand?', 'Yes. Colour, copy, imagery, and section order can be swapped cleanly while preserving the visual direction.'],
     ['Is this mobile friendly?', 'Yes. Sections are mobile-first and expand into richer grid layouts on desktop.'],
@@ -510,6 +514,7 @@ function renderTemplate(template) {
         <a class="btn btn-primary rounded-full" href="#contact">${escapeHtml(template.cta)}</a>
       </nav>
     </header>
+    ${renderPaletteSwitcher(defaultPaletteId)}
     <section class="relative bg-base-100">
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--color-primary)_22%,transparent),transparent_32rem),radial-gradient(circle_at_85%_20%,color-mix(in_srgb,var(--color-secondary)_16%,transparent),transparent_28rem)]"></div>
       <div class="relative mx-auto grid min-h-[calc(100vh-4rem)] w-[min(1280px,calc(100%-2rem))] items-center gap-10 py-14 lg:grid-cols-[.94fr_1.06fr] lg:py-20">
@@ -567,7 +572,7 @@ function renderTemplate(template) {
         </div>
       </div>
     </section>
-  </main>`);
+  </main>`, { paletteId: defaultPaletteId });
 }
 
 function sectionHeading(template) {
@@ -606,15 +611,43 @@ function finalCtaCopy(template) {
   return `Use this ${template.badge.toLowerCase()} direction as a starting point for a client-specific brief, visual QA pass, and final preview approval.`;
 }
 
-function htmlShell(title, theme, body) {
+function renderPaletteSwitcher(defaultPaletteId) {
+  const selected = enrichedPalettes.find(palette => palette.id === defaultPaletteId) || enrichedPalettes[0];
+  return `<aside class="sticky top-[4.1rem] z-20 border-b border-base-300 bg-base-100/92 px-4 py-3 shadow-sm backdrop-blur">
+    <div class="mx-auto flex w-[min(1280px,calc(100%-1rem))] flex-wrap items-center justify-between gap-3">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-[.2em] text-base-content/55">Palette engine</p>
+        <p id="palette-summary" class="text-sm text-base-content/70">${escapeHtml(selected.name)} - ${escapeHtml(selected.style)}</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <div id="palette-swatches" class="flex gap-1">${renderPaletteSwatches(selected)}</div>
+        <select id="palette-select" class="select select-bordered select-sm w-64" aria-label="Choose website colour palette">
+          ${enrichedPalettes.map(palette => `<option value="${palette.id}" ${palette.id === defaultPaletteId ? 'selected' : ''}>${escapeHtml(palette.name)}</option>`).join('')}
+        </select>
+        <span id="palette-contrast" class="badge badge-outline">${selected.accessibility.normalTextAA ? 'AA contrast' : 'Review contrast'}</span>
+      </div>
+    </div>
+  </aside>`;
+}
+
+function renderPaletteSwatches(palette) {
+  const colors = palette.colors;
+  return [colors.background, colors.primary, colors.secondary, colors.accent, colors.text]
+    .map(color => `<span class="h-6 w-6 rounded-full border border-base-300 shadow-sm" style="background:${color}"></span>`)
+    .join('');
+}
+
+function htmlShell(title, theme, body, options = {}) {
+  const paletteId = options.paletteId || '';
   return `<!doctype html>
-<html lang="en" data-theme="${theme}">
+<html lang="en" data-theme="${theme}"${paletteId ? ` data-palette="${paletteId}"` : ''}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(title)}</title>
   <link rel="stylesheet" href="/daisyui.css?v=template-gallery-1">
   <style>
+    ${paletteStyleBlock()}
     @keyframes agencyRiseIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
     @keyframes agencySlowZoom { from { transform:scale(1.02); } to { transform:scale(1.12); } }
     .agency-rise-in { animation:agencyRiseIn .7s ease both; animation-delay:var(--delay,0ms); }
@@ -622,8 +655,46 @@ function htmlShell(title, theme, body) {
     @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation:none !important; transition:none !important; } }
   </style>
 </head>
-<body>${body}</body>
+<body>${body}${paletteId ? paletteSwitcherScript() : ''}</body>
 </html>`;
+}
+
+function paletteSwitcherScript() {
+  return `<script type="application/json" id="palette-data">${escapeScriptJson(JSON.stringify(enrichedPalettes))}</script>
+<script>
+(() => {
+  const palettes = JSON.parse(document.getElementById('palette-data').textContent);
+  const select = document.getElementById('palette-select');
+  const summary = document.getElementById('palette-summary');
+  const contrast = document.getElementById('palette-contrast');
+  const swatches = document.getElementById('palette-swatches');
+  const stored = localStorage.getItem('template-gallery-palette');
+
+  function swatchHtml(palette) {
+    return [palette.colors.background, palette.colors.primary, palette.colors.secondary, palette.colors.accent, palette.colors.text]
+      .map(color => '<span class="h-6 w-6 rounded-full border border-base-300 shadow-sm" style="background:' + color + '"></span>')
+      .join('');
+  }
+
+  function applyPalette(id, persist = true) {
+    const palette = palettes.find(item => item.id === id) || palettes[0];
+    document.documentElement.dataset.palette = palette.id;
+    select.value = palette.id;
+    summary.textContent = palette.name + ' - ' + palette.style;
+    contrast.textContent = palette.accessibility.normalTextAA ? 'AA contrast' : 'Review contrast';
+    contrast.className = palette.accessibility.normalTextAA ? 'badge badge-success' : 'badge badge-warning';
+    swatches.innerHTML = swatchHtml(palette);
+    if (persist) localStorage.setItem('template-gallery-palette', palette.id);
+  }
+
+  if (stored && palettes.some(item => item.id === stored)) applyPalette(stored, false);
+  select.addEventListener('change', event => applyPalette(event.target.value));
+})();
+</script>`;
+}
+
+function escapeScriptJson(value) {
+  return String(value).replaceAll('<', '\\u003c').replaceAll('>', '\\u003e').replaceAll('&', '\\u0026');
 }
 
 function imageFor(template, index) {

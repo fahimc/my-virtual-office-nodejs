@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-11T09:27:31.953Z",
+  "generatedAt": "2026-07-11T09:44:15.788Z",
   "templateCount": 24,
   "results": [
     {
@@ -10,6 +10,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 936,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -21,6 +22,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1023,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -32,6 +34,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1021,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -43,6 +46,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1414,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -54,6 +58,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 936,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -65,6 +70,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1231,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -76,6 +82,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1021,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -87,6 +94,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1056,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -98,6 +106,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 936,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -109,6 +118,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1250,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -120,6 +130,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1110,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -131,6 +142,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1166,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -142,6 +154,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1021,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -153,6 +166,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1039,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -164,6 +178,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1021,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -175,6 +190,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1056,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -186,6 +202,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 936,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -197,6 +214,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1056,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -208,6 +226,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1110,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -219,6 +238,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1220,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -230,6 +250,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1021,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -241,6 +262,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1023,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -252,6 +274,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1021,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -263,6 +286,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1215,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -274,6 +298,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1142,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -285,6 +310,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1099,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -296,6 +322,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1110,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -307,6 +334,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1361,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -318,6 +346,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1021,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -329,6 +358,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1507,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -340,6 +370,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1142,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -351,6 +382,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1460,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -362,6 +394,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1021,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -373,6 +406,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1089,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -384,6 +418,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1110,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -395,6 +430,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1405,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -406,6 +442,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 936,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -417,6 +454,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1146,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -428,6 +466,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 936,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -439,6 +478,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1000,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -450,6 +490,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 936,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -461,6 +502,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1229,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -472,6 +514,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1021,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -483,6 +526,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1443,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -494,6 +538,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 1021,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -505,6 +550,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1555,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     },
@@ -516,6 +562,7 @@
       "clientWidth": 1425,
       "hasInternalCopy": false,
       "heroHeight": 936,
+      "palette": "dopamine-pop",
       "scrollWidth": 1425,
       "unloadedImages": []
     },
@@ -527,6 +574,7 @@
       "clientWidth": 375,
       "hasInternalCopy": false,
       "heroHeight": 1074,
+      "palette": "dopamine-pop",
       "scrollWidth": 375,
       "unloadedImages": []
     }
