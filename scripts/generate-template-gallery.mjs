@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderHeroSection } from './template-hero-sections.mjs';
 import { enrichedPalettes, paletteCollection, paletteStyleBlock, recommendedPaletteForTemplate } from './color-palette-engine.mjs';
+import { enrichedFontGroups, fontCollection, fontImportBlock, fontStyleBlock, recommendedFontGroupForTemplate } from './font-engine.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -454,6 +455,7 @@ for (const template of templates) {
 
 await writeFile(path.join(outDir, 'design-references.json'), `${JSON.stringify(referenceManifest, null, 2)}\n`);
 await writeFile(path.join(outDir, 'palettes.json'), `${JSON.stringify({ ...paletteCollection, palettes: enrichedPalettes }, null, 2)}\n`);
+await writeFile(path.join(outDir, 'font-groups.json'), `${JSON.stringify({ ...fontCollection, groups: enrichedFontGroups }, null, 2)}\n`);
 await writeFile(path.join(outDir, 'index.html'), renderGallery());
 
 console.log(`Generated ${templates.length} DaisyUI templates at /template-gallery/`);
@@ -486,6 +488,7 @@ function renderGallery() {
             <a class="btn btn-primary join-item rounded-full" href="#templates">Browse templates</a>
             <a class="btn btn-outline join-item rounded-full" href="/template-gallery/design-references.json">View references</a>
             <a class="btn btn-outline join-item rounded-full" href="/template-gallery/palettes.json">View palettes</a>
+            <a class="btn btn-outline join-item rounded-full" href="/template-gallery/font-groups.json">View fonts</a>
           </div>
         </div>
       </div>
@@ -500,6 +503,7 @@ function renderTemplate(template) {
   const images = Array.from({ length: 8 }, (_, index) => imageFor(template, index));
   const features = template.sections.slice(0, 4);
   const defaultPaletteId = recommendedPaletteForTemplate(template);
+  const defaultFontGroupId = recommendedFontGroupForTemplate(template);
   const faqs = [
     ['Can this be adapted to another brand?', 'Yes. Colour, copy, imagery, and section order can be swapped cleanly while preserving the visual direction.'],
     ['Is this mobile friendly?', 'Yes. Sections are mobile-first and expand into richer grid layouts on desktop.'],
@@ -514,7 +518,7 @@ function renderTemplate(template) {
         <a class="btn btn-primary rounded-full" href="#contact">${escapeHtml(template.cta)}</a>
       </nav>
     </header>
-    ${renderPaletteSwitcher(defaultPaletteId)}
+    ${renderDesignControls(defaultPaletteId, defaultFontGroupId)}
     <section class="relative bg-base-100">
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--color-primary)_22%,transparent),transparent_32rem),radial-gradient(circle_at_85%_20%,color-mix(in_srgb,var(--color-secondary)_16%,transparent),transparent_28rem)]"></div>
       <div class="relative mx-auto grid min-h-[calc(100vh-4rem)] w-[min(1280px,calc(100%-2rem))] items-center gap-10 py-14 lg:grid-cols-[.94fr_1.06fr] lg:py-20">
@@ -572,7 +576,7 @@ function renderTemplate(template) {
         </div>
       </div>
     </section>
-  </main>`, { paletteId: defaultPaletteId });
+  </main>`, { paletteId: defaultPaletteId, fontGroupId: defaultFontGroupId });
 }
 
 function sectionHeading(template) {
@@ -630,6 +634,41 @@ function renderPaletteSwitcher(defaultPaletteId) {
   </aside>`;
 }
 
+function renderDesignControls(defaultPaletteId, defaultFontGroupId) {
+  const selectedPalette = enrichedPalettes.find(palette => palette.id === defaultPaletteId) || enrichedPalettes[0];
+  const selectedFontGroup = enrichedFontGroups.find(groupItem => groupItem.id === defaultFontGroupId) || enrichedFontGroups[0];
+  return `<aside class="sticky top-[4.1rem] z-20 border-b border-base-300 bg-base-100/92 px-4 py-3 shadow-sm backdrop-blur">
+    <div class="mx-auto grid w-[min(1280px,calc(100%-1rem))] gap-3 lg:grid-cols-2">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[.2em] text-base-content/55">Palette engine</p>
+          <p id="palette-summary" class="text-sm text-base-content/70">${escapeHtml(selectedPalette.name)} - ${escapeHtml(selectedPalette.style)}</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <div id="palette-swatches" class="flex gap-1">${renderPaletteSwatches(selectedPalette)}</div>
+          <select id="palette-select" class="select select-bordered select-sm w-64" aria-label="Choose website colour palette">
+            ${enrichedPalettes.map(palette => `<option value="${palette.id}" ${palette.id === defaultPaletteId ? 'selected' : ''}>${escapeHtml(palette.name)}</option>`).join('')}
+          </select>
+          <span id="palette-contrast" class="badge badge-outline">${selectedPalette.accessibility.normalTextAA ? 'AA contrast' : 'Review contrast'}</span>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-base-300 pt-3 lg:border-l lg:border-t-0 lg:pl-4 lg:pt-0">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[.2em] text-base-content/55">Font engine</p>
+          <p id="font-summary" class="text-sm text-base-content/70">${escapeHtml(selectedFontGroup.name)} - ${escapeHtml(selectedFontGroup.style)}</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <div id="font-preview" class="rounded-field border border-base-300 bg-base-100 px-3 py-1 text-sm shadow-sm"><span style="font-family:var(--template-font-heading)">Aa</span> <span style="font-family:var(--template-font-body)">Aa</span></div>
+          <select id="font-select" class="select select-bordered select-sm w-64" aria-label="Choose website font group">
+            ${enrichedFontGroups.map(groupItem => `<option value="${groupItem.id}" ${groupItem.id === defaultFontGroupId ? 'selected' : ''}>${escapeHtml(groupItem.name)}</option>`).join('')}
+          </select>
+          <span id="font-validation" class="badge badge-outline">${selectedFontGroup.validation.passed ? 'Validated' : 'Review'}</span>
+        </div>
+      </div>
+    </div>
+  </aside>`;
+}
+
 function renderPaletteSwatches(palette) {
   const colors = palette.colors;
   return [colors.background, colors.primary, colors.secondary, colors.accent, colors.text]
@@ -639,15 +678,18 @@ function renderPaletteSwatches(palette) {
 
 function htmlShell(title, theme, body, options = {}) {
   const paletteId = options.paletteId || '';
+  const fontGroupId = options.fontGroupId || '';
   return `<!doctype html>
-<html lang="en" data-theme="${theme}"${paletteId ? ` data-palette="${paletteId}"` : ''}>
+<html lang="en" data-theme="${theme}"${paletteId ? ` data-palette="${paletteId}"` : ''}${fontGroupId ? ` data-font-group="${fontGroupId}"` : ''}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(title)}</title>
   <link rel="stylesheet" href="/daisyui.css?v=template-gallery-1">
+  ${fontImportBlock()}
   <style>
     ${paletteStyleBlock()}
+    ${fontStyleBlock()}
     @keyframes agencyRiseIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
     @keyframes agencySlowZoom { from { transform:scale(1.02); } to { transform:scale(1.12); } }
     .agency-rise-in { animation:agencyRiseIn .7s ease both; animation-delay:var(--delay,0ms); }
@@ -655,20 +697,26 @@ function htmlShell(title, theme, body, options = {}) {
     @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation:none !important; transition:none !important; } }
   </style>
 </head>
-<body>${body}${paletteId ? paletteSwitcherScript() : ''}</body>
+<body>${body}${paletteId ? designControlsScript() : ''}</body>
 </html>`;
 }
 
-function paletteSwitcherScript() {
+function designControlsScript() {
   return `<script type="application/json" id="palette-data">${escapeScriptJson(JSON.stringify(enrichedPalettes))}</script>
+<script type="application/json" id="font-data">${escapeScriptJson(JSON.stringify(enrichedFontGroups))}</script>
 <script>
 (() => {
   const palettes = JSON.parse(document.getElementById('palette-data').textContent);
+  const fontGroups = JSON.parse(document.getElementById('font-data').textContent);
   const select = document.getElementById('palette-select');
   const summary = document.getElementById('palette-summary');
   const contrast = document.getElementById('palette-contrast');
   const swatches = document.getElementById('palette-swatches');
+  const fontSelect = document.getElementById('font-select');
+  const fontSummary = document.getElementById('font-summary');
+  const fontValidation = document.getElementById('font-validation');
   const stored = localStorage.getItem('template-gallery-palette');
+  const storedFont = localStorage.getItem('template-gallery-font-group');
 
   function swatchHtml(palette) {
     return [palette.colors.background, palette.colors.primary, palette.colors.secondary, palette.colors.accent, palette.colors.text]
@@ -687,8 +735,20 @@ function paletteSwitcherScript() {
     if (persist) localStorage.setItem('template-gallery-palette', palette.id);
   }
 
+  function applyFontGroup(id, persist = true) {
+    const fontGroup = fontGroups.find(item => item.id === id) || fontGroups[0];
+    document.documentElement.dataset.fontGroup = fontGroup.id;
+    fontSelect.value = fontGroup.id;
+    fontSummary.textContent = fontGroup.name + ' - ' + fontGroup.style;
+    fontValidation.textContent = fontGroup.validation.passed ? 'Validated' : 'Review';
+    fontValidation.className = fontGroup.validation.passed ? 'badge badge-success' : 'badge badge-warning';
+    if (persist) localStorage.setItem('template-gallery-font-group', fontGroup.id);
+  }
+
   if (stored && palettes.some(item => item.id === stored)) applyPalette(stored, false);
+  if (storedFont && fontGroups.some(item => item.id === storedFont)) applyFontGroup(storedFont, false);
   select.addEventListener('change', event => applyPalette(event.target.value));
+  fontSelect.addEventListener('change', event => applyFontGroup(event.target.value));
 })();
 </script>`;
 }

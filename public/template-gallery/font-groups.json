@@ -1,0 +1,374 @@
+{
+  "title": "Modern Website Font Groups for 2025/2026",
+  "created_at": "2026-07-11",
+  "validation": {
+    "source": "Open Google Fonts families with commercial-use friendly licensing through the Google Fonts catalogue.",
+    "rules": [
+      "Body font must be legible at 16px on mobile.",
+      "Heading and body pairing must create either family harmony or intentional contrast.",
+      "Display/accent fonts are only assigned to brand or hero roles, never long body copy.",
+      "Fallback stacks are included for every role.",
+      "Groups avoid more than three families to protect performance."
+    ]
+  },
+  "trends": [
+    "Variable and multi-weight families for flexible responsive systems.",
+    "Neutral UI sans fonts for product clarity.",
+    "Humanist/geometric sans pairings for SaaS and service brands.",
+    "Editorial serif headlines for premium, AI, culture, and hospitality brands.",
+    "Expressive display faces used sparingly for campaign personality."
+  ],
+  "groups": [
+    {
+      "id": "inter-editorial-serif",
+      "name": "Inter Editorial Serif",
+      "style": "clean AI/editorial trust",
+      "best_for": [
+        "AI products",
+        "consultants",
+        "knowledge brands"
+      ],
+      "fonts": {
+        "heading": "Instrument Serif",
+        "body": "Inter",
+        "brand": "Inter",
+        "accent": "Inter"
+      },
+      "fallback": {
+        "heading": "Georgia, Cambria, Times New Roman, serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 2,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "space-grotesk-manrope",
+      "name": "Space Grotesk + Manrope",
+      "style": "future-facing product clarity",
+      "best_for": [
+        "SaaS",
+        "developer tools",
+        "cybersecurity"
+      ],
+      "fonts": {
+        "heading": "Space Grotesk",
+        "body": "Manrope",
+        "brand": "Space Grotesk",
+        "accent": "IBM Plex Mono"
+      },
+      "fallback": {
+        "heading": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 3,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "dm-sans-newsreader",
+      "name": "DM Sans + Newsreader",
+      "style": "warm modern publishing",
+      "best_for": [
+        "blogs",
+        "lifestyle",
+        "service brands"
+      ],
+      "fonts": {
+        "heading": "Newsreader",
+        "body": "DM Sans",
+        "brand": "DM Sans",
+        "accent": "Newsreader"
+      },
+      "fallback": {
+        "heading": "Georgia, Cambria, Times New Roman, serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "Georgia, Cambria, Times New Roman, serif"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 2,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "plus-jakarta-sans",
+      "name": "Plus Jakarta Product",
+      "style": "polished app interface",
+      "best_for": [
+        "dashboards",
+        "fintech",
+        "B2B services"
+      ],
+      "fonts": {
+        "heading": "Plus Jakarta Sans",
+        "body": "Plus Jakarta Sans",
+        "brand": "Plus Jakarta Sans",
+        "accent": "IBM Plex Mono"
+      },
+      "fallback": {
+        "heading": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 2,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "outfit-fraunces",
+      "name": "Outfit + Fraunces",
+      "style": "friendly premium commerce",
+      "best_for": [
+        "ecommerce",
+        "food brands",
+        "creator shops"
+      ],
+      "fonts": {
+        "heading": "Fraunces",
+        "body": "Outfit",
+        "brand": "Outfit",
+        "accent": "Fraunces"
+      },
+      "fallback": {
+        "heading": "Georgia, Cambria, Times New Roman, serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "Georgia, Cambria, Times New Roman, serif"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 2,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "instrument-sans-serif",
+      "name": "Instrument Studio",
+      "style": "gallery-grade design studio",
+      "best_for": [
+        "portfolios",
+        "architecture",
+        "agencies"
+      ],
+      "fonts": {
+        "heading": "Instrument Serif",
+        "body": "Instrument Sans",
+        "brand": "Instrument Sans",
+        "accent": "Instrument Serif"
+      },
+      "fallback": {
+        "heading": "Georgia, Cambria, Times New Roman, serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "Georgia, Cambria, Times New Roman, serif"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 2,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "bricolage-grotesque",
+      "name": "Bricolage Grotesque",
+      "style": "playful creative utility",
+      "best_for": [
+        "kids apps",
+        "creator tools",
+        "education"
+      ],
+      "fonts": {
+        "heading": "Bricolage Grotesque",
+        "body": "DM Sans",
+        "brand": "Bricolage Grotesque",
+        "accent": "Bricolage Grotesque"
+      },
+      "fallback": {
+        "heading": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 2,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "archivo-lora",
+      "name": "Archivo + Lora",
+      "style": "confident editorial service",
+      "best_for": [
+        "local services",
+        "healthcare",
+        "nonprofits"
+      ],
+      "fonts": {
+        "heading": "Archivo",
+        "body": "Source Sans 3",
+        "brand": "Archivo",
+        "accent": "Lora"
+      },
+      "fallback": {
+        "heading": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "Georgia, Cambria, Times New Roman, serif"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 3,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "playfair-source-sans",
+      "name": "Playfair Display + Source Sans 3",
+      "style": "classic premium hospitality",
+      "best_for": [
+        "restaurants",
+        "beauty",
+        "hotels",
+        "boutiques"
+      ],
+      "fonts": {
+        "heading": "Playfair Display",
+        "body": "Source Sans 3",
+        "brand": "Source Sans 3",
+        "accent": "Playfair Display"
+      },
+      "fallback": {
+        "heading": "Georgia, Cambria, Times New Roman, serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "Georgia, Cambria, Times New Roman, serif"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 2,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "urbanist-libre",
+      "name": "Urbanist + Libre Baskerville",
+      "style": "modern heritage",
+      "best_for": [
+        "real estate",
+        "architecture",
+        "consultants"
+      ],
+      "fonts": {
+        "heading": "Libre Baskerville",
+        "body": "Urbanist",
+        "brand": "Urbanist",
+        "accent": "Libre Baskerville"
+      },
+      "fallback": {
+        "heading": "Georgia, Cambria, Times New Roman, serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "Georgia, Cambria, Times New Roman, serif"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 2,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "syne-inter",
+      "name": "Syne + Inter",
+      "style": "bold campaign system",
+      "best_for": [
+        "launch pages",
+        "music",
+        "events",
+        "fitness"
+      ],
+      "fonts": {
+        "heading": "Syne",
+        "body": "Inter",
+        "brand": "Inter",
+        "accent": "Syne"
+      },
+      "fallback": {
+        "heading": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 2,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    },
+    {
+      "id": "ibm-plex-system",
+      "name": "IBM Plex Superfamily",
+      "style": "technical institutional clarity",
+      "best_for": [
+        "data products",
+        "research",
+        "government",
+        "fintech"
+      ],
+      "fonts": {
+        "heading": "IBM Plex Sans",
+        "body": "IBM Plex Sans",
+        "brand": "IBM Plex Sans",
+        "accent": "IBM Plex Mono"
+      },
+      "fallback": {
+        "heading": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "brand": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+        "accent": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+      },
+      "validation": {
+        "passed": true,
+        "readableBody": true,
+        "familyCount": 2,
+        "variableFriendly": true,
+        "warnings": []
+      }
+    }
+  ]
+}
