@@ -133,6 +133,9 @@ function imageSpecs(template) {
     `Palette cues: ${palette}`,
     [
       'High-end commercial website imagery with clean negative space for HTML UI overlays.',
+      'Composition rule: reserve the left 45% and upper-middle mobile crop as calm negative space for overlaid headline, paragraph, buttons, and metrics.',
+      'Place the main visual subject on the right side, lower-right, or outer edges so it supports the design without sitting behind text.',
+      'Make the subject tailored to the industry and template: product forms, environments, people, objects, interface-like shapes, interiors, service context, or atmospheric category cues.',
       'Absolute hard rule: the image must contain no text of any kind.',
       'No typography, no letters, no words, no numbers, no signage, no interface labels, no logo marks, no watermark, no poster text, no brand names, no decorative background type.',
       'Use only objects, environments, people, abstract light, product forms, texture, and atmosphere.'

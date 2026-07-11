@@ -39,19 +39,31 @@ for (const template of templateData.templates) {
         <stop stop-color="#000000" stop-opacity=".22"/>
         <stop offset="1" stop-color="${escapeXml(accent)}" stop-opacity="0"/>
       </radialGradient>
-      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="18"/>
+      <linearGradient id="copy-zone" x1="0" y1="0" x2="1" y2="0">
+        <stop stop-color="#000000" stop-opacity=".46"/>
+        <stop offset=".46" stop-color="#000000" stop-opacity=".20"/>
+        <stop offset=".74" stop-color="#000000" stop-opacity="0"/>
+      </linearGradient>
+      <pattern id="grain" width="42" height="42" patternUnits="userSpaceOnUse">
+        <circle cx="8" cy="9" r="1.3" fill="#ffffff" opacity=".08"/>
+        <circle cx="31" cy="25" r="1" fill="#000000" opacity=".10"/>
+        <circle cx="17" cy="36" r=".8" fill="#ffffff" opacity=".06"/>
+      </pattern>
+      <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="26" stdDeviation="28" flood-color="#000000" flood-opacity=".24"/>
       </filter>
     </defs>
     <rect width="1536" height="1024" fill="url(#base)"/>
     <rect width="1536" height="1024" fill="url(#a)"/>
     <rect width="1536" height="1024" fill="url(#b)"/>
-    <g filter="url(#soft)" opacity=".72">
+    <rect width="1536" height="1024" fill="url(#grain)" opacity=".7"/>
+    <g filter="url(#soft-shadow)" opacity=".86">
       ${motifForTemplate(template, { primary, secondary, accent })}
     </g>
     <path d="M-120 860 C210 710 430 916 740 786 C1044 658 1258 728 1660 578 L1660 1140 L-120 1140 Z" fill="#ffffff" opacity=".12"/>
     <path d="M-80 150 C220 40 380 130 620 88 C910 38 1110 72 1660 -48 L1660 0 L-80 0 Z" fill="#000000" opacity=".12"/>
-    <rect width="1536" height="1024" fill="#000000" opacity=".08"/>
+    <rect width="1536" height="1024" fill="url(#copy-zone)"/>
+    <rect width="1536" height="1024" fill="#000000" opacity=".05"/>
   </svg>`);
 
   await sharp(heroSvg)
@@ -61,9 +73,9 @@ for (const template of templateData.templates) {
 
   if (heroRecord) {
     heroRecord.provider = 'local_no_text_composite';
-    heroRecord.prompt = `${heroRecord.prompt || ''}\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.`;
+    heroRecord.prompt = `${heroRecord.prompt || ''}\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words. Visual detail is positioned away from the primary copy zone.`;
     heroRecord.noTextHero = true;
-    heroRecord.sourceImage = 'procedural-no-text-vector-composite';
+    heroRecord.sourceImage = 'procedural-tailored-no-text-composite';
   }
 
   rewritten += 1;
@@ -98,74 +110,120 @@ function motifForTemplate(template, colors) {
 }
 
 function fruitMotif({ accent, secondary }) {
-  return `<circle cx="1050" cy="430" r="250" fill="${escapeXml(accent)}" opacity=".68"/>
-    <circle cx="1220" cy="610" r="180" fill="${escapeXml(secondary)}" opacity=".58"/>
-    <circle cx="800" cy="630" r="120" fill="#ffffff" opacity=".22"/>
-    <path d="M900 300 C1020 220 1180 250 1280 360 C1140 352 1010 400 900 300 Z" fill="#ffffff" opacity=".20"/>`;
+  return `<g transform="translate(860 190)">
+      <rect x="30" y="150" width="150" height="430" rx="66" fill="#ffffff" opacity=".22"/>
+      <rect x="58" y="78" width="94" height="110" rx="38" fill="#111111" opacity=".30"/>
+      <rect x="82" y="285" width="48" height="178" rx="24" fill="${escapeXml(accent)}" opacity=".74"/>
+      <rect x="230" y="80" width="185" height="520" rx="78" fill="#ffffff" opacity=".28"/>
+      <rect x="270" y="0" width="106" height="130" rx="42" fill="#111111" opacity=".28"/>
+      <rect x="292" y="250" width="60" height="210" rx="30" fill="${escapeXml(secondary)}" opacity=".72"/>
+      <rect x="468" y="125" width="160" height="455" rx="72" fill="#ffffff" opacity=".20"/>
+      <rect x="500" y="48" width="96" height="110" rx="40" fill="#111111" opacity=".26"/>
+      <rect x="528" y="280" width="56" height="176" rx="28" fill="${escapeXml(accent)}" opacity=".55"/>
+      <circle cx="690" cy="420" r="155" fill="${escapeXml(secondary)}" opacity=".34"/>
+    </g>`;
 }
 
 function dashboardMotif({ primary, secondary, accent }) {
-  return `<rect x="790" y="210" width="520" height="350" rx="44" fill="#ffffff" opacity=".16"/>
-    <rect x="860" y="290" width="140" height="90" rx="28" fill="${escapeXml(accent)}" opacity=".46"/>
-    <rect x="1030" y="290" width="210" height="90" rx="28" fill="${escapeXml(secondary)}" opacity=".40"/>
-    <rect x="860" y="420" width="380" height="42" rx="21" fill="#ffffff" opacity=".26"/>
-    <rect x="860" y="492" width="290" height="42" rx="21" fill="${escapeXml(primary)}" opacity=".34"/>`;
+  return `<g transform="translate(760 170)">
+      <rect x="0" y="0" width="650" height="500" rx="56" fill="#ffffff" opacity=".17"/>
+      <rect x="44" y="58" width="562" height="84" rx="30" fill="#000000" opacity=".18"/>
+      <rect x="58" y="184" width="160" height="150" rx="36" fill="${escapeXml(accent)}" opacity=".56"/>
+      <rect x="250" y="184" width="310" height="150" rx="36" fill="${escapeXml(secondary)}" opacity=".42"/>
+      <rect x="58" y="370" width="502" height="34" rx="17" fill="#ffffff" opacity=".28"/>
+      <rect x="58" y="430" width="370" height="34" rx="17" fill="${escapeXml(primary)}" opacity=".38"/>
+      <circle cx="560" cy="85" r="22" fill="#ffffff" opacity=".42"/>
+      <circle cx="500" cy="85" r="22" fill="#ffffff" opacity=".24"/>
+    </g>`;
 }
 
 function serviceMotif({ secondary, accent }) {
-  return `<path d="M720 770 L1080 260 L1340 770 Z" fill="#ffffff" opacity=".16"/>
-    <path d="M960 770 L1260 360 L1500 770 Z" fill="${escapeXml(secondary)}" opacity=".22"/>
-    <rect x="820" y="650" width="560" height="90" rx="45" fill="${escapeXml(accent)}" opacity=".28"/>`;
+  return `<g transform="translate(760 230)">
+      <path d="M80 470 L330 120 L620 470 Z" fill="#ffffff" opacity=".18"/>
+      <path d="M280 470 L520 190 L760 470 Z" fill="${escapeXml(secondary)}" opacity=".28"/>
+      <rect x="136" y="430" width="590" height="90" rx="45" fill="${escapeXml(accent)}" opacity=".38"/>
+      <rect x="360" y="320" width="120" height="150" rx="12" fill="#000000" opacity=".16"/>
+      <path d="M120 470 H780" stroke="#ffffff" stroke-width="30" opacity=".16"/>
+    </g>`;
 }
 
 function architectureMotif({ secondary, accent }) {
-  return `<rect x="780" y="250" width="180" height="520" rx="12" fill="#ffffff" opacity=".16"/>
-    <rect x="990" y="180" width="280" height="590" rx="16" fill="${escapeXml(secondary)}" opacity=".24"/>
-    <rect x="1300" y="330" width="110" height="440" rx="12" fill="${escapeXml(accent)}" opacity=".22"/>
-    <path d="M680 780 L1460 780" stroke="#ffffff" stroke-width="38" opacity=".18"/>`;
+  return `<g transform="translate(720 145)">
+      <rect x="60" y="180" width="170" height="560" rx="10" fill="#ffffff" opacity=".18"/>
+      <rect x="270" y="80" width="290" height="660" rx="16" fill="${escapeXml(secondary)}" opacity=".28"/>
+      <rect x="600" y="240" width="130" height="500" rx="12" fill="${escapeXml(accent)}" opacity=".28"/>
+      <path d="M30 740 H800" stroke="#ffffff" stroke-width="38" opacity=".18"/>
+      <path d="M100 220 H192 M100 300 H192 M100 380 H192 M312 140 H520 M312 220 H520 M312 300 H520 M640 300 H700 M640 382 H700" stroke="#ffffff" stroke-width="18" opacity=".22"/>
+    </g>`;
 }
 
 function hospitalityMotif({ secondary, accent }) {
-  return `<circle cx="1030" cy="520" r="260" fill="${escapeXml(accent)}" opacity=".42"/>
-    <circle cx="1170" cy="438" r="160" fill="#ffffff" opacity=".18"/>
-    <path d="M820 720 C940 600 1220 600 1360 720" fill="none" stroke="${escapeXml(secondary)}" stroke-width="90" opacity=".26"/>`;
+  return `<g transform="translate(805 200)">
+      <circle cx="310" cy="340" r="240" fill="${escapeXml(accent)}" opacity=".42"/>
+      <circle cx="420" cy="270" r="135" fill="#ffffff" opacity=".20"/>
+      <path d="M72 560 C180 410 520 410 660 560" fill="none" stroke="${escapeXml(secondary)}" stroke-width="88" opacity=".34"/>
+      <path d="M600 130 V560 M640 130 V560 M600 250 H680" stroke="#ffffff" stroke-width="24" opacity=".24"/>
+      <path d="M110 112 C170 180 170 280 112 350" fill="none" stroke="#ffffff" stroke-width="26" opacity=".22"/>
+    </g>`;
 }
 
 function motionMotif({ secondary, accent }) {
-  return `<path d="M740 720 C900 320 1140 240 1390 170" fill="none" stroke="${escapeXml(accent)}" stroke-width="120" opacity=".35"/>
-    <circle cx="1040" cy="440" r="150" fill="#ffffff" opacity=".18"/>
-    <circle cx="1220" cy="620" r="210" fill="${escapeXml(secondary)}" opacity=".28"/>`;
+  return `<g transform="translate(700 140)">
+      <path d="M80 650 C260 170 520 110 800 60" fill="none" stroke="${escapeXml(accent)}" stroke-width="118" opacity=".42"/>
+      <circle cx="430" cy="330" r="145" fill="#ffffff" opacity=".22"/>
+      <circle cx="610" cy="540" r="230" fill="${escapeXml(secondary)}" opacity=".32"/>
+      <path d="M330 500 L500 260 L610 610 Z" fill="#000000" opacity=".16"/>
+    </g>`;
 }
 
 function careMotif({ secondary, accent }) {
-  return `<circle cx="1040" cy="460" r="280" fill="#ffffff" opacity=".20"/>
-    <circle cx="1170" cy="460" r="180" fill="${escapeXml(secondary)}" opacity=".32"/>
-    <rect x="910" y="610" width="420" height="120" rx="60" fill="${escapeXml(accent)}" opacity=".28"/>`;
+  return `<g transform="translate(820 210)">
+      <circle cx="300" cy="300" r="260" fill="#ffffff" opacity=".20"/>
+      <circle cx="450" cy="300" r="170" fill="${escapeXml(secondary)}" opacity=".34"/>
+      <rect x="190" y="472" width="430" height="130" rx="65" fill="${escapeXml(accent)}" opacity=".34"/>
+      <rect x="340" y="150" width="86" height="310" rx="43" fill="#ffffff" opacity=".22"/>
+      <rect x="230" y="262" width="310" height="86" rx="43" fill="#ffffff" opacity=".22"/>
+    </g>`;
 }
 
 function beautyMotif({ secondary, accent }) {
-  return `<circle cx="1010" cy="420" r="260" fill="${escapeXml(secondary)}" opacity=".34"/>
-    <circle cx="1190" cy="560" r="240" fill="#ffffff" opacity=".20"/>
-    <path d="M770 690 C980 520 1210 540 1450 700" fill="none" stroke="${escapeXml(accent)}" stroke-width="80" opacity=".30"/>`;
+  return `<g transform="translate(760 170)">
+      <circle cx="330" cy="260" r="245" fill="${escapeXml(secondary)}" opacity=".36"/>
+      <circle cx="520" cy="420" r="245" fill="#ffffff" opacity=".18"/>
+      <path d="M70 590 C260 390 545 415 780 585" fill="none" stroke="${escapeXml(accent)}" stroke-width="78" opacity=".36"/>
+      <rect x="520" y="110" width="90" height="390" rx="45" fill="#ffffff" opacity=".20"/>
+      <circle cx="565" cy="92" r="72" fill="#ffffff" opacity=".14"/>
+    </g>`;
 }
 
 function commerceMotif({ secondary, accent }) {
-  return `<rect x="830" y="260" width="240" height="360" rx="54" fill="#ffffff" opacity=".18"/>
-    <rect x="1120" y="210" width="300" height="450" rx="64" fill="${escapeXml(secondary)}" opacity=".28"/>
-    <circle cx="980" cy="700" r="100" fill="${escapeXml(accent)}" opacity=".40"/>
-    <circle cx="1240" cy="735" r="110" fill="#ffffff" opacity=".18"/>`;
+  return `<g transform="translate(790 170)">
+      <rect x="60" y="160" width="240" height="380" rx="58" fill="#ffffff" opacity=".20"/>
+      <rect x="350" y="90" width="310" height="500" rx="70" fill="${escapeXml(secondary)}" opacity=".32"/>
+      <path d="M120 170 C120 60 250 60 250 170" fill="none" stroke="#ffffff" stroke-width="28" opacity=".28"/>
+      <path d="M430 104 C430 -20 575 -20 575 104" fill="none" stroke="#ffffff" stroke-width="32" opacity=".24"/>
+      <circle cx="230" cy="650" r="100" fill="${escapeXml(accent)}" opacity=".42"/>
+      <circle cx="500" cy="680" r="116" fill="#ffffff" opacity=".18"/>
+    </g>`;
 }
 
 function galleryMotif({ secondary, accent }) {
-  return `<rect x="770" y="190" width="260" height="330" rx="30" fill="#ffffff" opacity=".18"/>
-    <rect x="1070" y="260" width="360" height="430" rx="34" fill="${escapeXml(secondary)}" opacity=".26"/>
-    <rect x="880" y="560" width="360" height="260" rx="34" fill="${escapeXml(accent)}" opacity=".22"/>`;
+  return `<g transform="translate(740 150)">
+      <rect x="70" y="70" width="270" height="360" rx="34" fill="#ffffff" opacity=".20"/>
+      <rect x="390" y="140" width="360" height="450" rx="38" fill="${escapeXml(secondary)}" opacity=".30"/>
+      <rect x="180" y="500" width="380" height="270" rx="38" fill="${escapeXml(accent)}" opacity=".26"/>
+      <circle cx="220" cy="210" r="74" fill="#000000" opacity=".12"/>
+      <path d="M130 370 L220 290 L300 370 Z" fill="#ffffff" opacity=".20"/>
+    </g>`;
 }
 
 function agencyMotif({ secondary, accent }) {
-  return `<circle cx="1010" cy="420" r="260" fill="${escapeXml(secondary)}" opacity=".26"/>
-    <rect x="850" y="540" width="540" height="180" rx="58" fill="#ffffff" opacity=".16"/>
-    <circle cx="1240" cy="610" r="170" fill="${escapeXml(accent)}" opacity=".30"/>`;
+  return `<g transform="translate(770 160)">
+      <circle cx="300" cy="260" r="250" fill="${escapeXml(secondary)}" opacity=".30"/>
+      <rect x="120" y="455" width="570" height="190" rx="64" fill="#ffffff" opacity=".18"/>
+      <circle cx="530" cy="500" r="170" fill="${escapeXml(accent)}" opacity=".34"/>
+      <path d="M140 540 C230 450 330 650 420 540 S610 430 690 540" fill="none" stroke="#ffffff" stroke-width="28" opacity=".20"/>
+    </g>`;
 }
 
 function escapeXml(value) {
