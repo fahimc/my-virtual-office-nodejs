@@ -11,10 +11,9 @@
     "dev": "npm run build && node --watch server.js",
     "check": "npm run build && node --check server.js && node --check public/app.js && node --check public/agency.js",
     "templates:gallery": "node scripts/generate-template-gallery.mjs",
-    "templates:hero-images": "node scripts/create-no-text-hero-imagery.mjs",
-    "templates:refresh": "npm run templates:gallery && npm run templates:hero-images && npm run templates:gallery && npm run build:css",
+    "templates:refresh": "npm run templates:gallery && npm run build:css",
     "templates:review": "node scripts/review-template-legibility.mjs",
-    "templates:imagery": "npm run templates:gallery && node scripts/generate-template-imagery.mjs && npm run templates:hero-images && npm run templates:gallery && npm run build:css",
+    "templates:imagery": "npm run templates:gallery && node scripts/generate-template-imagery.mjs && npm run templates:gallery && npm run build:css",
     "assets:placeholders": "node scripts/download-placeholder-images.mjs"
   },
   "dependencies": {

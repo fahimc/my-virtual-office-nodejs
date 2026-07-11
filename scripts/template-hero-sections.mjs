@@ -61,6 +61,9 @@ export function renderFullBleedHero(template, images) {
       ? 'justify-end'
       : 'justify-center';
   const contentWidth = layout === 'center' ? 'max-w-5xl' : 'max-w-3xl';
+  const headlineClass = layout === 'center'
+    ? 'text-balance break-words text-3xl font-black leading-[.96] tracking-normal text-white drop-shadow-[0_3px_18px_rgba(0,0,0,.55)] sm:text-5xl md:text-7xl xl:text-8xl'
+    : 'text-balance break-words text-4xl font-black leading-[.94] tracking-normal text-white drop-shadow-[0_3px_18px_rgba(0,0,0,.55)] sm:text-5xl md:text-7xl xl:text-8xl';
   const overlay = layout === 'center'
     ? 'bg-[linear-gradient(180deg,rgba(0,0,0,.52),rgba(0,0,0,.68)),radial-gradient(circle_at_50%_35%,rgba(255,255,255,.18),transparent_28rem)]'
     : layout === 'bottom'
@@ -75,7 +78,7 @@ export function renderFullBleedHero(template, images) {
     <div class="relative z-10 mx-auto flex min-h-[calc(100svh-4rem)] w-[min(1320px,calc(100%-2rem))] flex-col ${contentAlign} py-16 md:py-24">
       <div class="${contentWidth} template-hero-copy">
         <span class="badge badge-primary badge-lg mb-5 shadow-lg">${escapeHtml(template.badge)}</span>
-        <h1 class="text-balance text-4xl font-black leading-[.94] tracking-normal text-white drop-shadow-[0_3px_18px_rgba(0,0,0,.55)] sm:text-5xl md:text-7xl xl:text-8xl">${escapeHtml(template.headline)}</h1>
+        <h1 class="${headlineClass}">${escapeHtml(template.headline)}</h1>
         <p class="${layout === 'center' ? 'mx-auto' : ''} mt-6 max-w-2xl text-lg leading-relaxed text-white/88 drop-shadow-[0_2px_12px_rgba(0,0,0,.55)] md:text-2xl">${escapeHtml(template.subhead)}</p>
         <div class="${layout === 'center' ? 'justify-center' : ''} mt-7 flex flex-wrap gap-3">
           <a class="btn btn-primary rounded-full shadow-xl" href="#contact">${escapeHtml(template.cta)}</a>

@@ -19,6 +19,10 @@ const model = process.env.TEMPLATE_IMAGE_MODEL || 'gpt-image-1-mini';
 const quality = process.env.TEMPLATE_IMAGE_QUALITY || 'low';
 const size = process.env.TEMPLATE_IMAGE_SIZE || '1536x1024';
 const imagesPerTemplate = Math.max(1, Math.min(Number(process.env.TEMPLATE_IMAGES_PER_TEMPLATE || 3), 4));
+const imageKinds = (process.env.TEMPLATE_IMAGE_KINDS || '')
+  .split(',')
+  .map(kind => kind.trim())
+  .filter(Boolean);
 const hasOpenAiKey = Boolean(process.env.OPENAI_API_KEY);
 
 const pricing = {
@@ -53,6 +57,7 @@ const manifest = {
   quality,
   size,
   imagesPerTemplate,
+  imageKinds,
   templates: {},
   skipped: [],
   notes: [
@@ -76,7 +81,9 @@ for (const template of templateData.templates) {
     estimatedSpendGbp: 0
   };
 
-  const specs = imageSpecs(template).slice(0, imagesPerTemplate);
+  const specs = imageSpecs(template)
+    .filter(spec => !imageKinds.length || imageKinds.includes(spec.kind))
+    .slice(0, imagesPerTemplate);
   for (const spec of specs) {
     const estimate = estimateCost(spec.prompt);
     if (estimatedSpendUsd + estimate.estimatedCostUsd > budgetUsd) {
@@ -105,7 +112,10 @@ for (const template of templateData.templates) {
       estimatedInputTokens: estimate.estimatedInputTokens,
       estimatedOutputTokens: estimate.estimatedOutputTokens,
       estimatedCostUsd: estimate.estimatedCostUsd,
-      estimatedCostGbp: Number((estimate.estimatedCostUsd / gbpToUsd).toFixed(6))
+      estimatedCostGbp: Number((estimate.estimatedCostUsd / gbpToUsd).toFixed(6)),
+      noTextHero: spec.kind === 'hero',
+      heroCopySpace: spec.kind === 'hero',
+      sourceImage: spec.kind === 'hero' ? `${result.provider}-generated-copy-space-image` : undefined
     };
     manifest.templates[template.id].images.push(record);
     manifest.templates[template.id].estimatedSpendUsd = Number((manifest.templates[template.id].estimatedSpendUsd + record.estimatedCostUsd).toFixed(6));
@@ -117,6 +127,11 @@ for (const template of templateData.templates) {
 
 manifest.budget.estimatedSpendUsd = Number(estimatedSpendUsd.toFixed(6));
 manifest.budget.estimatedSpendGbp = Number((estimatedSpendUsd / gbpToUsd).toFixed(6));
+manifest.heroPolicy = {
+  updatedAt: new Date().toISOString(),
+  rule: 'Full-bleed hero backgrounds must be generated imagery tailored to the template, with no text, typography, letters, numbers, signage, watermarks, logos, or UI labels. Primary subject should be positioned away from the HTML copy zone.',
+  provider: hasOpenAiKey ? 'openai' : 'local_mock'
+};
 
 await writeFile(path.join(imageryDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
 console.log(`Template imagery ready. Estimated spend: $${manifest.budget.estimatedSpendUsd} / £${manifest.budget.estimatedSpendGbp}. Provider: ${manifest.provider}.`);
@@ -128,16 +143,16 @@ function imageSpecs(template) {
     `Client: ${template.client}`,
     `Template: ${template.title}`,
     `Industry/category: ${template.category}`,
-    `Headline: ${template.headline}`,
     `Style references: ${(template.inspiration || []).join(', ')}`,
     `Palette cues: ${palette}`,
     [
-      'High-end commercial website imagery with clean negative space for HTML UI overlays.',
+      'Create a high-end website background image asset only.',
+      'This must not look like a finished webpage, landing page screenshot, poster, billboard, social ad, pitch deck slide, UI mockup, or typographic layout.',
       'Composition rule: reserve the left 45% and upper-middle mobile crop as calm negative space for overlaid headline, paragraph, buttons, and metrics.',
       'Place the main visual subject on the right side, lower-right, or outer edges so it supports the design without sitting behind text.',
       'Make the subject tailored to the industry and template: product forms, environments, people, objects, interface-like shapes, interiors, service context, or atmospheric category cues.',
       'Absolute hard rule: the image must contain no text of any kind.',
-      'No typography, no letters, no words, no numbers, no signage, no interface labels, no logo marks, no watermark, no poster text, no brand names, no decorative background type.',
+      'No typography, no letters, no words, no numbers, no signage, no interface labels, no buttons, no chart labels, no logo marks, no watermark, no poster text, no brand names, no decorative background type, no readable or pseudo-readable marks.',
       'Use only objects, environments, people, abstract light, product forms, texture, and atmosphere.'
     ].join(' ')
   ].join('\n');
@@ -145,7 +160,7 @@ function imageSpecs(template) {
     {
       kind: 'hero',
       title: 'Hero image',
-      prompt: `${common}\nCreate a premium homepage hero background for ${brand}. Make it visually distinctive and suitable for a DaisyUI web template.`
+      prompt: `${common}\nCreate a premium homepage hero background image for ${brand}. The HTML page will add all text later, so the image itself must remain completely text-free.`
     },
     {
       kind: 'section',
