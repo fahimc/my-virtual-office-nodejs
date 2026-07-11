@@ -29,15 +29,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/fruit-commerce-splash/hero-fruit-commerce-splash.webp",
-          "provider": "openai",
-          "prompt": "Client: Zestora\nTemplate: Fruit Commerce Splash\nIndustry/category: food-drink\nHeadline: Fruit drinks that look as fresh as they taste.\nStyle references: bold product cards, oversized editorial typography, bright ecommerce landing page\nPalette cues: #ffb703, #fb7185, #22c55e\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Zestora food-drink. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Zestora\nTemplate: Fruit Commerce Splash\nIndustry/category: food-drink\nHeadline: Fruit drinks that look as fresh as they taste.\nStyle references: bold product cards, oversized editorial typography, bright ecommerce landing page\nPalette cues: #ffb703, #fb7185, #22c55e\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Zestora food-drink. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 134,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007468,
-          "estimatedCostGbp": 0.005573
+          "estimatedCostGbp": 0.005573,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -66,15 +68,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/saas-command-center/hero-saas-command-center.webp",
-          "provider": "openai",
-          "prompt": "Client: Northstar OS\nTemplate: SaaS Command Center\nIndustry/category: saas\nHeadline: Run the whole operation from one calm dashboard.\nStyle references: glass dashboard cards, clean SaaS hero, product UI depth\nPalette cues: #2563eb, #14b8a6, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Northstar OS saas. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Northstar OS\nTemplate: SaaS Command Center\nIndustry/category: saas\nHeadline: Run the whole operation from one calm dashboard.\nStyle references: glass dashboard cards, clean SaaS hero, product UI depth\nPalette cues: #2563eb, #14b8a6, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Northstar OS saas. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 127,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007454,
-          "estimatedCostGbp": 0.005563
+          "estimatedCostGbp": 0.005563,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -103,15 +107,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/local-trades-proof/hero-local-trades-proof.webp",
-          "provider": "openai",
-          "prompt": "Client: Ashford Heating\nTemplate: Local Trades Proof\nIndustry/category: trades\nHeadline: Fast repairs, tidy installs, and quotes without the runaround.\nStyle references: high trust service cards, strong contact CTA, local proof blocks\nPalette cues: #f97316, #0f172a, #38bdf8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Ashford Heating trades. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Ashford Heating\nTemplate: Local Trades Proof\nIndustry/category: trades\nHeadline: Fast repairs, tidy installs, and quotes without the runaround.\nStyle references: high trust service cards, strong contact CTA, local proof blocks\nPalette cues: #f97316, #0f172a, #38bdf8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Ashford Heating trades. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 135,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.00747,
-          "estimatedCostGbp": 0.005575
+          "estimatedCostGbp": 0.005575,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -140,15 +146,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/beauty-booking-editorial/hero-beauty-booking-editorial.webp",
-          "provider": "openai",
-          "prompt": "Client: Luna Studio\nTemplate: Beauty Booking Editorial\nIndustry/category: beauty\nHeadline: Soft-touch treatments with a polished booking flow.\nStyle references: soft editorial layout, luxury service cards, large beauty imagery\nPalette cues: #f9a8d4, #7c2d12, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Luna Studio beauty. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Luna Studio\nTemplate: Beauty Booking Editorial\nIndustry/category: beauty\nHeadline: Soft-touch treatments with a polished booking flow.\nStyle references: soft editorial layout, luxury service cards, large beauty imagery\nPalette cues: #f9a8d4, #7c2d12, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Luna Studio beauty. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 132,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007464,
-          "estimatedCostGbp": 0.00557
+          "estimatedCostGbp": 0.00557,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -177,15 +185,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/clinic-calm-care/hero-clinic-calm-care.webp",
-          "provider": "openai",
-          "prompt": "Client: Harbour Clinic\nTemplate: Clinic Calm Care\nIndustry/category: healthcare\nHeadline: Clear care pathways, without the confusion.\nStyle references: calm healthcare web design, clear appointment flow, accessible service cards\nPalette cues: #10b981, #2563eb, #ecfeff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Harbour Clinic healthcare. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Harbour Clinic\nTemplate: Clinic Calm Care\nIndustry/category: healthcare\nHeadline: Clear care pathways, without the confusion.\nStyle references: calm healthcare web design, clear appointment flow, accessible service cards\nPalette cues: #10b981, #2563eb, #ecfeff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Harbour Clinic healthcare. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 134,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007468,
-          "estimatedCostGbp": 0.005573
+          "estimatedCostGbp": 0.005573,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -214,15 +224,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/restaurant-night-menu/hero-restaurant-night-menu.webp",
-          "provider": "openai",
-          "prompt": "Client: Ember Table\nTemplate: Restaurant Night Menu\nIndustry/category: restaurant\nHeadline: Seasonal plates, warm rooms, and a table worth booking.\nStyle references: warm restaurant landing page, menu card design, immersive hospitality photography\nPalette cues: #ea580c, #451a03, #fde68a\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Ember Table restaurant. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Ember Table\nTemplate: Restaurant Night Menu\nIndustry/category: restaurant\nHeadline: Seasonal plates, warm rooms, and a table worth booking.\nStyle references: warm restaurant landing page, menu card design, immersive hospitality photography\nPalette cues: #ea580c, #451a03, #fde68a\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Ember Table restaurant. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 138,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007476,
-          "estimatedCostGbp": 0.005579
+          "estimatedCostGbp": 0.005579,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -251,15 +263,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/property-showcase/hero-property-showcase.webp",
-          "provider": "openai",
-          "prompt": "Client: Aster Homes\nTemplate: Property Showcase\nIndustry/category: real-estate\nHeadline: Homes presented with the polish buyers expect.\nStyle references: image-led property website, premium listing cards, clean estate agency layout\nPalette cues: #0f172a, #bfdbfe, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Aster Homes real-estate. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Aster Homes\nTemplate: Property Showcase\nIndustry/category: real-estate\nHeadline: Homes presented with the polish buyers expect.\nStyle references: image-led property website, premium listing cards, clean estate agency layout\nPalette cues: #0f172a, #bfdbfe, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Aster Homes real-estate. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 134,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007468,
-          "estimatedCostGbp": 0.005573
+          "estimatedCostGbp": 0.005573,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -288,15 +302,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/portfolio-creator-grid/hero-portfolio-creator-grid.webp",
-          "provider": "openai",
-          "prompt": "Client: Maya Finch\nTemplate: Portfolio Creator Grid\nIndustry/category: portfolio\nHeadline: A sharp portfolio that makes the work impossible to miss.\nStyle references: portfolio masonry grid, creator landing page, bold personal brand\nPalette cues: #111827, #facc15, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Maya Finch portfolio. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Maya Finch\nTemplate: Portfolio Creator Grid\nIndustry/category: portfolio\nHeadline: A sharp portfolio that makes the work impossible to miss.\nStyle references: portfolio masonry grid, creator landing page, bold personal brand\nPalette cues: #111827, #facc15, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Maya Finch portfolio. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 134,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007468,
-          "estimatedCostGbp": 0.005573
+          "estimatedCostGbp": 0.005573,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -325,15 +341,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/agency-premium-system/hero-agency-premium-system.webp",
-          "provider": "openai",
-          "prompt": "Client: Signal & Co\nTemplate: Agency Premium System\nIndustry/category: agency\nHeadline: Strategy, design, and launches without the agency fog.\nStyle references: premium agency website, case study cards, service design system\nPalette cues: #4338ca, #14b8a6, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Signal & Co agency. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Signal & Co\nTemplate: Agency Premium System\nIndustry/category: agency\nHeadline: Strategy, design, and launches without the agency fog.\nStyle references: premium agency website, case study cards, service design system\nPalette cues: #4338ca, #14b8a6, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Signal & Co agency. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 131,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007462,
-          "estimatedCostGbp": 0.005569
+          "estimatedCostGbp": 0.005569,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -362,15 +380,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/fitness-membership-flow/hero-fitness-membership-flow.webp",
-          "provider": "openai",
-          "prompt": "Client: Forge Fit\nTemplate: Fitness Membership Flow\nIndustry/category: fitness\nHeadline: Training plans, class energy, and membership conversion in one place.\nStyle references: high contrast fitness landing page, movement photography, membership pricing cards\nPalette cues: #facc15, #ef4444, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Forge Fit fitness. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Forge Fit\nTemplate: Fitness Membership Flow\nIndustry/category: fitness\nHeadline: Training plans, class energy, and membership conversion in one place.\nStyle references: high contrast fitness landing page, movement photography, membership pricing cards\nPalette cues: #facc15, #ef4444, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Forge Fit fitness. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 140,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.00748,
-          "estimatedCostGbp": 0.005582
+          "estimatedCostGbp": 0.005582,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -399,15 +419,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/fashion-shop-editorial/hero-fashion-shop-editorial.webp",
-          "provider": "openai",
-          "prompt": "Client: Vale Supply\nTemplate: Fashion Shop Editorial\nIndustry/category: ecommerce\nHeadline: A collection launch with editorial pace and shop clarity.\nStyle references: fashion ecommerce homepage, lookbook grid, editorial product cards\nPalette cues: #111827, #f9a8d4, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Vale Supply ecommerce. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Vale Supply\nTemplate: Fashion Shop Editorial\nIndustry/category: ecommerce\nHeadline: A collection launch with editorial pace and shop clarity.\nStyle references: fashion ecommerce homepage, lookbook grid, editorial product cards\nPalette cues: #111827, #f9a8d4, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Vale Supply ecommerce. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 134,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007468,
-          "estimatedCostGbp": 0.005573
+          "estimatedCostGbp": 0.005573,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -436,15 +458,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/learning-platform/hero-learning-platform.webp",
-          "provider": "openai",
-          "prompt": "Client: BrightPath\nTemplate: Learning Platform\nIndustry/category: local-business\nHeadline: Courses that feel structured, supportive, and easy to start.\nStyle references: education landing page, course cards, friendly learning journey\nPalette cues: #16a34a, #2563eb, #fefce8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for BrightPath local-business. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: BrightPath\nTemplate: Learning Platform\nIndustry/category: local-business\nHeadline: Courses that feel structured, supportive, and easy to start.\nStyle references: education landing page, course cards, friendly learning journey\nPalette cues: #16a34a, #2563eb, #fefce8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for BrightPath local-business. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 135,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.00747,
-          "estimatedCostGbp": 0.005575
+          "estimatedCostGbp": 0.005575,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -473,15 +497,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/awarded-museum-editorial/hero-awarded-museum-editorial.webp",
-          "provider": "openai",
-          "prompt": "Client: Warhol Archive\nTemplate: Museum Editorial\nIndustry/category: portfolio\nHeadline: An exhibition homepage with the confidence of a gallery wall.\nStyle references: Webby 2026 Architecture Art Design winner Warhol Art, Awwwards art portfolio editorial, museum website immersive typography\nPalette cues: #f8fafc, #ef4444, #0f172a\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Warhol Archive portfolio. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Warhol Archive\nTemplate: Museum Editorial\nIndustry/category: portfolio\nHeadline: An exhibition homepage with the confidence of a gallery wall.\nStyle references: Webby 2026 Architecture Art Design winner Warhol Art, Awwwards art portfolio editorial, museum website immersive typography\nPalette cues: #f8fafc, #ef4444, #0f172a\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Warhol Archive portfolio. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 150,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.0075,
-          "estimatedCostGbp": 0.005597
+          "estimatedCostGbp": 0.005597,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -510,15 +536,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/awarded-cinematic-luxury/hero-awarded-cinematic-luxury.webp",
-          "provider": "openai",
-          "prompt": "Client: Maison Atlas\nTemplate: Cinematic Luxury\nIndustry/category: real-estate\nHeadline: A quiet luxury launch built around atmosphere, scarcity, and desire.\nStyle references: CSS Winner Depo Luxe cinematic luxury, Awwwards luxury product storytelling, premium editorial interaction design\nPalette cues: #120f0a, #d6b46a, #f8f1df\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Maison Atlas real-estate. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Maison Atlas\nTemplate: Cinematic Luxury\nIndustry/category: real-estate\nHeadline: A quiet luxury launch built around atmosphere, scarcity, and desire.\nStyle references: CSS Winner Depo Luxe cinematic luxury, Awwwards luxury product storytelling, premium editorial interaction design\nPalette cues: #120f0a, #d6b46a, #f8f1df\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Maison Atlas real-estate. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 149,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007498,
-          "estimatedCostGbp": 0.005596
+          "estimatedCostGbp": 0.005596,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -547,15 +575,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/awarded-data-story/hero-awarded-data-story.webp",
-          "provider": "openai",
-          "prompt": "Client: TraceLab\nTemplate: Data Story Observatory\nIndustry/category: saas\nHeadline: Turn a complex dataset into a story people can act on.\nStyle references: Webby 2026 Best Data Visualization nominees, Reuters data quiz pattern, Climate TRACE visual narrative\nPalette cues: #0f766e, #38bdf8, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for TraceLab saas. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: TraceLab\nTemplate: Data Story Observatory\nIndustry/category: saas\nHeadline: Turn a complex dataset into a story people can act on.\nStyle references: Webby 2026 Best Data Visualization nominees, Reuters data quiz pattern, Climate TRACE visual narrative\nPalette cues: #0f766e, #38bdf8, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for TraceLab saas. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 139,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007478,
-          "estimatedCostGbp": 0.005581
+          "estimatedCostGbp": 0.005581,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -584,15 +614,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/awarded-kinetic-agency/hero-awarded-kinetic-agency.webp",
-          "provider": "openai",
-          "prompt": "Client: Junction Lab\nTemplate: Kinetic Agency\nIndustry/category: agency\nHeadline: A studio homepage that moves like a pitch deck and lands like a product.\nStyle references: Awwwards interaction design gallery, FWA experimental interaction patterns, Webby Best Home Page agency honorees\nPalette cues: #a855f7, #22d3ee, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Junction Lab agency. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Junction Lab\nTemplate: Kinetic Agency\nIndustry/category: agency\nHeadline: A studio homepage that moves like a pitch deck and lands like a product.\nStyle references: Awwwards interaction design gallery, FWA experimental interaction patterns, Webby Best Home Page agency honorees\nPalette cues: #a855f7, #22d3ee, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Junction Lab agency. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 147,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007494,
-          "estimatedCostGbp": 0.005593
+          "estimatedCostGbp": 0.005593,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -621,15 +653,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/awarded-immersive-product/hero-awarded-immersive-product.webp",
-          "provider": "openai",
-          "prompt": "Client: Aether One\nTemplate: Immersive Product Drop\nIndustry/category: ecommerce\nHeadline: A product drop with depth, motion, and a reason to scroll.\nStyle references: Webby 2026 Best Home Page honoree Aether 1, Awwwards product launch sites, FWA immersive product websites\nPalette cues: #f97316, #7c3aed, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Aether One ecommerce. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Aether One\nTemplate: Immersive Product Drop\nIndustry/category: ecommerce\nHeadline: A product drop with depth, motion, and a reason to scroll.\nStyle references: Webby 2026 Best Home Page honoree Aether 1, Awwwards product launch sites, FWA immersive product websites\nPalette cues: #f97316, #7c3aed, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Aether One ecommerce. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 144,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007488,
-          "estimatedCostGbp": 0.005588
+          "estimatedCostGbp": 0.005588,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -658,15 +692,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/awarded-human-cause/hero-awarded-human-cause.webp",
-          "provider": "openai",
-          "prompt": "Client: Ensaaf Foundation\nTemplate: Human Cause Story\nIndustry/category: healthcare\nHeadline: A campaign page that makes the human story impossible to skip.\nStyle references: Webby Best Home Page honoree Ensaaf, public service award websites, accessible campaign storytelling\nPalette cues: #064e3b, #fbbf24, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Ensaaf Foundation healthcare. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Ensaaf Foundation\nTemplate: Human Cause Story\nIndustry/category: healthcare\nHeadline: A campaign page that makes the human story impossible to skip.\nStyle references: Webby Best Home Page honoree Ensaaf, public service award websites, accessible campaign storytelling\nPalette cues: #064e3b, #fbbf24, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Ensaaf Foundation healthcare. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 146,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007492,
-          "estimatedCostGbp": 0.005591
+          "estimatedCostGbp": 0.005591,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -695,15 +731,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/reference-property-search-overlay/hero-reference-property-search-overlay.webp",
-          "provider": "openai",
-          "prompt": "Client: AsterKey\nTemplate: Property Search Overlay\nIndustry/category: real-estate\nHeadline: Where affordability meets sustainability.\nStyle references: uploaded reference: property search overlay, real estate search hero, glass filter interface\nPalette cues: #0f172a, #e2e8f0, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for AsterKey real-estate. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: AsterKey\nTemplate: Property Search Overlay\nIndustry/category: real-estate\nHeadline: Where affordability meets sustainability.\nStyle references: uploaded reference: property search overlay, real estate search hero, glass filter interface\nPalette cues: #0f172a, #e2e8f0, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for AsterKey real-estate. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 137,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007474,
-          "estimatedCostGbp": 0.005578
+          "estimatedCostGbp": 0.005578,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -732,15 +770,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/reference-mountain-journey/hero-reference-mountain-journey.webp",
-          "provider": "openai",
-          "prompt": "Client: Gateway\nTemplate: Mountain Journey Hero\nIndustry/category: portfolio\nHeadline: Crafting journeys, not just trips.\nStyle references: uploaded reference: mountain full-bleed travel hero, destination landing page, facility chip interface\nPalette cues: #0f172a, #f8fafc, #94a3b8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Gateway portfolio. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Gateway\nTemplate: Mountain Journey Hero\nIndustry/category: portfolio\nHeadline: Crafting journeys, not just trips.\nStyle references: uploaded reference: mountain full-bleed travel hero, destination landing page, facility chip interface\nPalette cues: #0f172a, #f8fafc, #94a3b8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Gateway portfolio. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 135,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.00747,
-          "estimatedCostGbp": 0.005575
+          "estimatedCostGbp": 0.005575,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -769,15 +809,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/reference-saas-carousel-growth/hero-reference-saas-carousel-growth.webp",
-          "provider": "openai",
-          "prompt": "Client: EoS\nTemplate: SaaS Carousel Growth\nIndustry/category: saas\nHeadline: More growth, less work. Get your time back.\nStyle references: uploaded reference: centered SaaS carousel hero, dark product hero, rounded customer card carousel\nPalette cues: #1d1738, #a7f3d0, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for EoS saas. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: EoS\nTemplate: SaaS Carousel Growth\nIndustry/category: saas\nHeadline: More growth, less work. Get your time back.\nStyle references: uploaded reference: centered SaaS carousel hero, dark product hero, rounded customer card carousel\nPalette cues: #1d1738, #a7f3d0, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for EoS saas. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 132,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007464,
-          "estimatedCostGbp": 0.00557
+          "estimatedCostGbp": 0.00557,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -806,15 +848,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/reference-spaceage-product-stage/hero-reference-spaceage-product-stage.webp",
-          "provider": "openai",
-          "prompt": "Client: SpaceAge\nTemplate: SpaceAge Product Stage\nIndustry/category: ecommerce\nHeadline: A launch page with atmosphere, motion, and product focus.\nStyle references: uploaded reference: SpaceAge dark hero, cinematic product stage, floating preview panel\nPalette cues: #11131d, #ef4444, #22d3ee\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for SpaceAge ecommerce. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: SpaceAge\nTemplate: SpaceAge Product Stage\nIndustry/category: ecommerce\nHeadline: A launch page with atmosphere, motion, and product focus.\nStyle references: uploaded reference: SpaceAge dark hero, cinematic product stage, floating preview panel\nPalette cues: #11131d, #ef4444, #22d3ee\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for SpaceAge ecommerce. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 138,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007476,
-          "estimatedCostGbp": 0.005579
+          "estimatedCostGbp": 0.005579,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -843,15 +887,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/reference-interior-split-panel/hero-reference-interior-split-panel.webp",
-          "provider": "openai",
-          "prompt": "Client: HouseCut\nTemplate: Interior Split Panel\nIndustry/category: real-estate\nHeadline: A loft apartment arranged around modern comfort.\nStyle references: uploaded reference: interior split orange panel, home interior landing page, warm editorial hero\nPalette cues: #f97316, #111827, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for HouseCut real-estate. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: HouseCut\nTemplate: Interior Split Panel\nIndustry/category: real-estate\nHeadline: A loft apartment arranged around modern comfort.\nStyle references: uploaded reference: interior split orange panel, home interior landing page, warm editorial hero\nPalette cues: #f97316, #111827, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for HouseCut real-estate. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 139,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.007478,
-          "estimatedCostGbp": 0.005581
+          "estimatedCostGbp": 0.005581,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -880,15 +926,17 @@
           "title": "Hero image",
           "kind": "hero",
           "file": "/template-gallery/generated-imagery/reference-architecture-strip/hero-reference-architecture-strip.webp",
-          "provider": "openai",
-          "prompt": "Client: Formline\nTemplate: Architecture Strip\nIndustry/category: real-estate\nHeadline: Building shapes for the future.\nStyle references: uploaded reference: architecture minimal hero, panoramic project strip, minimal architecture website\nPalette cues: #111827, #f8fafc, #cbd5e1\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Formline real-estate. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "provider": "local_no_text_composite",
+          "prompt": "Client: Formline\nTemplate: Architecture Strip\nIndustry/category: real-estate\nHeadline: Building shapes for the future.\nStyle references: uploaded reference: architecture minimal hero, panoramic project strip, minimal architecture website\nPalette cues: #111827, #f8fafc, #cbd5e1\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Formline real-estate. Make it visually distinctive and suitable for a DaisyUI web template.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.\nPOST-PROCESSED HERO POLICY: final hero background contains no readable text, no letters, no numbers, no signage, no logos, and no UI words.",
           "model": "gpt-image-1-mini",
           "quality": "low",
           "size": "1536x1024",
           "estimatedInputTokens": 135,
           "estimatedOutputTokens": 900,
           "estimatedCostUsd": 0.00747,
-          "estimatedCostGbp": 0.005575
+          "estimatedCostGbp": 0.005575,
+          "noTextHero": true,
+          "sourceImage": "procedural-no-text-vector-composite"
         },
         {
           "title": "Section image",
@@ -912,5 +960,10 @@
   "skipped": [],
   "notes": [
     "Images were generated with the OpenAI image API until the estimated GBP budget cap was reached."
-  ]
+  ],
+  "heroPolicy": {
+    "updatedAt": "2026-07-11T13:42:53.393Z",
+    "rule": "Full-bleed hero backgrounds must not contain text, typography, letters, numbers, logo marks, signage, watermarks, or UI labels because template copy is overlaid in HTML.",
+    "provider": "local_no_text_composite"
+  }
 }

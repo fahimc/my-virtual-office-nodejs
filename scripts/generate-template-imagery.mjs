@@ -131,7 +131,12 @@ function imageSpecs(template) {
     `Headline: ${template.headline}`,
     `Style references: ${(template.inspiration || []).join(', ')}`,
     `Palette cues: ${palette}`,
-    'High-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.'
+    [
+      'High-end commercial website imagery with clean negative space for HTML UI overlays.',
+      'Absolute hard rule: the image must contain no text of any kind.',
+      'No typography, no letters, no words, no numbers, no signage, no interface labels, no logo marks, no watermark, no poster text, no brand names, no decorative background type.',
+      'Use only objects, environments, people, abstract light, product forms, texture, and atmosphere.'
+    ].join(' ')
   ].join('\n');
   return [
     {
