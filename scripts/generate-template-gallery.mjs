@@ -524,7 +524,7 @@ function renderTemplate(template) {
       <div class="relative mx-auto grid min-h-[calc(100vh-4rem)] w-[min(1280px,calc(100%-2rem))] items-center gap-10 py-14 lg:grid-cols-[.94fr_1.06fr] lg:py-20">
         <div>
           <span class="badge badge-primary badge-lg mb-5">${escapeHtml(template.badge)}</span>
-          <h1 class="max-w-4xl text-4xl font-black leading-[.92] sm:text-5xl md:text-7xl xl:text-8xl">${escapeHtml(template.headline)}</h1>
+          <h1 class="max-w-4xl text-4xl font-black leading-[.95] sm:text-5xl md:text-6xl xl:text-7xl">${escapeHtml(template.headline)}</h1>
           <p class="max-w-2xl py-6 text-xl leading-relaxed text-base-content/70">${escapeHtml(template.subhead)}</p>
           <div class="flex flex-wrap gap-3">
             <a class="btn btn-primary rounded-full" href="#contact">${escapeHtml(template.cta)}</a>
