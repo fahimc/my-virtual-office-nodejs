@@ -1,0 +1,1252 @@
+{
+  "generatedAt": "2026-07-11T12:22:35.072Z",
+  "provider": "local_mock",
+  "budget": {
+    "capGbp": 1,
+    "gbpToUsd": 1.34,
+    "capUsd": 1.34,
+    "estimatedSpendUsd": 0.53865,
+    "estimatedSpendGbp": 0.401978
+  },
+  "pricing": {
+    "source": "OpenAI API pricing",
+    "sourceUrl": "https://developers.openai.com/api/docs/pricing",
+    "model": "gpt-image-1-mini",
+    "textInputPer1MTokensUsd": 2,
+    "imageOutputPer1MTokensUsd": 8
+  },
+  "model": "gpt-image-1-mini",
+  "quality": "low",
+  "size": "1536x1024",
+  "imagesPerTemplate": 3,
+  "templates": {
+    "fruit-commerce-splash": {
+      "id": "fruit-commerce-splash",
+      "category": "food-drink",
+      "title": "Fruit Commerce Splash",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/fruit-commerce-splash/hero-fruit-commerce-splash.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Zestora\nTemplate: Fruit Commerce Splash\nIndustry/category: food-drink\nHeadline: Fruit drinks that look as fresh as they taste.\nStyle references: bold product cards, oversized editorial typography, bright ecommerce landing page\nPalette cues: #ffb703, #fb7185, #22c55e\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Zestora food-drink. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/fruit-commerce-splash/section-fruit-commerce-splash.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Zestora\nTemplate: Fruit Commerce Splash\nIndustry/category: food-drink\nHeadline: Fruit drinks that look as fresh as they taste.\nStyle references: bold product cards, oversized editorial typography, bright ecommerce landing page\nPalette cues: #ffb703, #fb7185, #22c55e\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Hero, Product cards, Mixed case builder, Wholesale CTA, FAQ. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 143,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007486,
+          "estimatedCostGbp": 0.005587
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/fruit-commerce-splash/background-fruit-commerce-splash.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Zestora\nTemplate: Fruit Commerce Splash\nIndustry/category: food-drink\nHeadline: Fruit drinks that look as fresh as they taste.\nStyle references: bold product cards, oversized editorial typography, bright ecommerce landing page\nPalette cues: #ffb703, #fb7185, #22c55e\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        }
+      ],
+      "estimatedSpendUsd": 0.022422,
+      "estimatedSpendGbp": 0.016733
+    },
+    "saas-command-center": {
+      "id": "saas-command-center",
+      "category": "saas",
+      "title": "SaaS Command Center",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/saas-command-center/hero-saas-command-center.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Northstar OS\nTemplate: SaaS Command Center\nIndustry/category: saas\nHeadline: Run the whole operation from one calm dashboard.\nStyle references: glass dashboard cards, clean SaaS hero, product UI depth\nPalette cues: #2563eb, #14b8a6, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Northstar OS saas. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 127,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007454,
+          "estimatedCostGbp": 0.005563
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/saas-command-center/section-saas-command-center.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Northstar OS\nTemplate: SaaS Command Center\nIndustry/category: saas\nHeadline: Run the whole operation from one calm dashboard.\nStyle references: glass dashboard cards, clean SaaS hero, product UI depth\nPalette cues: #2563eb, #14b8a6, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Hero, Feature grid, Dashboard preview, Integrations, Pricing. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 136,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007472,
+          "estimatedCostGbp": 0.005576
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/saas-command-center/background-saas-command-center.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Northstar OS\nTemplate: SaaS Command Center\nIndustry/category: saas\nHeadline: Run the whole operation from one calm dashboard.\nStyle references: glass dashboard cards, clean SaaS hero, product UI depth\nPalette cues: #2563eb, #14b8a6, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 128,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007456,
+          "estimatedCostGbp": 0.005564
+        }
+      ],
+      "estimatedSpendUsd": 0.022382,
+      "estimatedSpendGbp": 0.016703
+    },
+    "local-trades-proof": {
+      "id": "local-trades-proof",
+      "category": "trades",
+      "title": "Local Trades Proof",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/local-trades-proof/hero-local-trades-proof.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Ashford Heating\nTemplate: Local Trades Proof\nIndustry/category: trades\nHeadline: Fast repairs, tidy installs, and quotes without the runaround.\nStyle references: high trust service cards, strong contact CTA, local proof blocks\nPalette cues: #f97316, #0f172a, #38bdf8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Ashford Heating trades. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 135,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00747,
+          "estimatedCostGbp": 0.005575
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/local-trades-proof/section-local-trades-proof.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Ashford Heating\nTemplate: Local Trades Proof\nIndustry/category: trades\nHeadline: Fast repairs, tidy installs, and quotes without the runaround.\nStyle references: high trust service cards, strong contact CTA, local proof blocks\nPalette cues: #f97316, #0f172a, #38bdf8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Emergency hero, Service cards, Reviews, Areas covered, Contact form. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 145,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00749,
+          "estimatedCostGbp": 0.00559
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/local-trades-proof/background-local-trades-proof.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Ashford Heating\nTemplate: Local Trades Proof\nIndustry/category: trades\nHeadline: Fast repairs, tidy installs, and quotes without the runaround.\nStyle references: high trust service cards, strong contact CTA, local proof blocks\nPalette cues: #f97316, #0f172a, #38bdf8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        }
+      ],
+      "estimatedSpendUsd": 0.022428,
+      "estimatedSpendGbp": 0.016737
+    },
+    "beauty-booking-editorial": {
+      "id": "beauty-booking-editorial",
+      "category": "beauty",
+      "title": "Beauty Booking Editorial",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/beauty-booking-editorial/hero-beauty-booking-editorial.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Luna Studio\nTemplate: Beauty Booking Editorial\nIndustry/category: beauty\nHeadline: Soft-touch treatments with a polished booking flow.\nStyle references: soft editorial layout, luxury service cards, large beauty imagery\nPalette cues: #f9a8d4, #7c2d12, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Luna Studio beauty. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 132,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007464,
+          "estimatedCostGbp": 0.00557
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/beauty-booking-editorial/section-beauty-booking-editorial.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Luna Studio\nTemplate: Beauty Booking Editorial\nIndustry/category: beauty\nHeadline: Soft-touch treatments with a polished booking flow.\nStyle references: soft editorial layout, luxury service cards, large beauty imagery\nPalette cues: #f9a8d4, #7c2d12, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Editorial hero, Treatment cards, Gallery, Specialists, Booking CTA. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 142,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007484,
+          "estimatedCostGbp": 0.005585
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/beauty-booking-editorial/background-beauty-booking-editorial.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Luna Studio\nTemplate: Beauty Booking Editorial\nIndustry/category: beauty\nHeadline: Soft-touch treatments with a polished booking flow.\nStyle references: soft editorial layout, luxury service cards, large beauty imagery\nPalette cues: #f9a8d4, #7c2d12, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 132,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007464,
+          "estimatedCostGbp": 0.00557
+        }
+      ],
+      "estimatedSpendUsd": 0.022412,
+      "estimatedSpendGbp": 0.016725
+    },
+    "clinic-calm-care": {
+      "id": "clinic-calm-care",
+      "category": "healthcare",
+      "title": "Clinic Calm Care",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/clinic-calm-care/hero-clinic-calm-care.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Harbour Clinic\nTemplate: Clinic Calm Care\nIndustry/category: healthcare\nHeadline: Clear care pathways, without the confusion.\nStyle references: calm healthcare web design, clear appointment flow, accessible service cards\nPalette cues: #10b981, #2563eb, #ecfeff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Harbour Clinic healthcare. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/clinic-calm-care/section-clinic-calm-care.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Harbour Clinic\nTemplate: Clinic Calm Care\nIndustry/category: healthcare\nHeadline: Clear care pathways, without the confusion.\nStyle references: calm healthcare web design, clear appointment flow, accessible service cards\nPalette cues: #10b981, #2563eb, #ecfeff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Care hero, Service finder, Clinician cards, Patient info, Accessible forms. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 145,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00749,
+          "estimatedCostGbp": 0.00559
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/clinic-calm-care/background-clinic-calm-care.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Harbour Clinic\nTemplate: Clinic Calm Care\nIndustry/category: healthcare\nHeadline: Clear care pathways, without the confusion.\nStyle references: calm healthcare web design, clear appointment flow, accessible service cards\nPalette cues: #10b981, #2563eb, #ecfeff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 133,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007466,
+          "estimatedCostGbp": 0.005572
+        }
+      ],
+      "estimatedSpendUsd": 0.022424,
+      "estimatedSpendGbp": 0.016734
+    },
+    "restaurant-night-menu": {
+      "id": "restaurant-night-menu",
+      "category": "restaurant",
+      "title": "Restaurant Night Menu",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/restaurant-night-menu/hero-restaurant-night-menu.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Ember Table\nTemplate: Restaurant Night Menu\nIndustry/category: restaurant\nHeadline: Seasonal plates, warm rooms, and a table worth booking.\nStyle references: warm restaurant landing page, menu card design, immersive hospitality photography\nPalette cues: #ea580c, #451a03, #fde68a\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Ember Table restaurant. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 138,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007476,
+          "estimatedCostGbp": 0.005579
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/restaurant-night-menu/section-restaurant-night-menu.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Ember Table\nTemplate: Restaurant Night Menu\nIndustry/category: restaurant\nHeadline: Seasonal plates, warm rooms, and a table worth booking.\nStyle references: warm restaurant landing page, menu card design, immersive hospitality photography\nPalette cues: #ea580c, #451a03, #fde68a\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Image-led hero, Menu highlights, Private dining, Reviews, Booking. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 147,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007494,
+          "estimatedCostGbp": 0.005593
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/restaurant-night-menu/background-restaurant-night-menu.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Ember Table\nTemplate: Restaurant Night Menu\nIndustry/category: restaurant\nHeadline: Seasonal plates, warm rooms, and a table worth booking.\nStyle references: warm restaurant landing page, menu card design, immersive hospitality photography\nPalette cues: #ea580c, #451a03, #fde68a\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 138,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007476,
+          "estimatedCostGbp": 0.005579
+        }
+      ],
+      "estimatedSpendUsd": 0.022446,
+      "estimatedSpendGbp": 0.016751
+    },
+    "property-showcase": {
+      "id": "property-showcase",
+      "category": "real-estate",
+      "title": "Property Showcase",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/property-showcase/hero-property-showcase.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Aster Homes\nTemplate: Property Showcase\nIndustry/category: real-estate\nHeadline: Homes presented with the polish buyers expect.\nStyle references: image-led property website, premium listing cards, clean estate agency layout\nPalette cues: #0f172a, #bfdbfe, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Aster Homes real-estate. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/property-showcase/section-property-showcase.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Aster Homes\nTemplate: Property Showcase\nIndustry/category: real-estate\nHeadline: Homes presented with the polish buyers expect.\nStyle references: image-led property website, premium listing cards, clean estate agency layout\nPalette cues: #0f172a, #bfdbfe, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Hero listing, Property cards, Valuation CTA, Area guides, Agent profile. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 145,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00749,
+          "estimatedCostGbp": 0.00559
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/property-showcase/background-property-showcase.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Aster Homes\nTemplate: Property Showcase\nIndustry/category: real-estate\nHeadline: Homes presented with the polish buyers expect.\nStyle references: image-led property website, premium listing cards, clean estate agency layout\nPalette cues: #0f172a, #bfdbfe, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        }
+      ],
+      "estimatedSpendUsd": 0.022426,
+      "estimatedSpendGbp": 0.016736
+    },
+    "portfolio-creator-grid": {
+      "id": "portfolio-creator-grid",
+      "category": "portfolio",
+      "title": "Portfolio Creator Grid",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/portfolio-creator-grid/hero-portfolio-creator-grid.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Maya Finch\nTemplate: Portfolio Creator Grid\nIndustry/category: portfolio\nHeadline: A sharp portfolio that makes the work impossible to miss.\nStyle references: portfolio masonry grid, creator landing page, bold personal brand\nPalette cues: #111827, #facc15, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Maya Finch portfolio. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/portfolio-creator-grid/section-portfolio-creator-grid.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Maya Finch\nTemplate: Portfolio Creator Grid\nIndustry/category: portfolio\nHeadline: A sharp portfolio that makes the work impossible to miss.\nStyle references: portfolio masonry grid, creator landing page, bold personal brand\nPalette cues: #111827, #facc15, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Editorial hero, Project gallery, Services, Testimonials, Contact. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 143,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007486,
+          "estimatedCostGbp": 0.005587
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/portfolio-creator-grid/background-portfolio-creator-grid.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Maya Finch\nTemplate: Portfolio Creator Grid\nIndustry/category: portfolio\nHeadline: A sharp portfolio that makes the work impossible to miss.\nStyle references: portfolio masonry grid, creator landing page, bold personal brand\nPalette cues: #111827, #facc15, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        }
+      ],
+      "estimatedSpendUsd": 0.022422,
+      "estimatedSpendGbp": 0.016733
+    },
+    "agency-premium-system": {
+      "id": "agency-premium-system",
+      "category": "agency",
+      "title": "Agency Premium System",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/agency-premium-system/hero-agency-premium-system.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Signal & Co\nTemplate: Agency Premium System\nIndustry/category: agency\nHeadline: Strategy, design, and launches without the agency fog.\nStyle references: premium agency website, case study cards, service design system\nPalette cues: #4338ca, #14b8a6, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Signal & Co agency. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 131,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007462,
+          "estimatedCostGbp": 0.005569
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/agency-premium-system/section-agency-premium-system.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Signal & Co\nTemplate: Agency Premium System\nIndustry/category: agency\nHeadline: Strategy, design, and launches without the agency fog.\nStyle references: premium agency website, case study cards, service design system\nPalette cues: #4338ca, #14b8a6, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Hero, Capabilities, Case studies, Process, Proposal CTA. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 139,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007478,
+          "estimatedCostGbp": 0.005581
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/agency-premium-system/background-agency-premium-system.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Signal & Co\nTemplate: Agency Premium System\nIndustry/category: agency\nHeadline: Strategy, design, and launches without the agency fog.\nStyle references: premium agency website, case study cards, service design system\nPalette cues: #4338ca, #14b8a6, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 132,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007464,
+          "estimatedCostGbp": 0.00557
+        }
+      ],
+      "estimatedSpendUsd": 0.022404,
+      "estimatedSpendGbp": 0.016719
+    },
+    "fitness-membership-flow": {
+      "id": "fitness-membership-flow",
+      "category": "fitness",
+      "title": "Fitness Membership Flow",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/fitness-membership-flow/hero-fitness-membership-flow.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Forge Fit\nTemplate: Fitness Membership Flow\nIndustry/category: fitness\nHeadline: Training plans, class energy, and membership conversion in one place.\nStyle references: high contrast fitness landing page, movement photography, membership pricing cards\nPalette cues: #facc15, #ef4444, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Forge Fit fitness. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 140,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00748,
+          "estimatedCostGbp": 0.005582
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/fitness-membership-flow/section-fitness-membership-flow.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Forge Fit\nTemplate: Fitness Membership Flow\nIndustry/category: fitness\nHeadline: Training plans, class energy, and membership conversion in one place.\nStyle references: high contrast fitness landing page, movement photography, membership pricing cards\nPalette cues: #facc15, #ef4444, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Action hero, Class cards, Trainer roster, Results, Membership CTA. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 150,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.0075,
+          "estimatedCostGbp": 0.005597
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/fitness-membership-flow/background-fitness-membership-flow.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Forge Fit\nTemplate: Fitness Membership Flow\nIndustry/category: fitness\nHeadline: Training plans, class energy, and membership conversion in one place.\nStyle references: high contrast fitness landing page, movement photography, membership pricing cards\nPalette cues: #facc15, #ef4444, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 141,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007482,
+          "estimatedCostGbp": 0.005584
+        }
+      ],
+      "estimatedSpendUsd": 0.022462,
+      "estimatedSpendGbp": 0.016763
+    },
+    "fashion-shop-editorial": {
+      "id": "fashion-shop-editorial",
+      "category": "ecommerce",
+      "title": "Fashion Shop Editorial",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/fashion-shop-editorial/hero-fashion-shop-editorial.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Vale Supply\nTemplate: Fashion Shop Editorial\nIndustry/category: ecommerce\nHeadline: A collection launch with editorial pace and shop clarity.\nStyle references: fashion ecommerce homepage, lookbook grid, editorial product cards\nPalette cues: #111827, #f9a8d4, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Vale Supply ecommerce. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/fashion-shop-editorial/section-fashion-shop-editorial.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Vale Supply\nTemplate: Fashion Shop Editorial\nIndustry/category: ecommerce\nHeadline: A collection launch with editorial pace and shop clarity.\nStyle references: fashion ecommerce homepage, lookbook grid, editorial product cards\nPalette cues: #111827, #f9a8d4, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Campaign hero, Collection cards, Lookbook gallery, Benefits, Newsletter. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 146,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007492,
+          "estimatedCostGbp": 0.005591
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/fashion-shop-editorial/background-fashion-shop-editorial.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Vale Supply\nTemplate: Fashion Shop Editorial\nIndustry/category: ecommerce\nHeadline: A collection launch with editorial pace and shop clarity.\nStyle references: fashion ecommerce homepage, lookbook grid, editorial product cards\nPalette cues: #111827, #f9a8d4, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        }
+      ],
+      "estimatedSpendUsd": 0.022428,
+      "estimatedSpendGbp": 0.016737
+    },
+    "learning-platform": {
+      "id": "learning-platform",
+      "category": "local-business",
+      "title": "Learning Platform",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/learning-platform/hero-learning-platform.svg",
+          "provider": "local_mock",
+          "prompt": "Client: BrightPath\nTemplate: Learning Platform\nIndustry/category: local-business\nHeadline: Courses that feel structured, supportive, and easy to start.\nStyle references: education landing page, course cards, friendly learning journey\nPalette cues: #16a34a, #2563eb, #fefce8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for BrightPath local-business. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 135,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00747,
+          "estimatedCostGbp": 0.005575
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/learning-platform/section-learning-platform.svg",
+          "provider": "local_mock",
+          "prompt": "Client: BrightPath\nTemplate: Learning Platform\nIndustry/category: local-business\nHeadline: Courses that feel structured, supportive, and easy to start.\nStyle references: education landing page, course cards, friendly learning journey\nPalette cues: #16a34a, #2563eb, #fefce8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Outcome hero, Course cards, Learning path, Tutor proof, Enquiry. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 143,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007486,
+          "estimatedCostGbp": 0.005587
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/learning-platform/background-learning-platform.svg",
+          "provider": "local_mock",
+          "prompt": "Client: BrightPath\nTemplate: Learning Platform\nIndustry/category: local-business\nHeadline: Courses that feel structured, supportive, and easy to start.\nStyle references: education landing page, course cards, friendly learning journey\nPalette cues: #16a34a, #2563eb, #fefce8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 134,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007468,
+          "estimatedCostGbp": 0.005573
+        }
+      ],
+      "estimatedSpendUsd": 0.022424,
+      "estimatedSpendGbp": 0.016734
+    },
+    "awarded-museum-editorial": {
+      "id": "awarded-museum-editorial",
+      "category": "portfolio",
+      "title": "Museum Editorial",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/awarded-museum-editorial/hero-awarded-museum-editorial.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Warhol Archive\nTemplate: Museum Editorial\nIndustry/category: portfolio\nHeadline: An exhibition homepage with the confidence of a gallery wall.\nStyle references: Webby 2026 Architecture Art Design winner Warhol Art, Awwwards art portfolio editorial, museum website immersive typography\nPalette cues: #f8fafc, #ef4444, #0f172a\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Warhol Archive portfolio. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 150,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.0075,
+          "estimatedCostGbp": 0.005597
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/awarded-museum-editorial/section-awarded-museum-editorial.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Warhol Archive\nTemplate: Museum Editorial\nIndustry/category: portfolio\nHeadline: An exhibition homepage with the confidence of a gallery wall.\nStyle references: Webby 2026 Architecture Art Design winner Warhol Art, Awwwards art portfolio editorial, museum website immersive typography\nPalette cues: #f8fafc, #ef4444, #0f172a\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Exhibition hero, Archive grid, Curator notes, Visit plan, Tickets. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 159,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007518,
+          "estimatedCostGbp": 0.00561
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/awarded-museum-editorial/background-awarded-museum-editorial.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Warhol Archive\nTemplate: Museum Editorial\nIndustry/category: portfolio\nHeadline: An exhibition homepage with the confidence of a gallery wall.\nStyle references: Webby 2026 Architecture Art Design winner Warhol Art, Awwwards art portfolio editorial, museum website immersive typography\nPalette cues: #f8fafc, #ef4444, #0f172a\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 149,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007498,
+          "estimatedCostGbp": 0.005596
+        }
+      ],
+      "estimatedSpendUsd": 0.022516,
+      "estimatedSpendGbp": 0.016803
+    },
+    "awarded-cinematic-luxury": {
+      "id": "awarded-cinematic-luxury",
+      "category": "real-estate",
+      "title": "Cinematic Luxury",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/awarded-cinematic-luxury/hero-awarded-cinematic-luxury.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Maison Atlas\nTemplate: Cinematic Luxury\nIndustry/category: real-estate\nHeadline: A quiet luxury launch built around atmosphere, scarcity, and desire.\nStyle references: CSS Winner Depo Luxe cinematic luxury, Awwwards luxury product storytelling, premium editorial interaction design\nPalette cues: #120f0a, #d6b46a, #f8f1df\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Maison Atlas real-estate. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 149,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007498,
+          "estimatedCostGbp": 0.005596
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/awarded-cinematic-luxury/section-awarded-cinematic-luxury.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Maison Atlas\nTemplate: Cinematic Luxury\nIndustry/category: real-estate\nHeadline: A quiet luxury launch built around atmosphere, scarcity, and desire.\nStyle references: CSS Winner Depo Luxe cinematic luxury, Awwwards luxury product storytelling, premium editorial interaction design\nPalette cues: #120f0a, #d6b46a, #f8f1df\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Cinematic hero, Private release, Craft details, Concierge proof, Request access. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 161,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007522,
+          "estimatedCostGbp": 0.005613
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/awarded-cinematic-luxury/background-awarded-cinematic-luxury.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Maison Atlas\nTemplate: Cinematic Luxury\nIndustry/category: real-estate\nHeadline: A quiet luxury launch built around atmosphere, scarcity, and desire.\nStyle references: CSS Winner Depo Luxe cinematic luxury, Awwwards luxury product storytelling, premium editorial interaction design\nPalette cues: #120f0a, #d6b46a, #f8f1df\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 148,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007496,
+          "estimatedCostGbp": 0.005594
+        }
+      ],
+      "estimatedSpendUsd": 0.022516,
+      "estimatedSpendGbp": 0.016803
+    },
+    "awarded-data-story": {
+      "id": "awarded-data-story",
+      "category": "saas",
+      "title": "Data Story Observatory",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/awarded-data-story/hero-awarded-data-story.svg",
+          "provider": "local_mock",
+          "prompt": "Client: TraceLab\nTemplate: Data Story Observatory\nIndustry/category: saas\nHeadline: Turn a complex dataset into a story people can act on.\nStyle references: Webby 2026 Best Data Visualization nominees, Reuters data quiz pattern, Climate TRACE visual narrative\nPalette cues: #0f766e, #38bdf8, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for TraceLab saas. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 139,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007478,
+          "estimatedCostGbp": 0.005581
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/awarded-data-story/section-awarded-data-story.svg",
+          "provider": "local_mock",
+          "prompt": "Client: TraceLab\nTemplate: Data Story Observatory\nIndustry/category: saas\nHeadline: Turn a complex dataset into a story people can act on.\nStyle references: Webby 2026 Best Data Visualization nominees, Reuters data quiz pattern, Climate TRACE visual narrative\nPalette cues: #0f766e, #38bdf8, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Data hero, Signal map, Insight cards, Method notes, Action CTA. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 150,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.0075,
+          "estimatedCostGbp": 0.005597
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/awarded-data-story/background-awarded-data-story.svg",
+          "provider": "local_mock",
+          "prompt": "Client: TraceLab\nTemplate: Data Story Observatory\nIndustry/category: saas\nHeadline: Turn a complex dataset into a story people can act on.\nStyle references: Webby 2026 Best Data Visualization nominees, Reuters data quiz pattern, Climate TRACE visual narrative\nPalette cues: #0f766e, #38bdf8, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 141,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007482,
+          "estimatedCostGbp": 0.005584
+        }
+      ],
+      "estimatedSpendUsd": 0.02246,
+      "estimatedSpendGbp": 0.016761
+    },
+    "awarded-kinetic-agency": {
+      "id": "awarded-kinetic-agency",
+      "category": "agency",
+      "title": "Kinetic Agency",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/awarded-kinetic-agency/hero-awarded-kinetic-agency.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Junction Lab\nTemplate: Kinetic Agency\nIndustry/category: agency\nHeadline: A studio homepage that moves like a pitch deck and lands like a product.\nStyle references: Awwwards interaction design gallery, FWA experimental interaction patterns, Webby Best Home Page agency honorees\nPalette cues: #a855f7, #22d3ee, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Junction Lab agency. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 147,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007494,
+          "estimatedCostGbp": 0.005593
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/awarded-kinetic-agency/section-awarded-kinetic-agency.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Junction Lab\nTemplate: Kinetic Agency\nIndustry/category: agency\nHeadline: A studio homepage that moves like a pitch deck and lands like a product.\nStyle references: Awwwards interaction design gallery, FWA experimental interaction patterns, Webby Best Home Page agency honorees\nPalette cues: #a855f7, #22d3ee, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Kinetic hero, Work strip, Capability chips, Proof wall, Sprint CTA. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 157,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007514,
+          "estimatedCostGbp": 0.005607
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/awarded-kinetic-agency/background-awarded-kinetic-agency.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Junction Lab\nTemplate: Kinetic Agency\nIndustry/category: agency\nHeadline: A studio homepage that moves like a pitch deck and lands like a product.\nStyle references: Awwwards interaction design gallery, FWA experimental interaction patterns, Webby Best Home Page agency honorees\nPalette cues: #a855f7, #22d3ee, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 147,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007494,
+          "estimatedCostGbp": 0.005593
+        }
+      ],
+      "estimatedSpendUsd": 0.022502,
+      "estimatedSpendGbp": 0.016793
+    },
+    "awarded-immersive-product": {
+      "id": "awarded-immersive-product",
+      "category": "ecommerce",
+      "title": "Immersive Product Drop",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/awarded-immersive-product/hero-awarded-immersive-product.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Aether One\nTemplate: Immersive Product Drop\nIndustry/category: ecommerce\nHeadline: A product drop with depth, motion, and a reason to scroll.\nStyle references: Webby 2026 Best Home Page honoree Aether 1, Awwwards product launch sites, FWA immersive product websites\nPalette cues: #f97316, #7c3aed, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Aether One ecommerce. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 144,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007488,
+          "estimatedCostGbp": 0.005588
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/awarded-immersive-product/section-awarded-immersive-product.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Aether One\nTemplate: Immersive Product Drop\nIndustry/category: ecommerce\nHeadline: A product drop with depth, motion, and a reason to scroll.\nStyle references: Webby 2026 Best Home Page honoree Aether 1, Awwwards product launch sites, FWA immersive product websites\nPalette cues: #f97316, #7c3aed, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Drop hero, Feature orbit, Material story, Social proof, Preorder. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 154,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007508,
+          "estimatedCostGbp": 0.005603
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/awarded-immersive-product/background-awarded-immersive-product.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Aether One\nTemplate: Immersive Product Drop\nIndustry/category: ecommerce\nHeadline: A product drop with depth, motion, and a reason to scroll.\nStyle references: Webby 2026 Best Home Page honoree Aether 1, Awwwards product launch sites, FWA immersive product websites\nPalette cues: #f97316, #7c3aed, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 144,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007488,
+          "estimatedCostGbp": 0.005588
+        }
+      ],
+      "estimatedSpendUsd": 0.022484,
+      "estimatedSpendGbp": 0.016779
+    },
+    "awarded-human-cause": {
+      "id": "awarded-human-cause",
+      "category": "healthcare",
+      "title": "Human Cause Story",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/awarded-human-cause/hero-awarded-human-cause.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Ensaaf Foundation\nTemplate: Human Cause Story\nIndustry/category: healthcare\nHeadline: A campaign page that makes the human story impossible to skip.\nStyle references: Webby Best Home Page honoree Ensaaf, public service award websites, accessible campaign storytelling\nPalette cues: #064e3b, #fbbf24, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Ensaaf Foundation healthcare. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 146,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007492,
+          "estimatedCostGbp": 0.005591
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/awarded-human-cause/section-awarded-human-cause.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Ensaaf Foundation\nTemplate: Human Cause Story\nIndustry/category: healthcare\nHeadline: A campaign page that makes the human story impossible to skip.\nStyle references: Webby Best Home Page honoree Ensaaf, public service award websites, accessible campaign storytelling\nPalette cues: #064e3b, #fbbf24, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Story hero, Evidence timeline, Impact cards, Donate, Updates. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 153,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007506,
+          "estimatedCostGbp": 0.005601
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/awarded-human-cause/background-awarded-human-cause.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Ensaaf Foundation\nTemplate: Human Cause Story\nIndustry/category: healthcare\nHeadline: A campaign page that makes the human story impossible to skip.\nStyle references: Webby Best Home Page honoree Ensaaf, public service award websites, accessible campaign storytelling\nPalette cues: #064e3b, #fbbf24, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 145,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00749,
+          "estimatedCostGbp": 0.00559
+        }
+      ],
+      "estimatedSpendUsd": 0.022488,
+      "estimatedSpendGbp": 0.016782
+    },
+    "reference-property-search-overlay": {
+      "id": "reference-property-search-overlay",
+      "category": "real-estate",
+      "title": "Property Search Overlay",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/reference-property-search-overlay/hero-reference-property-search-overlay.svg",
+          "provider": "local_mock",
+          "prompt": "Client: AsterKey\nTemplate: Property Search Overlay\nIndustry/category: real-estate\nHeadline: Where affordability meets sustainability.\nStyle references: uploaded reference: property search overlay, real estate search hero, glass filter interface\nPalette cues: #0f172a, #e2e8f0, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for AsterKey real-estate. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 137,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007474,
+          "estimatedCostGbp": 0.005578
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/reference-property-search-overlay/section-reference-property-search-overlay.svg",
+          "provider": "local_mock",
+          "prompt": "Client: AsterKey\nTemplate: Property Search Overlay\nIndustry/category: real-estate\nHeadline: Where affordability meets sustainability.\nStyle references: uploaded reference: property search overlay, real estate search hero, glass filter interface\nPalette cues: #0f172a, #e2e8f0, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Search, Featured homes, Neighbourhoods, Buyer proof, Book viewing. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 147,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007494,
+          "estimatedCostGbp": 0.005593
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/reference-property-search-overlay/background-reference-property-search-overlay.svg",
+          "provider": "local_mock",
+          "prompt": "Client: AsterKey\nTemplate: Property Search Overlay\nIndustry/category: real-estate\nHeadline: Where affordability meets sustainability.\nStyle references: uploaded reference: property search overlay, real estate search hero, glass filter interface\nPalette cues: #0f172a, #e2e8f0, #111827\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 137,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007474,
+          "estimatedCostGbp": 0.005578
+        }
+      ],
+      "estimatedSpendUsd": 0.022442,
+      "estimatedSpendGbp": 0.016748
+    },
+    "reference-mountain-journey": {
+      "id": "reference-mountain-journey",
+      "category": "portfolio",
+      "title": "Mountain Journey Hero",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/reference-mountain-journey/hero-reference-mountain-journey.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Gateway\nTemplate: Mountain Journey Hero\nIndustry/category: portfolio\nHeadline: Crafting journeys, not just trips.\nStyle references: uploaded reference: mountain full-bleed travel hero, destination landing page, facility chip interface\nPalette cues: #0f172a, #f8fafc, #94a3b8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Gateway portfolio. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 135,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00747,
+          "estimatedCostGbp": 0.005575
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/reference-mountain-journey/section-reference-mountain-journey.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Gateway\nTemplate: Mountain Journey Hero\nIndustry/category: portfolio\nHeadline: Crafting journeys, not just trips.\nStyle references: uploaded reference: mountain full-bleed travel hero, destination landing page, facility chip interface\nPalette cues: #0f172a, #f8fafc, #94a3b8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Tour guide, Travel package, Accommodation, Transport, Food, Online delivery. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 149,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007498,
+          "estimatedCostGbp": 0.005596
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/reference-mountain-journey/background-reference-mountain-journey.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Gateway\nTemplate: Mountain Journey Hero\nIndustry/category: portfolio\nHeadline: Crafting journeys, not just trips.\nStyle references: uploaded reference: mountain full-bleed travel hero, destination landing page, facility chip interface\nPalette cues: #0f172a, #f8fafc, #94a3b8\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 136,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007472,
+          "estimatedCostGbp": 0.005576
+        }
+      ],
+      "estimatedSpendUsd": 0.02244,
+      "estimatedSpendGbp": 0.016746
+    },
+    "reference-saas-carousel-growth": {
+      "id": "reference-saas-carousel-growth",
+      "category": "saas",
+      "title": "SaaS Carousel Growth",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/reference-saas-carousel-growth/hero-reference-saas-carousel-growth.svg",
+          "provider": "local_mock",
+          "prompt": "Client: EoS\nTemplate: SaaS Carousel Growth\nIndustry/category: saas\nHeadline: More growth, less work. Get your time back.\nStyle references: uploaded reference: centered SaaS carousel hero, dark product hero, rounded customer card carousel\nPalette cues: #1d1738, #a7f3d0, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for EoS saas. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 132,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007464,
+          "estimatedCostGbp": 0.00557
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/reference-saas-carousel-growth/section-reference-saas-carousel-growth.svg",
+          "provider": "local_mock",
+          "prompt": "Client: EoS\nTemplate: SaaS Carousel Growth\nIndustry/category: saas\nHeadline: More growth, less work. Get your time back.\nStyle references: uploaded reference: centered SaaS carousel hero, dark product hero, rounded customer card carousel\nPalette cues: #1d1738, #a7f3d0, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Product, Problems, Features, Resources, Pricing. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 140,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00748,
+          "estimatedCostGbp": 0.005582
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/reference-saas-carousel-growth/background-reference-saas-carousel-growth.svg",
+          "provider": "local_mock",
+          "prompt": "Client: EoS\nTemplate: SaaS Carousel Growth\nIndustry/category: saas\nHeadline: More growth, less work. Get your time back.\nStyle references: uploaded reference: centered SaaS carousel hero, dark product hero, rounded customer card carousel\nPalette cues: #1d1738, #a7f3d0, #ffffff\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 135,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00747,
+          "estimatedCostGbp": 0.005575
+        }
+      ],
+      "estimatedSpendUsd": 0.022414,
+      "estimatedSpendGbp": 0.016727
+    },
+    "reference-spaceage-product-stage": {
+      "id": "reference-spaceage-product-stage",
+      "category": "ecommerce",
+      "title": "SpaceAge Product Stage",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/reference-spaceage-product-stage/hero-reference-spaceage-product-stage.svg",
+          "provider": "local_mock",
+          "prompt": "Client: SpaceAge\nTemplate: SpaceAge Product Stage\nIndustry/category: ecommerce\nHeadline: A launch page with atmosphere, motion, and product focus.\nStyle references: uploaded reference: SpaceAge dark hero, cinematic product stage, floating preview panel\nPalette cues: #11131d, #ef4444, #22d3ee\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for SpaceAge ecommerce. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 138,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007476,
+          "estimatedCostGbp": 0.005579
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/reference-spaceage-product-stage/section-reference-spaceage-product-stage.svg",
+          "provider": "local_mock",
+          "prompt": "Client: SpaceAge\nTemplate: SpaceAge Product Stage\nIndustry/category: ecommerce\nHeadline: A launch page with atmosphere, motion, and product focus.\nStyle references: uploaded reference: SpaceAge dark hero, cinematic product stage, floating preview panel\nPalette cues: #11131d, #ef4444, #22d3ee\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Launch, Collection, Story, Preview, Reserve. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 143,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007486,
+          "estimatedCostGbp": 0.005587
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/reference-spaceage-product-stage/background-reference-spaceage-product-stage.svg",
+          "provider": "local_mock",
+          "prompt": "Client: SpaceAge\nTemplate: SpaceAge Product Stage\nIndustry/category: ecommerce\nHeadline: A launch page with atmosphere, motion, and product focus.\nStyle references: uploaded reference: SpaceAge dark hero, cinematic product stage, floating preview panel\nPalette cues: #11131d, #ef4444, #22d3ee\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 139,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007478,
+          "estimatedCostGbp": 0.005581
+        }
+      ],
+      "estimatedSpendUsd": 0.02244,
+      "estimatedSpendGbp": 0.016746
+    },
+    "reference-interior-split-panel": {
+      "id": "reference-interior-split-panel",
+      "category": "real-estate",
+      "title": "Interior Split Panel",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/reference-interior-split-panel/hero-reference-interior-split-panel.svg",
+          "provider": "local_mock",
+          "prompt": "Client: HouseCut\nTemplate: Interior Split Panel\nIndustry/category: real-estate\nHeadline: A loft apartment arranged around modern comfort.\nStyle references: uploaded reference: interior split orange panel, home interior landing page, warm editorial hero\nPalette cues: #f97316, #111827, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for HouseCut real-estate. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 139,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007478,
+          "estimatedCostGbp": 0.005581
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/reference-interior-split-panel/section-reference-interior-split-panel.svg",
+          "provider": "local_mock",
+          "prompt": "Client: HouseCut\nTemplate: Interior Split Panel\nIndustry/category: real-estate\nHeadline: A loft apartment arranged around modern comfort.\nStyle references: uploaded reference: interior split orange panel, home interior landing page, warm editorial hero\nPalette cues: #f97316, #111827, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Spaces, Services, Materials, Process, Consultation. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 145,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00749,
+          "estimatedCostGbp": 0.00559
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/reference-interior-split-panel/background-reference-interior-split-panel.svg",
+          "provider": "local_mock",
+          "prompt": "Client: HouseCut\nTemplate: Interior Split Panel\nIndustry/category: real-estate\nHeadline: A loft apartment arranged around modern comfort.\nStyle references: uploaded reference: interior split orange panel, home interior landing page, warm editorial hero\nPalette cues: #f97316, #111827, #f8fafc\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 139,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007478,
+          "estimatedCostGbp": 0.005581
+        }
+      ],
+      "estimatedSpendUsd": 0.022446,
+      "estimatedSpendGbp": 0.016751
+    },
+    "reference-architecture-strip": {
+      "id": "reference-architecture-strip",
+      "category": "real-estate",
+      "title": "Architecture Strip",
+      "images": [
+        {
+          "title": "Hero image",
+          "kind": "hero",
+          "file": "/template-gallery/generated-imagery/reference-architecture-strip/hero-reference-architecture-strip.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Formline\nTemplate: Architecture Strip\nIndustry/category: real-estate\nHeadline: Building shapes for the future.\nStyle references: uploaded reference: architecture minimal hero, panoramic project strip, minimal architecture website\nPalette cues: #111827, #f8fafc, #cbd5e1\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a premium homepage hero background for Formline real-estate. Make it visually distinctive and suitable for a DaisyUI web template.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 135,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00747,
+          "estimatedCostGbp": 0.005575
+        },
+        {
+          "title": "Section image",
+          "kind": "section",
+          "file": "/template-gallery/generated-imagery/reference-architecture-strip/section-reference-architecture-strip.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Formline\nTemplate: Architecture Strip\nIndustry/category: real-estate\nHeadline: Building shapes for the future.\nStyle references: uploaded reference: architecture minimal hero, panoramic project strip, minimal architecture website\nPalette cues: #111827, #f8fafc, #cbd5e1\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a supporting section image for these website sections: Projects, Approach, Studio, Sustainability, Contact. It should work inside cards or editorial blocks.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 141,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.007482,
+          "estimatedCostGbp": 0.005584
+        },
+        {
+          "title": "Background image",
+          "kind": "background",
+          "file": "/template-gallery/generated-imagery/reference-architecture-strip/background-reference-architecture-strip.svg",
+          "provider": "local_mock",
+          "prompt": "Client: Formline\nTemplate: Architecture Strip\nIndustry/category: real-estate\nHeadline: Building shapes for the future.\nStyle references: uploaded reference: architecture minimal hero, panoramic project strip, minimal architecture website\nPalette cues: #111827, #f8fafc, #cbd5e1\nHigh-end commercial website imagery, no logos, no watermarks, no readable fake text, clean negative space for UI overlays.\nCreate a subtle atmospheric background/content image that can sit behind proof, CTA, or feature sections without hurting text readability.",
+          "model": "gpt-image-1-mini",
+          "quality": "low",
+          "size": "1536x1024",
+          "estimatedInputTokens": 135,
+          "estimatedOutputTokens": 900,
+          "estimatedCostUsd": 0.00747,
+          "estimatedCostGbp": 0.005575
+        }
+      ],
+      "estimatedSpendUsd": 0.022422,
+      "estimatedSpendGbp": 0.016733
+    }
+  },
+  "skipped": [],
+  "notes": [
+    "OPENAI_API_KEY was not set, so local mock SVG imagery was generated and no API spend occurred."
+  ]
+}

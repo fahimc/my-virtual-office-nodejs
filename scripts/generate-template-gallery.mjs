@@ -11,6 +11,7 @@ const root = path.join(__dirname, '..');
 const publicDir = path.join(root, 'public');
 const outDir = path.join(publicDir, 'template-gallery');
 const manifest = JSON.parse(await readFile(path.join(publicDir, 'placeholders', 'manifest.json'), 'utf8'));
+const generatedImageryManifest = await readJsonIfExists(path.join(outDir, 'generated-imagery', 'manifest.json'), { templates: {} });
 
 const templates = [
   {
@@ -423,7 +424,8 @@ const templates = [
   }
 ];
 
-await rm(outDir, { recursive: true, force: true });
+await mkdir(outDir, { recursive: true });
+await rm(path.join(outDir, 'templates'), { recursive: true, force: true });
 await mkdir(path.join(outDir, 'templates'), { recursive: true });
 
 const referenceManifest = templates.map(template => ({
@@ -454,6 +456,25 @@ for (const template of templates) {
 }
 
 await writeFile(path.join(outDir, 'design-references.json'), `${JSON.stringify(referenceManifest, null, 2)}\n`);
+await writeFile(path.join(outDir, 'template-data.json'), `${JSON.stringify({
+  generatedAt: new Date().toISOString(),
+  templates: templates.map(template => ({
+    id: template.id,
+    category: template.category,
+    title: template.title,
+    client: template.client,
+    badge: template.badge,
+    headline: template.headline,
+    subhead: template.subhead,
+    cta: template.cta,
+    secondary: template.secondary,
+    palette: template.palette,
+    metrics: template.metrics,
+    sections: template.sections,
+    inspiration: template.inspiration || [],
+    heroPattern: template.heroPattern || template.awardPattern || ''
+  }))
+}, null, 2)}\n`);
 await writeFile(path.join(outDir, 'palettes.json'), `${JSON.stringify({ ...paletteCollection, palettes: enrichedPalettes }, null, 2)}\n`);
 await writeFile(path.join(outDir, 'font-groups.json'), `${JSON.stringify({ ...fontCollection, groups: enrichedFontGroups }, null, 2)}\n`);
 await writeFile(path.join(outDir, 'index.html'), renderGallery());
@@ -758,8 +779,18 @@ function escapeScriptJson(value) {
 }
 
 function imageFor(template, index) {
+  const generatedPool = generatedImageryManifest.templates?.[template.id]?.images || [];
+  if (generatedPool.length) return generatedPool[index % generatedPool.length]?.file;
   const pool = manifest.categories[template.category] || manifest.categories.agency || [];
   return pool[index % pool.length]?.file || '/placeholders/agency/agency-001.jpg';
+}
+
+async function readJsonIfExists(filePath, fallback) {
+  try {
+    return JSON.parse(await readFile(filePath, 'utf8'));
+  } catch {
+    return fallback;
+  }
 }
 
 function slug(value) {
