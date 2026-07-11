@@ -37,6 +37,8 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
       codexTasks: project ? data.codexTasks.filter(task => task.projectId === project.id) : data.codexTasks,
       githubPullRequests: project ? data.githubPullRequests.filter(item => item.projectId === project.id) : data.githubPullRequests,
       emailDrafts: project ? data.emailDrafts.filter(item => item.projectId === project.id) : data.emailDrafts,
+      generatedImages: project ? data.generatedImages.filter(item => item.projectId === project.id) : data.generatedImages,
+      costLedger: project ? data.costLedger.filter(item => item.projectId === project.id) : data.costLedger,
       notifications: project ? data.notifications.filter(item => item.projectId === project.id) : data.notifications
     },
     activity: data.tasks.slice(-20).map(task => ({

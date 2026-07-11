@@ -12,6 +12,8 @@ export type ArtifactType =
   | 'design_tokens'
   | 'component_spec'
   | 'prototype'
+  | 'imagery_plan'
+  | 'generated_image'
   | 'design_handoff'
   | 'design_qa'
   | 'post_build_design_review'

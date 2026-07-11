@@ -132,13 +132,29 @@ export class DesignWorkflow {
     await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'prototype', state: {}, createdAt: '', updatedAt: '' }, 'design.prototype.created', { prototype });
     await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'mobile_rules', state: {}, createdAt: '', updatedAt: '' }, 'design.mobile_rules.created', { mobileRules: wireframes.mobileLayout });
 
+    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'imagery_generation', state: {}, createdAt: '', updatedAt: '' }, 'design.imagery.started', {});
+    const imageryPlan = await this.companyOS.imagery.generateWebsiteImagery({
+      projectId,
+      customerId: designBrief.customerId,
+      designBrief,
+      direction: selectedDirection,
+      mode: 'standard',
+      count: 5
+    });
+    await this.saveArtifact(projectId, 'imagery_plan', 'imagery-plan.json', 'Website imagery plan', { imageryPlan });
+    for (const image of [imageryPlan.hero, ...imageryPlan.pageImages, ...imageryPlan.sectionImages]) {
+      await this.saveArtifact(projectId, 'generated_image', `imagery/${image.id}.json`, image.title, image as unknown as Record<string, unknown>);
+    }
+    await this.completeTask(projectId, 'imagery_generation', { imageryPlan });
+    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'imagery_generation', state: {}, createdAt: '', updatedAt: '' }, 'design.imagery.completed', { imageryPlan });
+
     await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'design_qa', state: {}, createdAt: '', updatedAt: '' }, 'design.qa.started', {});
     const qaReport = createDesignQa(projectId);
     await this.saveDesign(projectId, 'qaReports', qaReport, 'design_qa', 'design-qa-report.md', 'Design QA report');
     await this.completeTask(projectId, 'design_qa', { qaReport });
     await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'design_qa', state: {}, createdAt: '', updatedAt: '' }, qaReport.passed ? 'design.qa.passed' : 'design.qa.failed', { qaReport });
 
-    const handoff = createHandoff({ selectedDirection: selected, direction: selectedDirection, sitemap, wireframes, tokens, componentSpec });
+    const handoff = createHandoff({ selectedDirection: selected, direction: selectedDirection, sitemap, wireframes, tokens, componentSpec, imageryPlan });
     await this.saveDesign(projectId, 'handoffs', handoff, 'design_handoff', 'design-handoff.md', 'Builder handoff');
     await this.completeTask(projectId, 'builder_handoff', { handoff });
     await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'handoff', state: {}, createdAt: '', updatedAt: '' }, 'design.handoff.created', { handoff });
@@ -193,6 +209,7 @@ export class DesignWorkflow {
       ['Design Tokens', 'design_tokens'],
       ['Component System', 'component_system'],
       ['Prototype', 'prototype'],
+      ['Website Imagery', 'imagery_generation'],
       ['Design QA', 'design_qa'],
       ['Design Approval', 'design_approval'],
       ['Builder Handoff', 'builder_handoff'],

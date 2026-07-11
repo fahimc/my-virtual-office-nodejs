@@ -25,6 +25,8 @@ import type { Prototype } from '../schemas/prototype.schema.js';
 import type { DesignHandoff } from '../schemas/designHandoff.schema.js';
 import type { DesignQaReport } from '../schemas/designQa.schema.js';
 import type { ImplementationPlan } from '../schemas/implementationPlan.schema.js';
+import type { GeneratedImageAsset, WebsiteImageryPlan } from '../schemas/generatedImage.schema.js';
+import type { CostLedgerEntry } from '../schemas/costLedger.schema.js';
 
 export interface AgencyStoreData {
   customers: Customer[];
@@ -42,6 +44,9 @@ export interface AgencyStoreData {
   previews: PreviewRecord[];
   deployments: DeploymentRecord[];
   implementationPlans: ImplementationPlan[];
+  generatedImages: GeneratedImageAsset[];
+  imageryPlans: WebsiteImageryPlan[];
+  costLedger: CostLedgerEntry[];
   notifications: Array<{ id: string; projectId?: string; type: string; title: string; message: string; read: boolean; createdAt: string }>;
   design: {
     briefs: DesignBrief[];
@@ -78,6 +83,9 @@ const emptyStore = (): AgencyStoreData => ({
   previews: [],
   deployments: [],
   implementationPlans: [],
+  generatedImages: [],
+  imageryPlans: [],
+  costLedger: [],
   notifications: [],
   design: {
     briefs: [],

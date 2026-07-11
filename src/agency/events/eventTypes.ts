@@ -23,6 +23,8 @@ export type AgencyEventType =
   | 'design.component_spec.created'
   | 'design.prototype.started'
   | 'design.prototype.created'
+  | 'design.imagery.started'
+  | 'design.imagery.completed'
   | 'design.mobile_rules.created'
   | 'design.qa.started'
   | 'design.qa.failed'

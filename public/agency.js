@@ -495,6 +495,9 @@
     const direction = (design.creativeDirections || []).find(item => selected && item.id === selected.selectedDirectionId) || (design.creativeDirections || [])[0];
     const pendingDesignApproval = (design.approvals || [])[0];
     const designArtifacts = design.artifacts || [];
+    const generatedImages = design.generatedImages || [];
+    const imageryPlan = design.imageryPlan;
+    const imageCost = design.finance?.estimatedCostUsd || 0;
     const tokenColors = design.tokens && design.tokens.colours ? Object.values(design.tokens.colours).slice(0, 8) : [];
     const existingDesignFeedback = document.getElementById('designStudioFeedback')?.value || '';
     els.designStudioBody.innerHTML = `
@@ -565,6 +568,20 @@
           <b>Prototype</b>
           <span>${design.prototypePreview?.previewUrl ? `<a href="${design.prototypePreview.previewUrl}" target="_blank" rel="noreferrer">Open prototype</a>` : 'Prototype pending'}</span>
         </div>
+        <div class="design-studio-card design-studio-card-wide">
+          <b>Generated Imagery</b>
+          <span>${imageryPlan ? `${generatedImages.length} website images planned/generated. Estimated generation spend: $${Number(imageCost).toFixed(4)}.` : 'Imagery generation has not run yet'}</span>
+          ${generatedImages.length ? `
+            <div class="generated-image-strip">
+              ${generatedImages.slice(0, 5).map(image => `
+                <a href="${image.url || '#'}" target="_blank" rel="noreferrer" title="${escapeHtml(image.prompt)}">
+                  <img src="${image.url || ''}" alt="${escapeHtml(image.title)}">
+                  <small>${escapeHtml(image.title)}<br>${escapeHtml(image.tier)} - ${escapeHtml(image.provider)}</small>
+                </a>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
         <div class="design-studio-card">
           <b>Design QA</b>
           <span>${design.qaReport ? (design.qaReport.passed ? 'Passed' : 'Needs fixes') : 'Not reviewed yet'}</span>
@@ -572,6 +589,10 @@
         <div class="design-studio-card">
           <b>Builder Handoff</b>
           <span>${design.handoff ? design.handoff.handoffSummary : 'Not handed off yet'}</span>
+        </div>
+        <div class="design-studio-card">
+          <b>Finance</b>
+          <span>${design.finance ? `Estimated build spend tracked: $${Number(design.finance.estimatedCostUsd || 0).toFixed(4)}. Image entries: ${(design.finance.imageGenerationEntries || []).length}.` : 'No cost entries yet'}</span>
         </div>
         <div class="design-studio-card design-studio-card-wide">
           <details class="resources-panel compact">

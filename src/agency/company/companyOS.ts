@@ -7,6 +7,7 @@ import { ToolExecutionRuntime } from '../runtime/toolExecutionRuntime.js';
 import { Scheduler } from '../runtime/scheduler.js';
 import { RetryPolicy } from '../runtime/retryPolicy.js';
 import { EnvSecretsProvider } from '../runtime/envSecretsProvider.js';
+import { BudgetPolicy } from '../runtime/budgetPolicy.js';
 import { TaskBoardStore } from '../tools/taskboard/taskBoardStore.js';
 import { TaskBoardService } from '../tools/taskboard/taskBoardService.js';
 import { TaskAssignmentService } from '../tools/taskboard/taskAssignmentService.js';
@@ -50,8 +51,10 @@ import { screenshotReviewTool } from '../tools/design/screenshotReviewTool.js';
 import { accessibilityDesignTool } from '../tools/design/accessibilityDesignTool.js';
 import { visualQaTool } from '../tools/design/visualQaTool.js';
 import { designHandoffTool } from '../tools/design/designHandoffTool.js';
+import { createImageryGenerationTool, ImageryGenerationService } from '../tools/design/imageryGenerationTool.js';
 import { DeveloperPlanningService } from '../tools/developer/developerPlanningService.js';
 import { QuoteService } from '../tools/billing/quoteService.js';
+import { CostLedgerService } from '../tools/billing/costLedgerService.js';
 import { InvoiceService } from '../tools/billing/invoiceService.js';
 import { PaymentStatusService } from '../tools/billing/paymentStatusService.js';
 import { companyConfigFromEnv } from './companyConfig.js';
@@ -65,6 +68,7 @@ export class CompanyOS {
   readonly toolExecution: ToolExecutionRuntime;
   readonly scheduler = new Scheduler();
   readonly retryPolicy = new RetryPolicy();
+  readonly budgetPolicy = new BudgetPolicy();
   readonly taskBoardStore: TaskBoardStore;
   readonly taskBoard: TaskBoardService;
   readonly taskAssignment = new TaskAssignmentService();
@@ -85,6 +89,8 @@ export class CompanyOS {
   readonly notifications: NotificationService;
   readonly developerPlanning: DeveloperPlanningService;
   readonly quotes = new QuoteService();
+  readonly costs: CostLedgerService;
+  readonly imagery: ImageryGenerationService;
   readonly invoices = new InvoiceService();
   readonly payments = new PaymentStatusService();
   readonly tools: ToolDefinition[];
@@ -111,6 +117,8 @@ export class CompanyOS {
     this.deploymentApprovals = new DeploymentApprovalService(approvalService);
     this.notifications = new NotificationService(store);
     this.developerPlanning = new DeveloperPlanningService(store, this.taskBoard, workspaceRoot);
+    this.costs = new CostLedgerService(store);
+    this.imagery = new ImageryGenerationService(store, this.costs, this.budgetPolicy, workspaceRoot);
     this.tools = [
       createCompanyEmailTool(this.emailDrafts, this.emailProvider),
       createCodexTool(this.codex),
@@ -136,7 +144,8 @@ export class CompanyOS {
       screenshotReviewTool,
       accessibilityDesignTool,
       visualQaTool,
-      designHandoffTool
+      designHandoffTool,
+      createImageryGenerationTool(this.imagery)
     ];
   }
 
@@ -153,6 +162,10 @@ export class CompanyOS {
       previews: data.previews.filter(item => !projectId || item.projectId === projectId),
       deployments: data.deployments.filter(item => !projectId || item.projectId === projectId),
       implementationPlans: data.implementationPlans.filter(item => !projectId || item.projectId === projectId),
+      generatedImages: data.generatedImages.filter(item => !projectId || item.projectId === projectId),
+      imageryPlans: data.imageryPlans.filter(item => !projectId || item.projectId === projectId),
+      costLedger: data.costLedger.filter(item => !projectId || item.projectId === projectId),
+      costSummary: projectId ? await this.costs.summarizeProject(projectId) : undefined,
       design: {
         briefs: data.design.briefs.filter(item => !projectId || item.projectId === projectId),
         brandAudits: data.design.brandAudits.filter(item => !projectId || item.projectId === projectId),

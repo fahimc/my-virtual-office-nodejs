@@ -19,10 +19,13 @@ export type DesignModelTaskType =
   | 'design_tokens'
   | 'component_spec'
   | 'prototype_generation'
+  | 'design_imagery'
+  | 'image_prompting'
   | 'design_qa'
   | 'accessibility_review'
   | 'design_handoff'
-  | 'visual_qa';
+  | 'visual_qa'
+  | 'cost_estimation';
 
 export type AnyModelTaskType = ModelTaskType | DesignModelTaskType;
 
@@ -62,9 +65,12 @@ export const defaultModelConfig: ModelConfig = {
     design_tokens: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl },
     component_spec: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl },
     prototype_generation: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl },
+    design_imagery: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl },
+    image_prompting: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl },
     design_qa: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl },
     accessibility_review: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl },
     design_handoff: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl },
-    visual_qa: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl }
+    visual_qa: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl },
+    cost_estimation: { provider: 'ollama', model: ollamaModel, baseUrl: ollamaBaseUrl }
   }
 };

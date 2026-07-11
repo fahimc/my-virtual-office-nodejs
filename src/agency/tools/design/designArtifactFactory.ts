@@ -12,6 +12,7 @@ import type { ComponentSpec } from '../../schemas/componentSpec.schema.js';
 import type { Prototype } from '../../schemas/prototype.schema.js';
 import type { DesignHandoff } from '../../schemas/designHandoff.schema.js';
 import type { DesignQaReport } from '../../schemas/designQa.schema.js';
+import type { WebsiteImageryPlan } from '../../schemas/generatedImage.schema.js';
 
 export interface DesignContextInput {
   projectId: string;
@@ -345,7 +346,10 @@ export function createDesignQa(projectId: string, artifactIds: string[] = []): D
   };
 }
 
-export function createHandoff(input: { selectedDirection: SelectedDirection; direction: CreativeDirection; sitemap: Sitemap; wireframes: Wireframe; tokens: DesignTokens; componentSpec: ComponentSpec }): DesignHandoff {
+export function createHandoff(input: { selectedDirection: SelectedDirection; direction: CreativeDirection; sitemap: Sitemap; wireframes: Wireframe; tokens: DesignTokens; componentSpec: ComponentSpec; imageryPlan?: WebsiteImageryPlan }): DesignHandoff {
+  const generatedAssets = input.imageryPlan
+    ? [input.imageryPlan.hero, ...input.imageryPlan.pageImages, ...input.imageryPlan.sectionImages].map(asset => `${asset.title}: ${asset.url || asset.filePath || asset.status}`)
+    : [];
   return {
     projectId: input.direction.projectId,
     selectedDirection: input.selectedDirection,
@@ -355,9 +359,9 @@ export function createHandoff(input: { selectedDirection: SelectedDirection; dir
     componentSpec: input.componentSpec,
     responsiveRules: input.componentSpec.responsiveRules,
     animationSpec: [input.direction.animationStyle],
-    assetList: ['Logo', 'Final imagery', 'Case study proof assets'],
+    assetList: generatedAssets.length ? ['Logo', ...generatedAssets, 'Case study proof assets'] : ['Logo', 'Final imagery', 'Case study proof assets'],
     accessibilityRequirements: input.componentSpec.accessibilityRules,
-    implementationNotes: ['Implement from this handoff, not from the original brief alone', 'Use design tokens for colours, spacing, radius, and shadows', 'Preserve mobile layout priorities'],
+    implementationNotes: ['Implement from this handoff, not from the original brief alone', 'Use design tokens for colours, spacing, radius, and shadows', 'Use generated imagery assets when present before falling back to placeholders', 'Preserve mobile layout priorities'],
     acceptanceCriteria: ['Matches selected creative direction', 'Uses generated design tokens', 'All key sections present', 'Desktop/tablet/mobile layouts are polished', 'CTA hierarchy is clear'],
     handoffSummary: `${input.direction.name} handoff ready for Builder Agent.`
   };

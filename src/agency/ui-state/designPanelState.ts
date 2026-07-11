@@ -6,6 +6,9 @@ export function buildDesignPanelState(data: AgencyStoreData, projectId?: string)
   const selectedDirection = filter(data.design.selectedDirections).at(-1);
   const qaReports = filter(data.design.qaReports);
   const handoff = filter(data.design.handoffs).at(-1);
+  const imageryPlan = data.imageryPlans.filter(item => !projectId || item.projectId === projectId).at(-1);
+  const generatedImages = data.generatedImages.filter(item => !projectId || item.projectId === projectId);
+  const costEntries = data.costLedger.filter(item => !projectId || item.projectId === projectId);
   const artifacts = data.artifacts.filter(item => (!projectId || item.projectId === projectId) && item.path?.startsWith('project/design/'));
   const phase = handoff ? 'handoff_ready' : selectedDirection ? 'production_design' : creativeDirections.length ? 'creative_direction_approval' : filter(data.design.briefs).length ? 'discovery' : 'not_started';
   return {
@@ -20,6 +23,13 @@ export function buildDesignPanelState(data: AgencyStoreData, projectId?: string)
     tokens: filter(data.design.tokens).at(-1),
     componentSpec: filter(data.design.componentSpecs).at(-1),
     prototype: filter(data.design.prototypes).at(-1),
+    imageryPlan,
+    generatedImages,
+    finance: {
+      estimatedCostUsd: Number(costEntries.reduce((sum, item) => sum + item.estimatedCostUsd, 0).toFixed(6)),
+      actualCostUsd: Number(costEntries.reduce((sum, item) => sum + (item.actualCostUsd || 0), 0).toFixed(6)),
+      imageGenerationEntries: costEntries.filter(item => item.toolName === 'design.openai_image_generation')
+    },
     qaReport: qaReports.at(-1),
     postBuildReview: qaReports.filter(report => report.designArtifactIds.length === 0).at(-1),
     handoff,

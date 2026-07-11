@@ -43,6 +43,7 @@ export type DesignTaskType =
   | 'design_tokens'
   | 'component_system'
   | 'prototype'
+  | 'imagery_generation'
   | 'mobile_design'
   | 'design_qa'
   | 'design_approval'

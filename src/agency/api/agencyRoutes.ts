@@ -245,6 +245,27 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     res.json({ prototype: state.designStudio.prototype });
   }));
 
+  router.post('/design/:projectId/imagery', route(async (req, res) => {
+    const state = await system.officeState(req.params.projectId);
+    const designBrief = state.designStudio.designBrief;
+    const direction = req.body.direction || state.designStudio.creativeDirections?.[0];
+    if (!designBrief || !direction) return void res.status(409).json({ error: 'Design brief and creative direction are required before imagery generation' });
+    const plan = await system.companyOS.imagery.generateWebsiteImagery({
+      projectId: req.params.projectId,
+      customerId: designBrief.customerId,
+      designBrief,
+      direction,
+      mode: req.body.mode || 'standard',
+      count: Number(req.body.count || 5)
+    });
+    res.json({ imageryPlan: plan, officeState: await system.officeState(req.params.projectId), companyState: await system.companyState(req.params.projectId) });
+  }));
+
+  router.get('/design/:projectId/imagery', route(async (req, res) => {
+    const state = await system.officeState(req.params.projectId);
+    res.json({ imageryPlan: state.designStudio.imageryPlan, generatedImages: state.designStudio.generatedImages, finance: state.designStudio.finance });
+  }));
+
   router.post('/design/:projectId/qa', route(async (req, res) => {
     const report = await system.designWorkflow.postBuildReview(req.params.projectId, req.body.previewUrl);
     res.json({ report });
@@ -282,6 +303,10 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   router.post('/design/:projectId/post-build-review', route(async (req, res) => {
     const report = await system.designWorkflow.postBuildReview(req.params.projectId, req.body.previewUrl);
     res.json({ report, officeState: await system.officeState(req.params.projectId) });
+  }));
+
+  router.get('/finance/:projectId/costs', route(async (req, res) => {
+    res.json(await system.companyOS.costs.summarizeProject(req.params.projectId));
   }));
 
   router.get('/office-state', route(async (req, res) => {
