@@ -190,30 +190,35 @@ function architectureStrip(template, images) {
   </div>`;
 }
 
-function productBottleStage(template) {
-  return `<div class="relative min-h-[420px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-secondary via-primary to-accent p-6 shadow-2xl md:min-h-[520px]">
-    <div class="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/25 blur-sm"></div>
-    <div class="absolute -bottom-20 left-10 h-72 w-72 rounded-full bg-secondary/30 blur-xl"></div>
-    <div class="relative grid h-full min-h-[360px] place-items-center md:min-h-[470px]">
-      <div class="flex items-end justify-center gap-3 md:gap-4 md:rotate-[-4deg]">
-        ${template.palette.map((color, index) => `<div class="relative w-20 rounded-[1.6rem] border-4 border-white/70 bg-white/40 shadow-2xl backdrop-blur" style="height:${230 + index * 28}px"><div class="absolute left-1/2 top-[-34px] h-12 w-9 -translate-x-1/2 rounded-t-xl bg-neutral"></div><div class="absolute inset-x-3 bottom-4 rounded-2xl bg-white/85 p-3 text-center text-sm font-black text-neutral">${escapeHtml(['Mango', 'Berry', 'Leaf'][index] || template.client)}</div><div class="absolute inset-x-4 top-14 h-24 rounded-full" style="background:${color}"></div></div>`).join('')}
+function productBottleStage(template, images) {
+  return `<div class="relative min-h-[420px] overflow-hidden rounded-[2rem] bg-neutral shadow-2xl md:min-h-[560px]">
+    <img src="${images[0]}" alt="" class="absolute inset-0 h-full w-full object-cover agency-slow-zoom">
+    <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-black/15 to-black/70"></div>
+    <div class="relative z-10 flex min-h-[420px] flex-col justify-between p-5 text-white md:min-h-[560px] md:p-8">
+      ${miniNav(template, 'bg-white/12 text-white border-white/15')}
+      <div class="max-w-3xl">
+        <span class="badge badge-primary badge-lg">${escapeHtml(template.badge)}</span>
+        <h3 class="mt-5 text-5xl font-black leading-none md:text-7xl">${escapeHtml(template.headline)}</h3>
+        <p class="mt-5 max-w-xl text-lg text-white/76">${escapeHtml(template.subhead)}</p>
       </div>
-    </div>
-    <div class="absolute bottom-6 left-6 right-6 rounded-box border border-white/30 bg-base-100/90 p-5 shadow-xl backdrop-blur">
-      <strong class="text-2xl">${escapeHtml(template.title)}</strong>
-      <p class="mt-2 text-base-content/70">Bright product blocks, flavour comparison, and fast shopping actions.</p>
+      <div class="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+        ${metricStrip(template, 'border-white/20 bg-white/12 text-white backdrop-blur')}
+        <a class="btn btn-primary rounded-full" href="#contact">${escapeHtml(template.cta)}</a>
+      </div>
     </div>
   </div>`;
 }
 
-function dashboardBrowser(template) {
-  return `<div class="relative min-h-[420px] rounded-[2rem] bg-neutral p-4 text-neutral-content shadow-2xl md:min-h-[520px] md:p-5">
-    <div class="mockup-browser border border-white/15 bg-base-100 text-base-content shadow-2xl">
+function dashboardBrowser(template, images) {
+  return `<div class="relative min-h-[420px] overflow-hidden rounded-[2rem] bg-neutral p-4 text-neutral-content shadow-2xl md:min-h-[560px] md:p-5">
+    <img src="${images[0]}" alt="" class="absolute inset-0 h-full w-full object-cover opacity-45 agency-slow-zoom">
+    <div class="absolute inset-0 bg-gradient-to-br from-neutral/95 via-neutral/82 to-neutral/55"></div>
+    <div class="relative z-10 mockup-browser border border-white/15 bg-base-100 text-base-content shadow-2xl">
       <div class="mockup-browser-toolbar"><div class="input input-bordered w-full">${escapeHtml(template.client.toLowerCase().replaceAll(' ', ''))}.app/dashboard</div></div>
       <div class="grid gap-4 bg-base-200 p-5 md:grid-cols-3">
+        <figure class="overflow-hidden rounded-box shadow-xl md:col-span-2"><img src="${images[0]}" alt="" class="h-64 w-full object-cover md:h-80"></figure>
         <div class="stats stats-vertical shadow md:col-span-1">${template.metrics.map(([value, label]) => `<div class="stat"><div class="stat-value text-2xl">${escapeHtml(value)}</div><div class="stat-desc">${escapeHtml(label)}</div></div>`).join('')}</div>
-        <div class="card bg-base-100 shadow-xl md:col-span-2"><div class="card-body"><div class="mb-3 h-4 w-32 rounded bg-primary"></div><div class="grid gap-3">${[64, 88, 52, 78].map(width => `<div class="h-5 rounded bg-base-300" style="width:${width}%"></div>`).join('')}</div><div class="mt-5 grid grid-cols-4 gap-2">${[1, 2, 3, 4].map(() => `<div class="h-20 rounded-box bg-primary/20"></div>`).join('')}</div></div></div>
-        <div class="card bg-primary text-primary-content shadow-xl md:col-span-3"><div class="card-body flex-row items-center justify-between"><strong>Automation health</strong><span class="badge badge-neutral">Live</span></div></div>
+        <div class="card bg-primary text-primary-content shadow-xl md:col-span-3"><div class="card-body flex-row items-center justify-between"><strong>${escapeHtml(template.headline)}</strong><a class="btn btn-neutral rounded-full" href="#contact">${escapeHtml(template.cta)}</a></div></div>
       </div>
     </div>
   </div>`;
@@ -239,10 +244,12 @@ function editorialGallery(template, images) {
   </div>`;
 }
 
-function dataStoryMap(template) {
-  return `<div class="relative min-h-[430px] rounded-[2rem] bg-base-200 p-5 shadow-2xl md:min-h-[560px]">
-    <div class="grid min-h-[390px] gap-4 md:min-h-[520px] md:grid-cols-[1.1fr_.9fr]">
-      <div class="card bg-base-100 shadow-xl"><div class="card-body"><span class="badge badge-primary">Live signal map</span><div class="mt-4 grid flex-1 grid-cols-7 gap-2">${Array.from({ length: 49 }, (_, index) => `<span class="aspect-square rounded ${index % 5 === 0 ? 'bg-primary' : index % 7 === 0 ? 'bg-accent' : 'bg-base-300'}"></span>`).join('')}</div></div></div>
+function dataStoryMap(template, images) {
+  return `<div class="relative min-h-[430px] overflow-hidden rounded-[2rem] bg-base-200 p-5 shadow-2xl md:min-h-[560px]">
+    <img src="${images[0]}" alt="" class="absolute inset-0 h-full w-full object-cover opacity-25 agency-slow-zoom">
+    <div class="absolute inset-0 bg-base-200/80"></div>
+    <div class="relative z-10 grid min-h-[390px] gap-4 md:min-h-[520px] md:grid-cols-[1.1fr_.9fr]">
+      <figure class="relative overflow-hidden rounded-box shadow-2xl"><img src="${images[0]}" alt="" class="h-full min-h-[300px] w-full object-cover"><figcaption class="absolute bottom-5 left-5 right-5 rounded-box border border-white/20 bg-black/40 p-4 text-white backdrop-blur"><b>${escapeHtml(template.title)}</b><p class="mt-1 text-sm text-white/70">${escapeHtml(template.subhead)}</p></figcaption></figure>
       <div class="grid gap-4">${template.metrics.map(([value, label], index) => `<div class="card bg-base-100 shadow-xl"><div class="card-body"><span class="text-4xl font-black">${escapeHtml(value)}</span><p>${escapeHtml(label)}</p><progress class="progress progress-primary" value="${70 - index * 12}" max="100"></progress></div></div>`).join('')}</div>
     </div>
   </div>`;
@@ -259,10 +266,10 @@ function museumEditorial(template, images) {
   </div>`;
 }
 
-function humanCauseTimeline(template) {
+function humanCauseTimeline(template, images) {
   return `<div class="relative min-h-[430px] rounded-[2rem] bg-base-200 p-5 shadow-2xl md:min-h-[560px]">
     <div class="grid min-h-[390px] gap-4 md:min-h-[520px] md:grid-cols-[.85fr_1.15fr]">
-      <div class="card bg-neutral text-neutral-content shadow-xl"><div class="card-body justify-end"><span class="badge badge-warning">Human story</span><h3 class="text-4xl font-black">Evidence, care, and action in one page.</h3></div></div>
+      <figure class="relative overflow-hidden rounded-box bg-neutral text-neutral-content shadow-xl"><img src="${images[0]}" alt="" class="absolute inset-0 h-full w-full object-cover opacity-75 agency-slow-zoom"><div class="absolute inset-0 bg-gradient-to-t from-neutral/85 to-transparent"></div><figcaption class="relative z-10 flex h-full min-h-[300px] flex-col justify-end p-6"><span class="badge badge-warning">${escapeHtml(template.badge)}</span><h3 class="mt-4 text-4xl font-black">${escapeHtml(template.headline)}</h3></figcaption></figure>
       <div class="relative rounded-box bg-base-100 p-6 shadow-xl">
         <div class="absolute left-10 top-8 bottom-8 w-px bg-primary"></div>
         ${['Story opened', 'Evidence reviewed', 'People mobilised', 'Action taken'].map((item, index) => `<div class="relative z-10 ml-10 mb-8 rounded-box border border-base-300 bg-base-100 p-4 shadow"><span class="badge badge-primary">${index + 1}</span><strong class="ml-3">${escapeHtml(item)}</strong></div>`).join('')}
