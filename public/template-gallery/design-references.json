@@ -3,120 +3,270 @@
     "id": "fruit-commerce-splash",
     "title": "Fruit Commerce Splash",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/bold%20product%20cards",
       "https://dribbble.com/search/oversized%20editorial%20typography",
       "https://dribbble.com/search/bright%20ecommerce%20landing%20page"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "saas-command-center",
     "title": "SaaS Command Center",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/glass%20dashboard%20cards",
       "https://dribbble.com/search/clean%20SaaS%20hero",
       "https://dribbble.com/search/product%20UI%20depth"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "local-trades-proof",
     "title": "Local Trades Proof",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/high%20trust%20service%20cards",
       "https://dribbble.com/search/strong%20contact%20CTA",
       "https://dribbble.com/search/local%20proof%20blocks"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "beauty-booking-editorial",
     "title": "Beauty Booking Editorial",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/soft%20editorial%20layout",
       "https://dribbble.com/search/luxury%20service%20cards",
       "https://dribbble.com/search/large%20beauty%20imagery"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "clinic-calm-care",
     "title": "Clinic Calm Care",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/calm%20healthcare%20web%20design",
       "https://dribbble.com/search/clear%20appointment%20flow",
       "https://dribbble.com/search/accessible%20service%20cards"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "restaurant-night-menu",
     "title": "Restaurant Night Menu",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/warm%20restaurant%20landing%20page",
       "https://dribbble.com/search/menu%20card%20design",
       "https://dribbble.com/search/immersive%20hospitality%20photography"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "property-showcase",
     "title": "Property Showcase",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/image-led%20property%20website",
       "https://dribbble.com/search/premium%20listing%20cards",
       "https://dribbble.com/search/clean%20estate%20agency%20layout"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "portfolio-creator-grid",
     "title": "Portfolio Creator Grid",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/portfolio%20masonry%20grid",
       "https://dribbble.com/search/creator%20landing%20page",
       "https://dribbble.com/search/bold%20personal%20brand"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "agency-premium-system",
     "title": "Agency Premium System",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/premium%20agency%20website",
       "https://dribbble.com/search/case%20study%20cards",
       "https://dribbble.com/search/service%20design%20system"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "fitness-membership-flow",
     "title": "Fitness Membership Flow",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/high%20contrast%20fitness%20landing%20page",
       "https://dribbble.com/search/movement%20photography",
       "https://dribbble.com/search/membership%20pricing%20cards"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "fashion-shop-editorial",
     "title": "Fashion Shop Editorial",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/fashion%20ecommerce%20homepage",
       "https://dribbble.com/search/lookbook%20grid",
       "https://dribbble.com/search/editorial%20product%20cards"
-    ]
+    ],
+    "researchSources": []
   },
   {
     "id": "learning-platform",
     "title": "Learning Platform",
     "source": "Dribbble search reference only - no images copied or stored",
+    "awardInspired": false,
+    "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/education%20landing%20page",
       "https://dribbble.com/search/course%20cards",
       "https://dribbble.com/search/friendly%20learning%20journey"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "awarded-museum-editorial",
+    "title": "Museum Editorial",
+    "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
+    "awardInspired": true,
+    "pattern": "museum-editorial",
+    "searches": [
+      "https://dribbble.com/search/Webby%202026%20Architecture%20Art%20Design%20winner%20Warhol%20Art",
+      "https://dribbble.com/search/Awwwards%20art%20portfolio%20editorial",
+      "https://dribbble.com/search/museum%20website%20immersive%20typography"
+    ],
+    "researchSources": [
+      "https://www.awwwards.com/websites/sites_of_the_day/",
+      "https://www.awwwards.com/websites/interaction-design/",
+      "https://www.cssdesignawards.com/",
+      "https://www.csswinner.com/",
+      "https://winners.webbyawards.com/winners/websites-and-mobile-sites"
+    ]
+  },
+  {
+    "id": "awarded-cinematic-luxury",
+    "title": "Cinematic Luxury",
+    "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
+    "awardInspired": true,
+    "pattern": "cinematic-luxury",
+    "searches": [
+      "https://dribbble.com/search/CSS%20Winner%20Depo%20Luxe%20cinematic%20luxury",
+      "https://dribbble.com/search/Awwwards%20luxury%20product%20storytelling",
+      "https://dribbble.com/search/premium%20editorial%20interaction%20design"
+    ],
+    "researchSources": [
+      "https://www.awwwards.com/websites/sites_of_the_day/",
+      "https://www.awwwards.com/websites/interaction-design/",
+      "https://www.cssdesignawards.com/",
+      "https://www.csswinner.com/",
+      "https://winners.webbyawards.com/winners/websites-and-mobile-sites"
+    ]
+  },
+  {
+    "id": "awarded-data-story",
+    "title": "Data Story Observatory",
+    "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
+    "awardInspired": true,
+    "pattern": "data-story",
+    "searches": [
+      "https://dribbble.com/search/Webby%202026%20Best%20Data%20Visualization%20nominees",
+      "https://dribbble.com/search/Reuters%20data%20quiz%20pattern",
+      "https://dribbble.com/search/Climate%20TRACE%20visual%20narrative"
+    ],
+    "researchSources": [
+      "https://www.awwwards.com/websites/sites_of_the_day/",
+      "https://www.awwwards.com/websites/interaction-design/",
+      "https://www.cssdesignawards.com/",
+      "https://www.csswinner.com/",
+      "https://winners.webbyawards.com/winners/websites-and-mobile-sites"
+    ]
+  },
+  {
+    "id": "awarded-kinetic-agency",
+    "title": "Kinetic Agency",
+    "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
+    "awardInspired": true,
+    "pattern": "kinetic-agency",
+    "searches": [
+      "https://dribbble.com/search/Awwwards%20interaction%20design%20gallery",
+      "https://dribbble.com/search/FWA%20experimental%20interaction%20patterns",
+      "https://dribbble.com/search/Webby%20Best%20Home%20Page%20agency%20honorees"
+    ],
+    "researchSources": [
+      "https://www.awwwards.com/websites/sites_of_the_day/",
+      "https://www.awwwards.com/websites/interaction-design/",
+      "https://www.cssdesignawards.com/",
+      "https://www.csswinner.com/",
+      "https://winners.webbyawards.com/winners/websites-and-mobile-sites"
+    ]
+  },
+  {
+    "id": "awarded-immersive-product",
+    "title": "Immersive Product Drop",
+    "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
+    "awardInspired": true,
+    "pattern": "immersive-product",
+    "searches": [
+      "https://dribbble.com/search/Webby%202026%20Best%20Home%20Page%20honoree%20Aether%201",
+      "https://dribbble.com/search/Awwwards%20product%20launch%20sites",
+      "https://dribbble.com/search/FWA%20immersive%20product%20websites"
+    ],
+    "researchSources": [
+      "https://www.awwwards.com/websites/sites_of_the_day/",
+      "https://www.awwwards.com/websites/interaction-design/",
+      "https://www.cssdesignawards.com/",
+      "https://www.csswinner.com/",
+      "https://winners.webbyawards.com/winners/websites-and-mobile-sites"
+    ]
+  },
+  {
+    "id": "awarded-human-cause",
+    "title": "Human Cause Story",
+    "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
+    "awardInspired": true,
+    "pattern": "human-cause",
+    "searches": [
+      "https://dribbble.com/search/Webby%20Best%20Home%20Page%20honoree%20Ensaaf",
+      "https://dribbble.com/search/public%20service%20award%20websites",
+      "https://dribbble.com/search/accessible%20campaign%20storytelling"
+    ],
+    "researchSources": [
+      "https://www.awwwards.com/websites/sites_of_the_day/",
+      "https://www.awwwards.com/websites/interaction-design/",
+      "https://www.cssdesignawards.com/",
+      "https://www.csswinner.com/",
+      "https://winners.webbyawards.com/winners/websites-and-mobile-sites"
     ]
   }
 ]

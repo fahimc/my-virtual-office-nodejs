@@ -201,6 +201,114 @@ const templates = [
     metrics: [['18', 'courses'], ['92%', 'completion'], ['1:1', 'support']],
     sections: ['Outcome hero', 'Course cards', 'Learning path', 'Tutor proof', 'Enquiry'],
     inspiration: ['education landing page', 'course cards', 'friendly learning journey']
+  },
+  {
+    id: 'awarded-museum-editorial',
+    category: 'portfolio',
+    theme: 'night',
+    awardInspired: true,
+    awardPattern: 'museum-editorial',
+    title: 'Museum Editorial',
+    client: 'Warhol Archive',
+    badge: 'Award-inspired art site',
+    headline: 'An exhibition homepage with the confidence of a gallery wall.',
+    subhead: 'A visual arts template shaped by award-gallery patterns: restrained navigation, dramatic cropping, archival captions, and cinematic object focus.',
+    cta: 'Enter exhibition',
+    secondary: 'View collection',
+    palette: ['#f8fafc', '#ef4444', '#0f172a'],
+    metrics: [['48', 'works'], ['7', 'rooms'], ['1960s', 'archive focus']],
+    sections: ['Exhibition hero', 'Archive grid', 'Curator notes', 'Visit plan', 'Tickets'],
+    inspiration: ['Webby 2026 Architecture Art Design winner Warhol Art', 'Awwwards art portfolio editorial', 'museum website immersive typography']
+  },
+  {
+    id: 'awarded-cinematic-luxury',
+    category: 'real-estate',
+    theme: 'luxury',
+    awardInspired: true,
+    awardPattern: 'cinematic-luxury',
+    title: 'Cinematic Luxury',
+    client: 'Maison Atlas',
+    badge: 'Luxury launch',
+    headline: 'A quiet luxury launch built around atmosphere, scarcity, and desire.',
+    subhead: 'A premium property/product template with dark editorial framing, slow reveal panels, concierge CTAs, and high-touch proof.',
+    cta: 'Request private view',
+    secondary: 'Explore story',
+    palette: ['#120f0a', '#d6b46a', '#f8f1df'],
+    metrics: [['12', 'private releases'], ['3', 'signature spaces'], ['1:1', 'concierge']],
+    sections: ['Cinematic hero', 'Private release', 'Craft details', 'Concierge proof', 'Request access'],
+    inspiration: ['CSS Winner Depo Luxe cinematic luxury', 'Awwwards luxury product storytelling', 'premium editorial interaction design']
+  },
+  {
+    id: 'awarded-data-story',
+    category: 'saas',
+    theme: 'corporate',
+    awardInspired: true,
+    awardPattern: 'data-story',
+    title: 'Data Story Observatory',
+    client: 'TraceLab',
+    badge: 'Data narrative',
+    headline: 'Turn a complex dataset into a story people can act on.',
+    subhead: 'A data-visualisation template with map-like cards, evidence modules, narrative steps, and clear reader takeaways.',
+    cta: 'Explore the data',
+    secondary: 'Read findings',
+    palette: ['#0f766e', '#38bdf8', '#f8fafc'],
+    metrics: [['140+', 'data sources'], ['9', 'regions'], ['3min', 'guided read']],
+    sections: ['Data hero', 'Signal map', 'Insight cards', 'Method notes', 'Action CTA'],
+    inspiration: ['Webby 2026 Best Data Visualization nominees', 'Reuters data quiz pattern', 'Climate TRACE visual narrative']
+  },
+  {
+    id: 'awarded-kinetic-agency',
+    category: 'agency',
+    theme: 'cyberpunk',
+    awardInspired: true,
+    awardPattern: 'kinetic-agency',
+    title: 'Kinetic Agency',
+    client: 'Junction Lab',
+    badge: 'Experimental studio',
+    headline: 'A studio homepage that moves like a pitch deck and lands like a product.',
+    subhead: 'An agency template inspired by motion-heavy award sites: kinetic type, diagonal work strips, capability chips, and bold proof moments.',
+    cta: 'Start a sprint',
+    secondary: 'See motion reel',
+    palette: ['#a855f7', '#22d3ee', '#111827'],
+    metrics: [['6wk', 'launch sprint'], ['40+', 'brand systems'], ['3x', 'lead lift']],
+    sections: ['Kinetic hero', 'Work strip', 'Capability chips', 'Proof wall', 'Sprint CTA'],
+    inspiration: ['Awwwards interaction design gallery', 'FWA experimental interaction patterns', 'Webby Best Home Page agency honorees']
+  },
+  {
+    id: 'awarded-immersive-product',
+    category: 'ecommerce',
+    theme: 'sunset',
+    awardInspired: true,
+    awardPattern: 'immersive-product',
+    title: 'Immersive Product Drop',
+    client: 'Aether One',
+    badge: 'Product experience',
+    headline: 'A product drop with depth, motion, and a reason to scroll.',
+    subhead: 'A launch template for objects, fashion, devices, and limited drops with layered product cards, feature hotspots, and pre-order flow.',
+    cta: 'Join the drop',
+    secondary: 'Inspect features',
+    palette: ['#f97316', '#7c3aed', '#111827'],
+    metrics: [['72h', 'early access'], ['5', 'feature layers'], ['1', 'limited drop']],
+    sections: ['Drop hero', 'Feature orbit', 'Material story', 'Social proof', 'Preorder'],
+    inspiration: ['Webby 2026 Best Home Page honoree Aether 1', 'Awwwards product launch sites', 'FWA immersive product websites']
+  },
+  {
+    id: 'awarded-human-cause',
+    category: 'healthcare',
+    theme: 'emerald',
+    awardInspired: true,
+    awardPattern: 'human-cause',
+    title: 'Human Cause Story',
+    client: 'Ensaaf Foundation',
+    badge: 'Cause campaign',
+    headline: 'A campaign page that makes the human story impossible to skip.',
+    subhead: 'A nonprofit/cause template with emotionally direct hierarchy, timeline evidence, donation prompts, and careful accessibility.',
+    cta: 'Support the work',
+    secondary: 'Read the story',
+    palette: ['#064e3b', '#fbbf24', '#f8fafc'],
+    metrics: [['25yr', 'timeline'], ['18k', 'records'], ['4', 'ways to help']],
+    sections: ['Story hero', 'Evidence timeline', 'Impact cards', 'Donate', 'Updates'],
+    inspiration: ['Webby Best Home Page honoree Ensaaf', 'public service award websites', 'accessible campaign storytelling']
   }
 ];
 
@@ -210,8 +318,19 @@ await mkdir(path.join(outDir, 'templates'), { recursive: true });
 const referenceManifest = templates.map(template => ({
   id: template.id,
   title: template.title,
-  source: 'Dribbble search reference only - no images copied or stored',
-  searches: template.inspiration.map(term => `https://dribbble.com/search/${encodeURIComponent(term)}`)
+  source: template.awardInspired
+    ? 'Award-site research inspiration only - no winning site code, layouts, or assets copied'
+    : 'Dribbble search reference only - no images copied or stored',
+  awardInspired: Boolean(template.awardInspired),
+  pattern: template.awardPattern || 'industry-template',
+  searches: template.inspiration.map(term => `https://dribbble.com/search/${encodeURIComponent(term)}`),
+  researchSources: template.awardInspired ? [
+    'https://www.awwwards.com/websites/sites_of_the_day/',
+    'https://www.awwwards.com/websites/interaction-design/',
+    'https://www.cssdesignawards.com/',
+    'https://www.csswinner.com/',
+    'https://winners.webbyawards.com/winners/websites-and-mobile-sites'
+  ] : []
 }));
 
 for (const template of templates) {
@@ -231,7 +350,7 @@ function renderGallery() {
     return `<article class="card bg-base-100 shadow-xl border border-base-300 overflow-hidden">
       <figure class="h-56"><img src="${image}" alt="" class="h-full w-full object-cover"></figure>
       <div class="card-body">
-        <div class="flex flex-wrap gap-2"><span class="badge badge-primary">${template.badge}</span><span class="badge badge-outline">${template.theme}</span></div>
+        <div class="flex flex-wrap gap-2"><span class="badge badge-primary">${template.badge}</span><span class="badge badge-outline">${template.theme}</span>${template.awardInspired ? '<span class="badge badge-secondary">award-inspired</span>' : ''}</div>
         <h2 class="card-title text-2xl">${escapeHtml(template.title)}</h2>
         <p>${escapeHtml(template.subhead)}</p>
         <div class="flex gap-2">${template.palette.map(color => `<span class="h-6 w-6 rounded-full border border-base-300" style="background:${color}"></span>`).join('')}</div>
@@ -248,7 +367,7 @@ function renderGallery() {
         <div>
           <div class="badge badge-primary badge-lg mb-5">DaisyUI template system</div>
           <h1 class="text-5xl md:text-7xl font-black leading-none">Review the agency template library.</h1>
-          <p class="py-6 text-lg text-base-content/70">Original DaisyUI websites generated from design-reference themes. Dribbble is used only as a search/reference source; no Dribbble images are copied or stored.</p>
+          <p class="py-6 text-lg text-base-content/70">Original DaisyUI websites generated from industry and award-site pattern research. Award sites are used only for high-level inspiration; no external site code, layouts, or assets are copied.</p>
           <div class="join">
             <a class="btn btn-primary join-item rounded-full" href="#templates">Browse templates</a>
             <a class="btn btn-outline join-item rounded-full" href="/template-gallery/design-references.json">View references</a>
@@ -340,6 +459,69 @@ function renderTemplate(template) {
 }
 
 function renderHeroVisual(template, images) {
+  if (template.awardPattern === 'museum-editorial') {
+    return `<div class="relative min-h-[430px] overflow-hidden rounded-[2rem] bg-neutral p-4 text-neutral-content shadow-2xl md:min-h-[560px]">
+      <div class="absolute inset-0 grid grid-cols-12 gap-px opacity-20">${Array.from({ length: 48 }, () => '<span class="border border-white/20"></span>').join('')}</div>
+      <figure class="absolute right-6 top-8 h-[72%] w-[58%] overflow-hidden rounded-box border border-white/20 shadow-2xl"><img src="${images[0]}" alt="" class="h-full w-full object-cover grayscale contrast-125"></figure>
+      <div class="relative z-10 flex min-h-[390px] flex-col justify-between md:min-h-[520px]">
+        <div class="max-w-sm"><span class="badge badge-primary">Current exhibition</span><p class="mt-4 text-sm text-neutral-content/70">Archive notes, room sequence, curator context, and ticket path.</p></div>
+        <div class="max-w-xl rounded-box border border-white/15 bg-neutral/70 p-5 backdrop-blur"><strong class="text-4xl font-black">01 / ${escapeHtml(template.client)}</strong><p class="mt-2 text-neutral-content/75">A restrained editorial system for art, archive, and cultural institutions.</p></div>
+      </div>
+    </div>`;
+  }
+
+  if (template.awardPattern === 'cinematic-luxury') {
+    return `<div class="relative min-h-[430px] overflow-hidden rounded-[2rem] bg-[#120f0a] p-5 text-[#f8f1df] shadow-2xl md:min-h-[560px]">
+      <img src="${images[0]}" alt="" class="absolute inset-0 h-full w-full object-cover opacity-45 agency-slow-zoom">
+      <div class="absolute inset-0 bg-[linear-gradient(90deg,#120f0a_0%,rgba(18,15,10,.82)_34%,rgba(18,15,10,.2)_100%)]"></div>
+      <div class="relative z-10 flex min-h-[390px] flex-col justify-end md:min-h-[520px]">
+        <div class="max-w-lg border-l border-[#d6b46a] pl-6"><span class="text-sm uppercase tracking-[.35em] text-[#d6b46a]">Private release</span><h3 class="mt-4 text-5xl font-black leading-none">Quiet detail. High intent.</h3><p class="mt-4 text-[#f8f1df]/70">Dark editorial framing, sparse proof, and a concierge-first conversion path.</p></div>
+      </div>
+    </div>`;
+  }
+
+  if (template.awardPattern === 'data-story') {
+    return `<div class="relative min-h-[430px] rounded-[2rem] bg-base-200 p-5 shadow-2xl md:min-h-[560px]">
+      <div class="grid min-h-[390px] gap-4 md:min-h-[520px] md:grid-cols-[1.1fr_.9fr]">
+        <div class="card bg-base-100 shadow-xl"><div class="card-body"><span class="badge badge-primary">Live signal map</span><div class="mt-4 grid flex-1 grid-cols-7 gap-2">${Array.from({ length: 49 }, (_, index) => `<span class="aspect-square rounded ${index % 5 === 0 ? 'bg-primary' : index % 7 === 0 ? 'bg-accent' : 'bg-base-300'}"></span>`).join('')}</div></div></div>
+        <div class="grid gap-4">${template.metrics.map(([value, label], index) => `<div class="card bg-base-100 shadow-xl"><div class="card-body"><span class="text-4xl font-black">${escapeHtml(value)}</span><p>${escapeHtml(label)}</p><progress class="progress progress-primary" value="${70 - index * 12}" max="100"></progress></div></div>`).join('')}</div>
+      </div>
+    </div>`;
+  }
+
+  if (template.awardPattern === 'kinetic-agency') {
+    return `<div class="relative min-h-[430px] overflow-hidden rounded-[2rem] bg-neutral text-neutral-content shadow-2xl md:min-h-[560px]">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(168,85,247,.55),transparent_30rem),radial-gradient(circle_at_80%_70%,rgba(34,211,238,.45),transparent_28rem)]"></div>
+      <div class="relative z-10 flex min-h-[390px] flex-col justify-between p-5 md:min-h-[520px] md:p-8">
+        <div class="flex flex-wrap gap-3">${template.sections.slice(0, 5).map(item => `<span class="badge badge-outline badge-lg text-neutral-content">${escapeHtml(item)}</span>`).join('')}</div>
+        <div class="grid gap-3 text-5xl font-black uppercase leading-none md:text-7xl">${['Strategy', 'Design', 'Launch'].map((word, index) => `<div class="${index % 2 ? 'translate-x-8 text-primary' : 'text-secondary'}">${word}</div>`).join('')}</div>
+        <div class="marquee-row text-lg font-bold opacity-80">Sprint system / launch proof / brand motion / conversion loops</div>
+      </div>
+    </div>`;
+  }
+
+  if (template.awardPattern === 'immersive-product') {
+    return `<div class="relative min-h-[430px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-neutral via-secondary to-warning p-5 text-white shadow-2xl md:min-h-[560px]">
+      <div class="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30"></div>
+      <div class="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/15"></div>
+      <div class="relative z-10 grid min-h-[390px] place-items-center md:min-h-[520px]">
+        <div class="relative h-72 w-72 rounded-[3rem] bg-white/15 p-8 shadow-2xl backdrop-blur"><div class="h-full rounded-[2rem] bg-white/80 shadow-inner"></div><span class="absolute -right-8 top-8 badge badge-primary">Feature 01</span><span class="absolute -left-10 bottom-12 badge badge-secondary">Material story</span><span class="absolute right-8 -bottom-4 badge badge-accent">Early access</span></div>
+      </div>
+    </div>`;
+  }
+
+  if (template.awardPattern === 'human-cause') {
+    return `<div class="relative min-h-[430px] rounded-[2rem] bg-base-200 p-5 shadow-2xl md:min-h-[560px]">
+      <div class="grid min-h-[390px] gap-4 md:min-h-[520px] md:grid-cols-[.85fr_1.15fr]">
+        <div class="card bg-neutral text-neutral-content shadow-xl"><div class="card-body justify-end"><span class="badge badge-warning">Human story</span><h3 class="text-4xl font-black">Evidence, care, and action in one page.</h3></div></div>
+        <div class="relative rounded-box bg-base-100 p-6 shadow-xl">
+          <div class="absolute left-10 top-8 bottom-8 w-px bg-primary"></div>
+          ${['Story opened', 'Evidence reviewed', 'People mobilised', 'Action taken'].map((item, index) => `<div class="relative z-10 ml-10 mb-8 rounded-box border border-base-300 bg-base-100 p-4 shadow"><span class="badge badge-primary">${index + 1}</span><strong class="ml-3">${escapeHtml(item)}</strong></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+
   if (template.category === 'food-drink') {
     return `<div class="relative min-h-[420px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-warning via-primary to-accent p-6 shadow-2xl md:min-h-[520px]">
       <div class="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/25 blur-sm"></div>

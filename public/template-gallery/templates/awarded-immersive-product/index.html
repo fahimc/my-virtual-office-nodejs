@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-theme="sunset">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Immersive Product Drop</title>
+  <link rel="stylesheet" href="/daisyui.css?v=template-gallery-1">
+  <style>
+    @keyframes agencyRiseIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes agencySlowZoom { from { transform:scale(1.02); } to { transform:scale(1.12); } }
+    .agency-rise-in { animation:agencyRiseIn .7s ease both; animation-delay:var(--delay,0ms); }
+    .agency-slow-zoom { animation:agencySlowZoom 18s ease-in-out infinite alternate; }
+    @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation:none !important; transition:none !important; } }
+  </style>
+</head>
+<body><main class="overflow-hidden">
+    <header class="navbar sticky top-0 z-30 border-b border-base-300 bg-base-100/90 px-4 backdrop-blur">
+      <div class="navbar-start"><a class="btn btn-ghost text-xl font-black" href="/template-gallery/">Aether One</a></div>
+      <nav class="navbar-end hidden gap-4 md:flex">
+        <a class="link link-hover" href="#drop-hero">Drop hero</a><a class="link link-hover" href="#feature-orbit">Feature orbit</a><a class="link link-hover" href="#material-story">Material story</a><a class="link link-hover" href="#social-proof">Social proof</a>
+        <a class="btn btn-primary rounded-full" href="#contact">Join the drop</a>
+      </nav>
+    </header>
+    <section class="relative bg-base-100">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--color-primary)_22%,transparent),transparent_32rem),radial-gradient(circle_at_85%_20%,color-mix(in_srgb,var(--color-secondary)_16%,transparent),transparent_28rem)]"></div>
+      <div class="relative mx-auto grid min-h-[calc(100vh-4rem)] w-[min(1280px,calc(100%-2rem))] items-center gap-10 py-14 lg:grid-cols-[.94fr_1.06fr] lg:py-20">
+        <div>
+          <span class="badge badge-primary badge-lg mb-5">Product experience</span>
+          <h1 class="max-w-4xl text-4xl font-black leading-[.92] sm:text-5xl md:text-7xl xl:text-8xl">A product drop with depth, motion, and a reason to scroll.</h1>
+          <p class="max-w-2xl py-6 text-xl leading-relaxed text-base-content/70">A launch template for objects, fashion, devices, and limited drops with layered product cards, feature hotspots, and pre-order flow.</p>
+          <div class="flex flex-wrap gap-3">
+            <a class="btn btn-primary rounded-full" href="#contact">Join the drop</a>
+            <a class="btn btn-outline rounded-full" href="#sections">Inspect features</a>
+          </div>
+          <div class="mt-8 grid max-w-2xl grid-cols-3 overflow-hidden rounded-box border border-base-300 bg-base-100 shadow">
+            <div class="border-r border-base-300 p-4 last:border-r-0"><div class="text-2xl font-black md:text-4xl">72h</div><div class="mt-1 text-xs text-base-content/60 md:text-sm">early access</div></div><div class="border-r border-base-300 p-4 last:border-r-0"><div class="text-2xl font-black md:text-4xl">5</div><div class="mt-1 text-xs text-base-content/60 md:text-sm">feature layers</div></div><div class="border-r border-base-300 p-4 last:border-r-0"><div class="text-2xl font-black md:text-4xl">1</div><div class="mt-1 text-xs text-base-content/60 md:text-sm">limited drop</div></div>
+          </div>
+        </div>
+        <div class="relative min-h-[430px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-neutral via-secondary to-warning p-5 text-white shadow-2xl md:min-h-[560px]">
+      <div class="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30"></div>
+      <div class="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/15"></div>
+      <div class="relative z-10 grid min-h-[390px] place-items-center md:min-h-[520px]">
+        <div class="relative h-72 w-72 rounded-[3rem] bg-white/15 p-8 shadow-2xl backdrop-blur"><div class="h-full rounded-[2rem] bg-white/80 shadow-inner"></div><span class="absolute -right-8 top-8 badge badge-primary">Feature 01</span><span class="absolute -left-10 bottom-12 badge badge-secondary">Material story</span><span class="absolute right-8 -bottom-4 badge badge-accent">Early access</span></div>
+      </div>
+    </div>
+      </div>
+    </section>
+    <section id="sections" class="bg-base-200 py-20">
+      <div class="mx-auto w-[min(1180px,calc(100%-2rem))]">
+        <div class="mb-8 max-w-3xl">
+          <span class="badge badge-secondary badge-lg mb-4">Page structure</span>
+          <h2 class="text-4xl font-black md:text-6xl">A finished section system with a stronger visual point of view.</h2>
+        </div>
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <article id="drop-hero" class="card bg-base-100 shadow-xl border border-base-300 agency-rise-in" style="--delay:0ms"><div class="card-body"><div class="badge badge-primary">1</div><h3 class="card-title">Drop hero</h3><p>Introduces drop hero with a clear job in the conversion path.</p></div></article><article id="feature-orbit" class="card bg-base-100 shadow-xl border border-base-300 agency-rise-in" style="--delay:80ms"><div class="card-body"><div class="badge badge-primary">2</div><h3 class="card-title">Feature orbit</h3><p>Keeps the content specific to Aether One with a consistent card and spacing rhythm.</p></div></article><article id="material-story" class="card bg-base-100 shadow-xl border border-base-300 agency-rise-in" style="--delay:160ms"><div class="card-body"><div class="badge badge-primary">3</div><h3 class="card-title">Material story</h3><p>Supports quick scanning on mobile and richer comparison on desktop.</p></div></article><article id="social-proof" class="card bg-base-100 shadow-xl border border-base-300 agency-rise-in" style="--delay:240ms"><div class="card-body"><div class="badge badge-primary">4</div><h3 class="card-title">Social proof</h3><p>Keeps the next action visible without flattening the page into a generic layout.</p></div></article>
+        </div>
+      </div>
+    </section>
+    <section class="py-20">
+      <div class="mx-auto grid w-[min(1180px,calc(100%-2rem))] gap-8 lg:grid-cols-[.8fr_1.2fr]">
+        <div>
+          <span class="badge badge-accent badge-lg mb-4">Visual proof</span>
+          <h2 class="text-4xl font-black md:text-6xl">Lookbook moments balanced with product clarity.</h2>
+          <p class="mt-5 text-lg text-base-content/70">The Immersive Product Drop direction uses category-specific image rhythm, proof cards, and action blocks so the page has a recognisable design idea before final brand content is added.</p>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <figure class="overflow-hidden rounded-box shadow-xl sm:row-span-2"><img src="/placeholders/ecommerce/ecommerce-002.jpeg" alt="" class="h-full min-h-56 w-full object-cover transition duration-300 hover:scale-105"></figure><figure class="overflow-hidden rounded-box shadow-xl "><img src="/placeholders/ecommerce/ecommerce-003.jpg" alt="" class="h-full min-h-56 w-full object-cover transition duration-300 hover:scale-105"></figure><figure class="overflow-hidden rounded-box shadow-xl "><img src="/placeholders/ecommerce/ecommerce-004.jpeg" alt="" class="h-full min-h-56 w-full object-cover transition duration-300 hover:scale-105"></figure><figure class="overflow-hidden rounded-box shadow-xl "><img src="/placeholders/ecommerce/ecommerce-005.jpg" alt="" class="h-full min-h-56 w-full object-cover transition duration-300 hover:scale-105"></figure>
+        </div>
+      </div>
+    </section>
+    <section class="bg-base-200 py-20">
+      <div class="mx-auto w-[min(980px,calc(100%-2rem))]">
+        <span class="badge badge-primary badge-lg mb-4">Questions</span>
+        <h2 class="mb-8 text-4xl font-black md:text-6xl">Useful details before someone takes action.</h2>
+        <div class="space-y-3"><div class="collapse collapse-arrow bg-base-100 border border-base-300"><input type="checkbox"><div class="collapse-title text-xl font-bold">Can this be adapted to another brand?</div><div class="collapse-content"><p>Yes. Colour, copy, imagery, and section order can be swapped cleanly while preserving the visual direction.</p></div></div><div class="collapse collapse-arrow bg-base-100 border border-base-300"><input type="checkbox"><div class="collapse-title text-xl font-bold">Is this mobile friendly?</div><div class="collapse-content"><p>Yes. Sections are mobile-first and expand into richer grid layouts on desktop.</p></div></div><div class="collapse collapse-arrow bg-base-100 border border-base-300"><input type="checkbox"><div class="collapse-title text-xl font-bold">Can this support a real launch?</div><div class="collapse-content"><p>Yes. The page structure is ready for client-specific content, imagery, forms, and final approval.</p></div></div></div>
+      </div>
+    </section>
+    <section id="contact" class="hero bg-neutral py-20 text-neutral-content">
+      <div class="hero-content text-center">
+        <div class="max-w-3xl">
+          <h2 class="text-4xl font-black md:text-6xl">Ready to adapt this direction?</h2>
+          <p class="py-6 text-lg text-neutral-content/75">Use this product experience direction as a starting point for a client-specific brief, visual QA pass, and final preview approval.</p>
+          <a class="btn btn-primary rounded-full" href="/template-gallery/">Back to gallery</a>
+        </div>
+      </div>
+    </section>
+  </main></body>
+</html>
