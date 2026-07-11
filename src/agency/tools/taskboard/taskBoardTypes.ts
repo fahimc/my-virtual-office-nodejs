@@ -33,6 +33,13 @@ export type CompanyTaskType =
   | 'admin'
   | 'finance'
   | 'support';
+export type CustomerFeedbackTaskType =
+  | 'copy_fix'
+  | 'bug_fix'
+  | 'responsive_fix'
+  | 'content_task'
+  | 'asset_task'
+  | 'frontend_fix';
 export type DesignTaskType =
   | 'design_discovery'
   | 'brand_audit'
@@ -65,7 +72,7 @@ export type DeveloperTaskType =
   | 'accessibility_component_pass'
   | 'responsive_component_pass';
 
-export type AnyCompanyTaskType = CompanyTaskType | DesignTaskType | DeveloperTaskType;
+export type AnyCompanyTaskType = CompanyTaskType | DesignTaskType | DeveloperTaskType | CustomerFeedbackTaskType;
 
 export type CompanyTaskPriority = 'low' | 'normal' | 'high' | 'urgent';
 

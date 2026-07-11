@@ -24,12 +24,16 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
-app.use(express.json({ limit: '2mb' }));
+app.use(express.json({ limit: '25mb' }));
 try {
   const { createAgencyRouter } = await import('./dist/agency/api/agencyRoutes.js');
   const { createCompanyRouter } = await import('./dist/agency/api/companyRoutes.js');
+  const { createClientPortalRouter, createAgencyClientPortalRouter, createAgencyPreviewRouter } = await import('./dist/agency/client-portal/clientPortalRoutes.js');
   app.use('/api/agency', createAgencyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
   app.use('/api/company', createCompanyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+  app.use('/api/portal', createClientPortalRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+  app.use('/api/agency/client-portal', createAgencyClientPortalRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+  app.use('/api/agency/previews', createAgencyPreviewRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
 } catch (error) {
   console.warn('Agency API is not available until TypeScript is built:', error.message);
 }
@@ -91,6 +95,10 @@ app.get(['/design-concepts/:projectId/:directionId', '/design-concepts/:projectI
   } catch (error) {
     res.status(500).send(`Design concept unavailable: ${error.message}`);
   }
+});
+
+app.get(['/portal', '/portal/*'], (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'portal.html'));
 });
 
 app.use(express.static(path.join(__dirname, 'public')));

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Client Portal</title>
+  <link rel="stylesheet" href="/daisyui.css">
+  <link rel="stylesheet" href="/portal.css">
+</head>
+<body>
+  <div id="portal-root" class="portal-shell">
+    <aside class="portal-sidebar">
+      <div class="portal-brand">
+        <span class="portal-mark">A</span>
+        <div>
+          <strong>Agency Portal</strong>
+          <span>Client workspace</span>
+        </div>
+      </div>
+      <nav class="portal-nav" aria-label="Project sections">
+        <a href="#overview" data-section-link="overview">Overview</a>
+        <a href="#updates" data-section-link="updates">Updates</a>
+        <a href="#design" data-section-link="design">Design</a>
+        <a href="#preview" data-section-link="preview">Preview</a>
+        <a href="#feedback" data-section-link="feedback">Feedback</a>
+        <a href="#approvals" data-section-link="approvals">Approvals</a>
+        <a href="#files" data-section-link="files">Files</a>
+        <a href="#messages" data-section-link="messages">Messages</a>
+        <a href="#launch" data-section-link="launch">Launch</a>
+      </nav>
+    </aside>
+    <main class="portal-main">
+      <div id="portal-app" class="portal-loading">Loading portal...</div>
+    </main>
+  </div>
+  <script src="/portal.js" type="module"></script>
+</body>
+</html>

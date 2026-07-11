@@ -6,6 +6,7 @@ data/emails.json
 data/agency-store.json
 data/agency-audit.json
 public/generated-images/
+public/uploads/
 .env
 *.log
 .tools/

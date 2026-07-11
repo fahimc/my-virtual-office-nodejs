@@ -9,7 +9,7 @@
     "build:css": "tailwindcss -i ./src/styles/daisyui.css -o ./public/daisyui.css --minify",
     "start": "npm run build && node server.js",
     "dev": "npm run build && node --watch server.js",
-    "check": "npm run build && node --check server.js && node --check public/app.js && node --check public/agency.js",
+    "check": "npm run build && node --check server.js && node --check public/app.js && node --check public/agency.js && node --check public/portal.js",
     "templates:gallery": "node scripts/generate-template-gallery.mjs",
     "templates:refresh": "npm run templates:gallery && npm run build:css",
     "templates:review": "node scripts/review-template-legibility.mjs",

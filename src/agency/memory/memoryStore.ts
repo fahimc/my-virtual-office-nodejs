@@ -27,6 +27,12 @@ import type { DesignQaReport } from '../schemas/designQa.schema.js';
 import type { ImplementationPlan } from '../schemas/implementationPlan.schema.js';
 import type { GeneratedImageAsset, WebsiteImageryPlan } from '../schemas/generatedImage.schema.js';
 import type { CostLedgerEntry } from '../schemas/costLedger.schema.js';
+import type { UpdateFeedItem } from '../schemas/customerUpdate.schema.js';
+import type { VisualFeedback } from '../schemas/visualFeedback.schema.js';
+import type { PreviewVersion } from '../schemas/previewVersion.schema.js';
+import type { ClientApproval } from '../schemas/clientApproval.schema.js';
+import type { CustomerFile } from '../schemas/customerFile.schema.js';
+import type { ClientMessage } from '../schemas/clientMessage.schema.js';
 
 export interface AgencyStoreData {
   customers: Customer[];
@@ -47,6 +53,12 @@ export interface AgencyStoreData {
   generatedImages: GeneratedImageAsset[];
   imageryPlans: WebsiteImageryPlan[];
   costLedger: CostLedgerEntry[];
+  customerUpdates: UpdateFeedItem[];
+  visualFeedback: VisualFeedback[];
+  previewVersions: PreviewVersion[];
+  clientApprovals: ClientApproval[];
+  customerFiles: CustomerFile[];
+  clientMessages: ClientMessage[];
   notifications: Array<{ id: string; projectId?: string; type: string; title: string; message: string; read: boolean; createdAt: string }>;
   design: {
     briefs: DesignBrief[];
@@ -86,6 +98,12 @@ const emptyStore = (): AgencyStoreData => ({
   generatedImages: [],
   imageryPlans: [],
   costLedger: [],
+  customerUpdates: [],
+  visualFeedback: [],
+  previewVersions: [],
+  clientApprovals: [],
+  customerFiles: [],
+  clientMessages: [],
   notifications: [],
   design: {
     briefs: [],
