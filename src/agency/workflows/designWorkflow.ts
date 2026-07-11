@@ -21,8 +21,11 @@ import {
   selectDirection
 } from '../tools/design/designArtifactFactory.js';
 import type { ArtifactType } from '../schemas/artifact.schema.js';
+import { VisualReviewService } from '../tools/design/visualReviewService.js';
 
 export class DesignWorkflow {
+  private readonly visualReview = new VisualReviewService();
+
   constructor(
     private readonly store: MemoryStore,
     private readonly approvals: ApprovalService,
@@ -145,9 +148,34 @@ export class DesignWorkflow {
 
   async postBuildReview(projectId: string, previewUrl?: string) {
     await this.workflowRuntime.emit({ id: '', projectId, workflowName: 'postBuildDesignQaWorkflow', status: 'running', currentStep: 'post_build_review', state: {}, createdAt: '', updatedAt: '' }, 'design.post_build_review.started', { previewUrl });
-    const report = createDesignQa(projectId);
-    await this.saveDesign(projectId, 'qaReports', report, 'post_build_design_review', 'post-build-design-review.md', 'Post-build design review');
+    const screenshotResult = previewUrl ? await this.companyOS.screenshots.capture(previewUrl) : { screenshotPaths: [], summary: 'No preview URL was available for screenshot capture.' };
+    const report = this.visualReview.createReport({
+      projectId,
+      previewUrl: previewUrl || '',
+      screenshots: screenshotResult.screenshotPaths.map(path => ({
+        viewport: path.includes('mobile') ? 'mobile' : path.includes('tablet') ? 'tablet' : 'desktop',
+        path,
+        width: path.includes('mobile') ? 390 : path.includes('tablet') ? 768 : 1440,
+        height: path.includes('mobile') ? 844 : path.includes('tablet') ? 1024 : 1100
+      })),
+      codexDesignerNotes: screenshotResult.summary ? [screenshotResult.summary] : []
+    });
+    await this.saveDesign(projectId, 'qaReports', report, 'post_build_design_review', 'post-build-design-review.md', 'Post-build visual design review');
     await this.completeTask(projectId, 'post_build_design_qa', { report, previewUrl });
+    if (!report.passed) {
+      for (const issue of report.issues) {
+        await this.companyOS.taskBoard.createTask({
+          projectId,
+          title: `Design fix: ${issue.title}`,
+          description: `${issue.description}\n\nRecommended fix: ${issue.recommendation}`,
+          type: 'design_fix',
+          priority: issue.severity === 'high' ? 'high' : 'normal',
+          assignedAgentId: 'builder',
+          createdByAgentId: 'design',
+          input: { issue, previewUrl }
+        });
+      }
+    }
     await this.workflowRuntime.emit({ id: '', projectId, workflowName: 'postBuildDesignQaWorkflow', status: 'running', currentStep: 'post_build_review', state: {}, createdAt: '', updatedAt: '' }, report.passed ? 'design.post_build_review.passed' : 'design.post_build_review.failed', { report });
     return report;
   }
