@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@source "../../server.js";
+@source "../../public";
+@source "../agency";
+@source "../design-system";
+@source "../components";
+@source "../templates";
+
+@plugin "daisyui" {
+  themes: light --default, corporate, cupcake, lemonade, garden, emerald, winter, sunset, night --prefersdark;
+  root: ":root";
+  logs: false;
+}
+
+@plugin "daisyui/theme" {
+  name: "agency-preview";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: #fffaf1;
+  --color-base-200: #fff1d2;
+  --color-base-300: #e8dcc7;
+  --color-base-content: #172033;
+  --color-primary: #ffb703;
+  --color-primary-content: #172033;
+  --color-secondary: #c026d3;
+  --color-secondary-content: #ffffff;
+  --color-accent: #22c55e;
+  --color-accent-content: #062b14;
+  --color-neutral: #172033;
+  --color-neutral-content: #ffffff;
+  --color-info: #2563eb;
+  --color-info-content: #ffffff;
+  --color-success: #16a34a;
+  --color-success-content: #ffffff;
+  --color-warning: #f97316;
+  --color-warning-content: #172033;
+  --color-error: #dc2626;
+  --color-error-content: #ffffff;
+  --radius-selector: 999rem;
+  --radius-field: 1rem;
+  --radius-box: 1.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}

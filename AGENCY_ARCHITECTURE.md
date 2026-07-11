@@ -77,7 +77,7 @@ The implementation plan records:
 - files to modify or avoid
 - validation commands and Codex task rules
 
-Current repo detection is intentionally conservative: this app is Express plus static HTML/CSS, so the Developer Agent plans client-site reusable components and templates without installing React, Tailwind, shadcn/ui, or another library unless approval is added later.
+Current repo detection treats DaisyUI on Tailwind CSS as the approved component library. The app is still Express plus static HTML/CSS, so generated client previews use DaisyUI HTML classes, internal design-system tokens, reusable section definitions, and template adapters rather than React components.
 
 Codex prompts now include a task mode such as `build_page_from_template`, `apply_design_tokens`, `create_reusable_component`, `adapt_existing_component`, or `fix_qa_design_issues`. Codex must inspect existing components first, avoid duplicates, preserve the selected design system, and use Designer Agent handoff tokens as source of truth.
 

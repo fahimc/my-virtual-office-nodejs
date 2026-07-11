@@ -541,8 +541,9 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(content.brand)} - ${escapeHtml(isConcept ? direction.name : 'Website')}</title>
+  <link rel="stylesheet" href="/daisyui.css?v=daisyui-system-1">
   <style>
-    :root {
+    [data-theme="agency-preview"] {
       color-scheme: light;
       --ink:${tokens.ink};
       --muted:${tokens.muted};
@@ -556,6 +557,20 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
       --soft:${tokens.soft};
       --radius:${tokens.radius};
       --shadow:0 22px 70px rgba(15, 23, 42, .13);
+      --color-base-100:${tokens.bg};
+      --color-base-200:${tokens.soft};
+      --color-base-300:${tokens.line};
+      --color-base-content:${tokens.ink};
+      --color-primary:${tokens.brand};
+      --color-primary-content:${tokens.primaryContent};
+      --color-secondary:${tokens.brand2};
+      --color-secondary-content:${tokens.secondaryContent};
+      --color-accent:${tokens.accent};
+      --color-accent-content:${tokens.accentContent};
+      --color-neutral:${tokens.ink};
+      --color-neutral-content:#ffffff;
+      --radius-box:${tokens.radius};
+      --radius-field:1rem;
     }
     * { box-sizing:border-box; }
     html { scroll-behavior:smooth; }
@@ -563,25 +578,23 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
       radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 23%, transparent), transparent 35rem),
       linear-gradient(180deg, var(--bg), #fff 58rem); }
     a { color:inherit; }
-    .site-header { min-height:72px; padding:14px 28px; display:flex; justify-content:space-between; align-items:center; gap:22px; position:sticky; top:0; z-index:20; background:rgba(255,255,255,.82); border-bottom:1px solid var(--line); backdrop-filter:blur(16px); }
-    .brand { display:flex; align-items:center; gap:10px; font-weight:950; letter-spacing:0; }
+    .site-header { min-height:72px; padding:14px 28px; position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--color-base-100) 88%, transparent); border-bottom:1px solid var(--line); backdrop-filter:blur(16px); }
+    .brand { font-weight:950; letter-spacing:0; }
     .mark { width:38px; height:38px; border-radius:14px; background:linear-gradient(135deg,var(--brand),var(--accent)); display:grid; place-items:center; color:#fff; box-shadow:0 12px 30px color-mix(in srgb, var(--brand) 32%, transparent); }
-    nav { display:flex; align-items:center; gap:18px; color:var(--muted); font-size:14px; }
-    .nav-cta,.button { min-height:46px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:0 18px; text-decoration:none; font-weight:900; border:1px solid transparent; }
-    .button.primary,.nav-cta { background:var(--ink); color:#fff; box-shadow:0 16px 36px rgba(15,23,42,.18); }
-    .button.secondary { background:#fff; color:var(--ink); border-color:var(--line); }
+    nav { color:var(--muted); font-size:14px; }
+    .btn { text-decoration:none; font-weight:900; }
     main { overflow:hidden; }
     .container { width:min(1160px, calc(100% - 40px)); margin:0 auto; }
     .hero { min-height:calc(100vh - 72px); display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,.9fr); gap:48px; align-items:center; padding:54px 0 42px; }
-    .eyebrow { display:inline-flex; align-items:center; gap:8px; min-height:30px; padding:0 12px; border-radius:999px; background:color-mix(in srgb, var(--accent) 18%, #fff); color:var(--ink); font-size:13px; font-weight:850; }
+    .eyebrow { font-size:13px; font-weight:850; }
     h1 { font-size:clamp(48px,7vw,102px); line-height:.9; margin:18px 0 20px; letter-spacing:0; max-width:850px; }
     h2 { font-size:clamp(30px,4vw,58px); line-height:1; margin:0 0 16px; letter-spacing:0; }
     h3 { font-size:22px; margin:0; letter-spacing:0; }
     p { line-height:1.65; color:#334155; font-size:17px; }
     .lead { max-width:670px; font-size:20px; color:#253247; }
-    .actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
+    .actions { margin-top:28px; }
     .proof-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:34px; max-width:720px; }
-    .proof-pill { border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.74); padding:13px 14px; font-weight:850; color:#1f2937; }
+    .proof-pill { min-height:46px; justify-content:center; font-weight:850; color:#1f2937; }
     .visual-stage { position:relative; min-height:560px; border-radius:42px; background:linear-gradient(145deg, color-mix(in srgb, var(--brand) 84%, white), color-mix(in srgb, var(--accent) 70%, white)); box-shadow:var(--shadow); overflow:hidden; }
     .visual-stage.photo-stage { display:grid; place-items:end stretch; background:var(--ink); isolation:isolate; }
     .visual-stage.photo-stage img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.78; transform:scale(1.04); animation:slowZoom 18s ease-in-out infinite alternate; }
@@ -605,24 +618,21 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     .section-head { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:28px; }
     .section-head p { max-width:520px; margin:0; }
     .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
-    .product-card,.feature-card,.review-card,.panel { border:1px solid var(--line); border-radius:var(--radius); background:rgba(255,255,255,.88); box-shadow:0 16px 40px rgba(15,23,42,.07); }
     .product-card,.feature-card,.review-card,.panel,.media-card { animation:riseIn .7s ease both; animation-delay:var(--delay,0ms); }
-    .product-card { padding:18px; overflow:hidden; }
-    .product-visual { height:210px; border-radius:28px; background:linear-gradient(135deg, color-mix(in srgb, var(--flavour) 72%, #fff), #fff); display:grid; place-items:center; margin-bottom:16px; overflow:hidden; position:relative; }
+    .product-card { overflow:hidden; }
+    .product-visual { height:210px; border-radius:28px; background:linear-gradient(135deg, color-mix(in srgb, var(--flavour) 72%, #fff), #fff); display:grid; place-items:center; overflow:hidden; position:relative; }
     .product-visual img { width:100%; height:100%; object-fit:cover; mix-blend-mode:multiply; opacity:.9; transition:transform 260ms ease; }
     .product-card:hover .product-visual img { transform:scale(1.07); }
     .mini-bottle { width:58px; height:150px; border-radius:20px 20px 24px 24px; background:linear-gradient(180deg,#fff,var(--flavour)); border:2px solid rgba(255,255,255,.8); box-shadow:0 18px 34px rgba(15,23,42,.16); position:relative; }
     .mini-bottle:before { content:""; position:absolute; width:28px; height:28px; border-radius:8px 8px 4px 4px; background:var(--ink); top:-24px; left:50%; transform:translateX(-50%); }
     .price-row { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:14px; }
     .price { font-weight:950; font-size:20px; }
-    .tiny-button { border:0; border-radius:999px; background:var(--ink); color:#fff; padding:10px 12px; font-weight:850; }
-    .feature-card,.review-card,.panel { padding:24px; }
+    .tiny-button { font-weight:850; }
     .media-split { display:grid; grid-template-columns:minmax(0,.9fr) minmax(320px,1.1fr); gap:28px; align-items:stretch; }
     .media-card { min-height:460px; border-radius:42px; overflow:hidden; position:relative; box-shadow:var(--shadow); background:var(--ink); }
     .media-card img { width:100%; height:100%; object-fit:cover; display:block; }
     .media-card .overlay { position:absolute; left:22px; right:22px; bottom:22px; padding:20px; border-radius:24px; background:rgba(255,255,255,.88); border:1px solid rgba(255,255,255,.5); }
     .metric-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:22px; }
-    .metric { padding:18px; border-radius:22px; background:#fff; border:1px solid var(--line); }
     .metric b { display:block; font-size:28px; }
     .gallery { display:grid; grid-template-columns:1.1fr .9fr .9fr; grid-auto-rows:230px; gap:14px; }
     .gallery figure { margin:0; border-radius:30px; overflow:hidden; position:relative; background:var(--soft); box-shadow:0 16px 36px rgba(15,23,42,.08); }
@@ -631,10 +641,9 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     .gallery figure:hover img { transform:scale(1.06); }
     .gallery figcaption { position:absolute; left:14px; right:14px; bottom:14px; border-radius:18px; background:rgba(255,255,255,.88); padding:10px 12px; font-weight:900; }
     .process { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; counter-reset:step; }
-    .process-card { counter-increment:step; padding:24px; border-radius:28px; background:linear-gradient(180deg,#fff,color-mix(in srgb,var(--soft) 50%,#fff)); border:1px solid var(--line); }
+    .process-card { counter-increment:step; background:linear-gradient(180deg,#fff,color-mix(in srgb,var(--soft) 50%,#fff)); }
     .process-card:before { content:counter(step, decimal-leading-zero); display:inline-grid; place-items:center; width:48px; height:48px; border-radius:16px; background:var(--ink); color:#fff; font-weight:950; margin-bottom:16px; }
     .faq-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
-    .faq-item { border:1px solid var(--line); border-radius:24px; background:#fff; padding:22px; }
     .icon { width:44px; height:44px; border-radius:16px; background:color-mix(in srgb, var(--accent) 22%, #fff); display:grid; place-items:center; margin-bottom:14px; font-weight:950; }
     .split { display:grid; grid-template-columns:minmax(0,.95fr) minmax(320px,1.05fr); gap:28px; align-items:center; }
     .case-builder { border-radius:36px; padding:28px; background:var(--ink); color:#fff; box-shadow:var(--shadow); }
@@ -644,7 +653,6 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     .band { border-radius:40px; background:linear-gradient(135deg,var(--brand),var(--accent)); color:#fff; padding:52px; display:grid; grid-template-columns:1fr auto; gap:26px; align-items:center; box-shadow:var(--shadow); }
     .band p { color:rgba(255,255,255,.88); }
     .newsletter { display:grid; grid-template-columns:1fr auto; gap:12px; background:#fff; border:1px solid var(--line); border-radius:999px; padding:8px; box-shadow:0 14px 40px rgba(15,23,42,.08); }
-    .newsletter input { border:0; min-height:48px; padding:0 18px; font:inherit; min-width:260px; outline:0; }
     footer { padding:44px 0; color:var(--muted); border-top:1px solid var(--line); }
     .concept-bar { position:fixed; right:18px; bottom:18px; z-index:50; border-radius:999px; background:var(--ink); color:#fff; padding:12px 16px; box-shadow:var(--shadow); font-weight:850; font-size:13px; }
     @keyframes riseIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
@@ -655,46 +663,46 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     @media (max-width:900px) { nav { display:none; } .hero,.split,.band,.newsletter,.media-split { grid-template-columns:1fr; } .visual-stage,.media-card { min-height:430px; } .proof-row,.grid,.metric-row,.process,.faq-grid,.gallery { grid-template-columns:1fr; } .gallery figure:first-child { grid-row:auto; } .section { padding:62px 0; } h1 { font-size:clamp(42px,14vw,76px); } }
   </style>
 </head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="#"><span class="mark">${escapeHtml(content.brandInitial)}</span><span>${escapeHtml(content.brand)}</span></a>
-    <nav>${content.nav.map(item => `<a href="#${slug(item)}">${escapeHtml(item)}</a>`).join('')}<a class="nav-cta" href="#shop">${escapeHtml(content.primaryCta)}</a></nav>
+<body data-theme="agency-preview" class="bg-base-100 text-base-content">
+  <header class="site-header navbar">
+    <div class="navbar-start"><a class="brand btn btn-ghost text-lg" href="#"><span class="mark">${escapeHtml(content.brandInitial)}</span><span>${escapeHtml(content.brand)}</span></a></div>
+    <nav class="navbar-end gap-4">${content.nav.map(item => `<a class="link link-hover" href="#${slug(item)}">${escapeHtml(item)}</a>`).join('')}<a class="btn btn-primary rounded-full" href="#shop">${escapeHtml(content.primaryCta)}</a></nav>
   </header>
   <main>
     <section class="container hero">
       <div>
-        <span class="eyebrow">${escapeHtml(content.heroEyebrow)}</span>
+        <span class="eyebrow badge badge-primary badge-lg">${escapeHtml(content.heroEyebrow)}</span>
         <h1>${escapeHtml(content.headline)}</h1>
         <p class="lead">${escapeHtml(content.subhead)}</p>
-        <div class="actions">
-          <a class="button primary" href="#shop">${escapeHtml(content.primaryCta)}</a>
-          <a class="button secondary" href="#wholesale">${escapeHtml(content.secondaryCta)}</a>
+        <div class="actions join join-horizontal">
+          <a class="btn btn-primary join-item rounded-full" href="#shop">${escapeHtml(content.primaryCta)}</a>
+          <a class="btn btn-outline join-item rounded-full" href="#wholesale">${escapeHtml(content.secondaryCta)}</a>
         </div>
-        <div class="proof-row">${content.proofs.map(item => `<div class="proof-pill">${escapeHtml(item)}</div>`).join('')}</div>
+        <div class="proof-row">${content.proofs.map(item => `<div class="proof-pill badge badge-outline badge-lg">${escapeHtml(item)}</div>`).join('')}</div>
       </div>
       ${renderHeroVisual(content)}
     </section>
     ${renderStorySection(content)}
     <section class="section soft" id="shop">
       <div class="container">
-        <div class="section-head"><div><span class="eyebrow">${escapeHtml(content.productEyebrow)}</span><h2>${escapeHtml(content.productHeading)}</h2></div><p>${escapeHtml(content.productIntro)}</p></div>
+        <div class="section-head"><div><span class="eyebrow badge badge-primary badge-lg">${escapeHtml(content.productEyebrow)}</span><h2>${escapeHtml(content.productHeading)}</h2></div><p>${escapeHtml(content.productIntro)}</p></div>
         <div class="grid">${content.products.map((item, index) => renderProductCard(item, content.images[index + 4], index)).join('')}</div>
       </div>
     </section>
     <section class="section" id="why">
       <div class="container">
-        <div class="section-head"><div><span class="eyebrow">${escapeHtml(content.benefitEyebrow)}</span><h2>${escapeHtml(content.benefitHeading)}</h2></div><p>${escapeHtml(content.benefitIntro)}</p></div>
-        <div class="grid">${content.benefits.map((item, index) => `<article class="feature-card"><div class="icon">${index + 1}</div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p></article>`).join('')}</div>
+        <div class="section-head"><div><span class="eyebrow badge badge-accent badge-lg">${escapeHtml(content.benefitEyebrow)}</span><h2>${escapeHtml(content.benefitHeading)}</h2></div><p>${escapeHtml(content.benefitIntro)}</p></div>
+        <div class="grid">${content.benefits.map((item, index) => `<article class="feature-card card bg-base-100 border border-base-300 shadow-xl"><div class="card-body"><div class="icon badge badge-primary badge-lg">${index + 1}</div><h3 class="card-title">${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p></div></article>`).join('')}</div>
       </div>
     </section>
     ${renderGallerySection(content)}
     <section class="section" id="mixed-case">
       <div class="container split">
         <div>
-          <span class="eyebrow">${escapeHtml(content.caseEyebrow)}</span>
+          <span class="eyebrow badge badge-secondary badge-lg">${escapeHtml(content.caseEyebrow)}</span>
           <h2>${escapeHtml(content.caseHeading)}</h2>
           <p>${escapeHtml(content.caseText)}</p>
-          <div class="actions"><a class="button primary" href="#shop">${escapeHtml(content.caseCta)}</a><a class="button secondary" href="#contact">Ask a question</a></div>
+          <div class="actions join join-horizontal"><a class="btn btn-primary join-item rounded-full" href="#shop">${escapeHtml(content.caseCta)}</a><a class="btn btn-outline join-item rounded-full" href="#contact">Ask a question</a></div>
         </div>
         <div class="case-builder">
           <h3>Build your case</h3>
@@ -706,8 +714,8 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     ${renderProcessSection(content)}
     <section class="section soft" id="reviews">
       <div class="container">
-        <div class="section-head"><div><span class="eyebrow">Trust signals</span><h2>${escapeHtml(content.reviewHeading)}</h2></div><p>${escapeHtml(content.reviewIntro)}</p></div>
-        <div class="grid">${content.reviews.map(item => `<article class="review-card"><p>${escapeHtml(item.quote)}</p><strong>${escapeHtml(item.name)}</strong><br><span>${escapeHtml(item.meta)}</span></article>`).join('')}</div>
+        <div class="section-head"><div><span class="eyebrow badge badge-primary badge-lg">Trust signals</span><h2>${escapeHtml(content.reviewHeading)}</h2></div><p>${escapeHtml(content.reviewIntro)}</p></div>
+        <div class="grid">${content.reviews.map(item => `<article class="review-card card bg-base-100 border border-base-300 shadow-xl"><div class="card-body"><p>${escapeHtml(item.quote)}</p><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.meta)}</span></div></article>`).join('')}</div>
       </div>
     </section>
     ${renderFaqSection(content)}
@@ -715,22 +723,22 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
       <div class="container">
         <div class="band">
           <div><h2>${escapeHtml(content.wholesaleHeading)}</h2><p>${escapeHtml(content.wholesaleText)}</p></div>
-          <a class="button secondary" href="#contact">${escapeHtml(content.wholesaleCta)}</a>
+          <a class="btn btn-secondary rounded-full" href="#contact">${escapeHtml(content.wholesaleCta)}</a>
         </div>
       </div>
     </section>
     <section class="section" id="contact">
       <div class="container split">
         <div>
-          <span class="eyebrow">${escapeHtml(content.newsletterEyebrow)}</span>
+          <span class="eyebrow badge badge-accent badge-lg">${escapeHtml(content.newsletterEyebrow)}</span>
           <h2>${escapeHtml(content.newsletterHeading)}</h2>
           <p>${escapeHtml(content.newsletterText)}</p>
         </div>
-        <form class="newsletter"><input aria-label="Email address" placeholder="Email address"><button class="button primary" type="button">${escapeHtml(content.newsletterCta)}</button></form>
+        <form class="newsletter join"><input class="input input-bordered join-item" aria-label="Email address" placeholder="Email address"><button class="btn btn-primary join-item rounded-full" type="button">${escapeHtml(content.newsletterCta)}</button></form>
       </div>
     </section>
   </main>
-  <footer><div class="container">${escapeHtml(content.footerText)}</div></footer>
+  <footer class="footer footer-center p-10 bg-base-200 text-base-content"><div>${escapeHtml(content.footerText)}</div></footer>
 </body>
 </html>`;
 }
@@ -876,18 +884,23 @@ function designTokensFromDirection(direction, context) {
   const palette = direction?.palette || [];
   const byName = name => palette.find(item => item.name?.toLowerCase().includes(name))?.hex;
   const fruit = /(fruit|drink|juice|beverage|bottle)/i.test(context.originalBrief);
+  const brand = byName('mango') || byName('electric') || palette[0]?.hex || (fruit ? '#FFB703' : '#2563EB');
+  const accent = byName('leaf') || byName('watermelon') || byName('coral') || palette[2]?.hex || '#22C55E';
   return {
     ink: byName('charcoal') || byName('night') || byName('ink') || '#172033',
     muted: '#64748b',
     line: 'rgba(15, 23, 42, .13)',
-    brand: byName('mango') || byName('electric') || palette[0]?.hex || (fruit ? '#FFB703' : '#2563EB'),
+    brand,
     brand2: byName('berry') || byName('purple') || palette[1]?.hex || '#C026D3',
-    accent: byName('leaf') || byName('watermelon') || byName('coral') || palette[2]?.hex || '#22C55E',
+    accent,
     accent2: byName('citrus') || byName('orange') || palette[3]?.hex || '#F97316',
     bg: byName('cream') || byName('warm') || '#FFF7E8',
     surface: '#FFFFFF',
     soft: byName('mint') || '#FEF3C7',
-    radius: fruit ? '30px' : '18px'
+    radius: fruit ? '30px' : '18px',
+    primaryContent: readableContentColor(brand),
+    secondaryContent: '#FFFFFF',
+    accentContent: readableContentColor(accent)
   };
 }
 
@@ -902,30 +915,30 @@ function loadPlaceholderManifest() {
 function templateProfileFor(template, context, direction) {
   const text = `${template} ${context.businessType} ${context.originalBrief} ${direction?.name || ''}`.toLowerCase();
   if (/(drink|juice|fruit|beverage|shop|ecommerce|product|checkout)/.test(text)) {
-    return { name: 'Commerce editorial', imageCategory: 'food-drink', sourceInspiration: 'Start Bootstrap Shop Homepage + Landing Page', motion: 'float-and-reveal' };
+    return { name: 'Bright product-led shopping', imageCategory: 'food-drink', description: 'Colour, product clarity, and quick buying paths keep the page lively without losing trust.', motion: 'float-and-reveal' };
   }
   if (/(software|saas|dashboard|platform|subscription)/.test(text)) {
-    return { name: 'SaaS product launch', imageCategory: 'saas', sourceInspiration: 'Start Bootstrap Landing Page', motion: 'soft-rise' };
+    return { name: 'Product-led launch system', imageCategory: 'saas', description: 'A calm structure explains the value, shows proof, and gets visitors to the next action quickly.', motion: 'soft-rise' };
   }
   if (/(portfolio|photographer|creator|designer)/.test(text)) {
-    return { name: 'Portfolio showcase', imageCategory: 'portfolio', sourceInspiration: 'Start Bootstrap Freelancer', motion: 'gallery-focus' };
+    return { name: 'Visual portfolio showcase', imageCategory: 'portfolio', description: 'Large imagery, concise proof, and selective detail make the work easy to scan.', motion: 'gallery-focus' };
   }
   if (/(restaurant|cafe|food)/.test(text)) {
-    return { name: 'Hospitality local', imageCategory: 'restaurant', sourceInspiration: 'Start Bootstrap Creative', motion: 'warm-editorial' };
+    return { name: 'Warm local hospitality', imageCategory: 'restaurant', description: 'Atmosphere, menus, location, and booking actions are arranged for quick decisions.', motion: 'warm-editorial' };
   }
   if (/(clinic|health|wellness)/.test(text)) {
-    return { name: 'Wellness service', imageCategory: 'healthcare', sourceInspiration: 'Start Bootstrap Business Frontpage', motion: 'calm-proof' };
+    return { name: 'Calm service trust', imageCategory: 'healthcare', description: 'Gentle visuals, clear services, and proof points support confident enquiries.', motion: 'calm-proof' };
   }
   if (/(salon|beauty|spa)/.test(text)) {
-    return { name: 'Beauty booking', imageCategory: 'beauty', sourceInspiration: 'Start Bootstrap Creative', motion: 'polished-reveal' };
+    return { name: 'Polished booking journey', imageCategory: 'beauty', description: 'Service cards, gallery moments, and booking prompts keep the experience premium and direct.', motion: 'polished-reveal' };
   }
   if (/(real estate|house|property)/.test(text)) {
-    return { name: 'Property showcase', imageCategory: 'real-estate', sourceInspiration: 'Start Bootstrap Landing Page', motion: 'image-led' };
+    return { name: 'Image-led property showcase', imageCategory: 'real-estate', description: 'Strong photography, trust markers, and simple enquiry paths put the property first.', motion: 'image-led' };
   }
   if (/(plumber|electrician|builder|trade|construction)/.test(text)) {
-    return { name: 'Trades lead-gen', imageCategory: 'trades', sourceInspiration: 'Start Bootstrap Business Frontpage', motion: 'proof-first' };
+    return { name: 'Proof-first local service', imageCategory: 'trades', description: 'Fast contact, service clarity, and trust signals help local buyers act quickly.', motion: 'proof-first' };
   }
-  return { name: 'Agency service', imageCategory: 'agency', sourceInspiration: 'Start Bootstrap Agency + Creative', motion: 'editorial-rise' };
+  return { name: 'Premium service journey', imageCategory: 'agency', description: 'A refined service flow balances positioning, proof, process, and enquiry.', motion: 'editorial-rise' };
 }
 
 function placeholderImagesFor(category, count = 12) {
@@ -959,12 +972,12 @@ function renderStorySection(content) {
   return `<section class="section" id="story">
     <div class="container media-split">
       <div>
-        <span class="eyebrow">${escapeHtml(content.storyEyebrow)}</span>
+        <span class="eyebrow badge badge-primary badge-lg">${escapeHtml(content.storyEyebrow)}</span>
         <h2>${escapeHtml(content.storyHeading)}</h2>
         <p>${escapeHtml(content.storyText)}</p>
-        <div class="metric-row">${content.metrics.map(([value, label]) => `<div class="metric"><b>${escapeHtml(value)}</b><span>${escapeHtml(label)}</span></div>`).join('')}</div>
+        <div class="metric-row stats stats-vertical lg:stats-horizontal shadow">${content.metrics.map(([value, label]) => `<div class="metric stat"><b class="stat-value">${escapeHtml(value)}</b><span class="stat-desc">${escapeHtml(label)}</span></div>`).join('')}</div>
       </div>
-      <div class="media-card">${image ? `<img src="${escapeHtml(imageUrl(image))}" alt="">` : renderProductStage(content)}<div class="overlay"><strong>${escapeHtml(content.profile.sourceInspiration)}</strong><p>${escapeHtml(content.profile.motion)} motion system</p></div></div>
+      <div class="media-card">${image ? `<img src="${escapeHtml(imageUrl(image))}" alt="">` : renderProductStage(content)}<div class="overlay"><strong>${escapeHtml(content.profile.name)}</strong><p>${escapeHtml(content.profile.description)}</p></div></div>
     </div>
   </section>`;
 }
@@ -974,7 +987,7 @@ function renderGallerySection(content) {
   if (!images.length) return '';
   return `<section class="section soft" id="gallery">
     <div class="container">
-      <div class="section-head"><div><span class="eyebrow">${escapeHtml(content.galleryEyebrow)}</span><h2>${escapeHtml(content.galleryHeading)}</h2></div><p>${escapeHtml(content.storyText)}</p></div>
+      <div class="section-head"><div><span class="eyebrow badge badge-secondary badge-lg">${escapeHtml(content.galleryEyebrow)}</span><h2>${escapeHtml(content.galleryHeading)}</h2></div><p>${escapeHtml(content.storyText)}</p></div>
       <div class="gallery">${images.map((image, index) => `<figure style="--delay:${index * 80}ms"><img src="${escapeHtml(imageUrl(image))}" alt=""><figcaption>${escapeHtml(content.galleryCaptions[index] || content.brand)}</figcaption></figure>`).join('')}</div>
     </div>
   </section>`;
@@ -983,8 +996,8 @@ function renderGallerySection(content) {
 function renderProcessSection(content) {
   return `<section class="section" id="process">
     <div class="container">
-      <div class="section-head"><div><span class="eyebrow">${escapeHtml(content.processEyebrow)}</span><h2>${escapeHtml(content.processHeading)}</h2></div><p>${escapeHtml(content.caseText)}</p></div>
-      <div class="process">${content.processSteps.map(([title, text], index) => `<article class="process-card" style="--delay:${index * 80}ms"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(text)}</p></article>`).join('')}</div>
+      <div class="section-head"><div><span class="eyebrow badge badge-primary badge-lg">${escapeHtml(content.processEyebrow)}</span><h2>${escapeHtml(content.processHeading)}</h2></div><p>${escapeHtml(content.caseText)}</p></div>
+      <div class="process">${content.processSteps.map(([title, text], index) => `<article class="process-card card bg-base-100 border border-base-300 shadow-xl" style="--delay:${index * 80}ms"><div class="card-body"><h3 class="card-title">${escapeHtml(title)}</h3><p>${escapeHtml(text)}</p></div></article>`).join('')}</div>
     </div>
   </section>`;
 }
@@ -992,8 +1005,8 @@ function renderProcessSection(content) {
 function renderFaqSection(content) {
   return `<section class="section" id="faq">
     <div class="container">
-      <div class="section-head"><div><span class="eyebrow">Questions</span><h2>Good to know before you start.</h2></div><p>${escapeHtml(content.newsletterText)}</p></div>
-      <div class="faq-grid">${content.faqs.map(([question, answer]) => `<article class="faq-item"><h3>${escapeHtml(question)}</h3><p>${escapeHtml(answer)}</p></article>`).join('')}</div>
+      <div class="section-head"><div><span class="eyebrow badge badge-accent badge-lg">Questions</span><h2>Good to know before you start.</h2></div><p>${escapeHtml(content.newsletterText)}</p></div>
+      <div class="faq-grid">${content.faqs.map(([question, answer]) => `<article class="faq-item collapse collapse-arrow bg-base-100 border border-base-300"><input type="checkbox"><h3 class="collapse-title text-xl font-bold">${escapeHtml(question)}</h3><div class="collapse-content"><p>${escapeHtml(answer)}</p></div></article>`).join('')}</div>
     </div>
   </section>`;
 }
@@ -1006,11 +1019,13 @@ function renderProductStage(content) {
 }
 
 function renderProductCard(item, image, index = 0) {
-  return `<article class="product-card" style="--flavour:${item.color}; --delay:${index * 80}ms">
-    <div class="product-visual">${image ? `<img src="${escapeHtml(imageUrl(image))}" alt="">` : '<div class="mini-bottle"></div>'}</div>
-    <h3>${escapeHtml(item.name)}</h3>
-    <p>${escapeHtml(item.desc)}</p>
-    <div class="price-row"><span class="price">${escapeHtml(item.price)}</span><button class="tiny-button" type="button">Add</button></div>
+  return `<article class="product-card card bg-base-100 border border-base-300 shadow-xl" style="--flavour:${item.color}; --delay:${index * 80}ms">
+    <figure class="product-visual">${image ? `<img src="${escapeHtml(imageUrl(image))}" alt="">` : '<div class="mini-bottle"></div>'}</figure>
+    <div class="card-body">
+      <h3 class="card-title">${escapeHtml(item.name)}</h3>
+      <p>${escapeHtml(item.desc)}</p>
+      <div class="price-row card-actions"><span class="price">${escapeHtml(item.price)}</span><button class="tiny-button btn btn-neutral btn-sm rounded-full" type="button">Add</button></div>
+    </div>
   </article>`;
 }
 
@@ -1027,6 +1042,16 @@ function defaultDirection(project) {
       { name: 'Charcoal', hex: '#172033' }
     ]
   };
+}
+
+function readableContentColor(hex) {
+  const value = String(hex || '').replace('#', '');
+  if (!/^[0-9a-f]{6}$/i.test(value)) return '#172033';
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.58 ? '#172033' : '#ffffff';
 }
 
 function cleanText(value) {

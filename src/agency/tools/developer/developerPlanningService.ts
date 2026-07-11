@@ -27,7 +27,10 @@ export class DeveloperPlanningService {
       'components.json',
       'tailwind.config.ts',
       'tailwind.config.js',
-      '.storybook'
+      '.storybook',
+      'package-lock.json',
+      'pnpm-lock.yaml',
+      'yarn.lock'
     ]);
     const componentLibraries = [
       has('@radix-ui/react-dialog') || has('@radix-ui/react-slot') ? 'Radix UI' : '',
@@ -45,6 +48,8 @@ export class DeveloperPlanningService {
         : 'plain CSS';
     const reusableComponents = [
       paths['src/components/ui'] ? 'src/components/ui' : '',
+      paths['src/components/sections'] ? 'src/components/sections' : '',
+      paths['src/templates'] ? 'src/templates' : '',
       paths['src/design-system'] ? 'src/design-system' : '',
       'public/agency.css virtual office panels',
       'public/styles.css canvas office UI'
@@ -64,9 +69,9 @@ export class DeveloperPlanningService {
         paths['yarn.lock'] ? 'yarn' : ''
       ].filter(Boolean),
       inspectionNotes: [
-        'The current app is an Express/static HTML/CSS office UI, not a React client-site builder.',
-        'Generated client sites should use the selected template/component strategy without adding a new UI library unless approved.',
-        'Designer Agent handoff and design tokens are the source of truth for website implementation.'
+        'The current app is an Express/static HTML/CSS office UI with Tailwind CSS and DaisyUI available for generated client previews.',
+        'Generated client sites should use DaisyUI primitives, the internal design-system tokens, and reusable section/template definitions before custom CSS.',
+        'Designer Agent handoff and design tokens remain the source of truth for website implementation.'
       ]
     };
   }
@@ -112,16 +117,16 @@ export class DeveloperPlanningService {
       ],
       filesToAvoid: ['server.js unless routing is required', 'data/agency-store.json', 'node_modules', 'dist', 'production deployment files without approval'],
       risks: [
-        'This virtual office repo does not currently include a React/Tailwind client-site runtime.',
-        'Installing a new component library requires explicit approval.',
-        'A raw template must be adapted with approved design tokens, copy, and conversion goals.'
+        'This virtual office repo is still an Express/static renderer, so DaisyUI components are applied as HTML classes rather than React components.',
+        'A raw template must be adapted with approved design tokens, copy, and conversion goals.',
+        'Do not introduce a second UI library unless explicitly approved.'
       ],
       validationCommands: ['npm run check'],
       codexTaskRules: [
         'State the Codex task mode before implementation.',
         'Inspect existing components and sections before creating new ones.',
         'Do not create duplicate components when a suitable one exists.',
-        'Do not install a new component library or mix UI libraries without approval.',
+        'Use DaisyUI as the selected component library and do not mix UI libraries without approval.',
         'Apply Designer Agent design tokens and handoff decisions.',
         'Prefer reusable primitives and sections over a single large page file.'
       ],

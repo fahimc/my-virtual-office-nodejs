@@ -1,0 +1,7 @@
+:root,
+[data-theme="agency-preview"] {
+  --agency-section-y: clamp(4rem, 8vw, 7rem);
+  --agency-container: min(1180px, calc(100% - 2rem));
+  --agency-shadow-soft: 0 24px 80px rgba(15, 23, 42, 0.14);
+  --agency-shadow-card: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
