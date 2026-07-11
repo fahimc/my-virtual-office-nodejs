@@ -4,6 +4,7 @@
     "title": "Fruit Commerce Splash",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/bold%20product%20cards",
@@ -17,6 +18,7 @@
     "title": "SaaS Command Center",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/glass%20dashboard%20cards",
@@ -30,6 +32,7 @@
     "title": "Local Trades Proof",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/high%20trust%20service%20cards",
@@ -43,6 +46,7 @@
     "title": "Beauty Booking Editorial",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/soft%20editorial%20layout",
@@ -56,6 +60,7 @@
     "title": "Clinic Calm Care",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/calm%20healthcare%20web%20design",
@@ -69,6 +74,7 @@
     "title": "Restaurant Night Menu",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/warm%20restaurant%20landing%20page",
@@ -82,6 +88,7 @@
     "title": "Property Showcase",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/image-led%20property%20website",
@@ -95,6 +102,7 @@
     "title": "Portfolio Creator Grid",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/portfolio%20masonry%20grid",
@@ -108,6 +116,7 @@
     "title": "Agency Premium System",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/premium%20agency%20website",
@@ -121,6 +130,7 @@
     "title": "Fitness Membership Flow",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/high%20contrast%20fitness%20landing%20page",
@@ -134,6 +144,7 @@
     "title": "Fashion Shop Editorial",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/fashion%20ecommerce%20homepage",
@@ -147,6 +158,7 @@
     "title": "Learning Platform",
     "source": "Dribbble search reference only - no images copied or stored",
     "awardInspired": false,
+    "referenceInspired": false,
     "pattern": "industry-template",
     "searches": [
       "https://dribbble.com/search/education%20landing%20page",
@@ -160,6 +172,7 @@
     "title": "Museum Editorial",
     "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
     "awardInspired": true,
+    "referenceInspired": false,
     "pattern": "museum-editorial",
     "searches": [
       "https://dribbble.com/search/Webby%202026%20Architecture%20Art%20Design%20winner%20Warhol%20Art",
@@ -179,6 +192,7 @@
     "title": "Cinematic Luxury",
     "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
     "awardInspired": true,
+    "referenceInspired": false,
     "pattern": "cinematic-luxury",
     "searches": [
       "https://dribbble.com/search/CSS%20Winner%20Depo%20Luxe%20cinematic%20luxury",
@@ -198,6 +212,7 @@
     "title": "Data Story Observatory",
     "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
     "awardInspired": true,
+    "referenceInspired": false,
     "pattern": "data-story",
     "searches": [
       "https://dribbble.com/search/Webby%202026%20Best%20Data%20Visualization%20nominees",
@@ -217,6 +232,7 @@
     "title": "Kinetic Agency",
     "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
     "awardInspired": true,
+    "referenceInspired": false,
     "pattern": "kinetic-agency",
     "searches": [
       "https://dribbble.com/search/Awwwards%20interaction%20design%20gallery",
@@ -236,6 +252,7 @@
     "title": "Immersive Product Drop",
     "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
     "awardInspired": true,
+    "referenceInspired": false,
     "pattern": "immersive-product",
     "searches": [
       "https://dribbble.com/search/Webby%202026%20Best%20Home%20Page%20honoree%20Aether%201",
@@ -255,6 +272,7 @@
     "title": "Human Cause Story",
     "source": "Award-site research inspiration only - no winning site code, layouts, or assets copied",
     "awardInspired": true,
+    "referenceInspired": false,
     "pattern": "human-cause",
     "searches": [
       "https://dribbble.com/search/Webby%20Best%20Home%20Page%20honoree%20Ensaaf",
@@ -268,5 +286,89 @@
       "https://www.csswinner.com/",
       "https://winners.webbyawards.com/winners/websites-and-mobile-sites"
     ]
+  },
+  {
+    "id": "reference-property-search-overlay",
+    "title": "Property Search Overlay",
+    "source": "Uploaded user reference image set - layout inspiration only; no external code or image assets copied",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "property-search-overlay",
+    "searches": [
+      "https://dribbble.com/search/uploaded%20reference%3A%20property%20search%20overlay",
+      "https://dribbble.com/search/real%20estate%20search%20hero",
+      "https://dribbble.com/search/glass%20filter%20interface"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "reference-mountain-journey",
+    "title": "Mountain Journey Hero",
+    "source": "Uploaded user reference image set - layout inspiration only; no external code or image assets copied",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "travel-chips",
+    "searches": [
+      "https://dribbble.com/search/uploaded%20reference%3A%20mountain%20full-bleed%20travel%20hero",
+      "https://dribbble.com/search/destination%20landing%20page",
+      "https://dribbble.com/search/facility%20chip%20interface"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "reference-saas-carousel-growth",
+    "title": "SaaS Carousel Growth",
+    "source": "Uploaded user reference image set - layout inspiration only; no external code or image assets copied",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "centered-carousel",
+    "searches": [
+      "https://dribbble.com/search/uploaded%20reference%3A%20centered%20SaaS%20carousel%20hero",
+      "https://dribbble.com/search/dark%20product%20hero",
+      "https://dribbble.com/search/rounded%20customer%20card%20carousel"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "reference-spaceage-product-stage",
+    "title": "SpaceAge Product Stage",
+    "source": "Uploaded user reference image set - layout inspiration only; no external code or image assets copied",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "kinetic-persona",
+    "searches": [
+      "https://dribbble.com/search/uploaded%20reference%3A%20SpaceAge%20dark%20hero",
+      "https://dribbble.com/search/cinematic%20product%20stage",
+      "https://dribbble.com/search/floating%20preview%20panel"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "reference-interior-split-panel",
+    "title": "Interior Split Panel",
+    "source": "Uploaded user reference image set - layout inspiration only; no external code or image assets copied",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "interior-split-panel",
+    "searches": [
+      "https://dribbble.com/search/uploaded%20reference%3A%20interior%20split%20orange%20panel",
+      "https://dribbble.com/search/home%20interior%20landing%20page",
+      "https://dribbble.com/search/warm%20editorial%20hero"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "reference-architecture-strip",
+    "title": "Architecture Strip",
+    "source": "Uploaded user reference image set - layout inspiration only; no external code or image assets copied",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "architecture-strip",
+    "searches": [
+      "https://dribbble.com/search/uploaded%20reference%3A%20architecture%20minimal%20hero",
+      "https://dribbble.com/search/panoramic%20project%20strip",
+      "https://dribbble.com/search/minimal%20architecture%20website"
+    ],
+    "researchSources": []
   }
 ]

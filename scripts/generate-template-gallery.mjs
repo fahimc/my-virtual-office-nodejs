@@ -1,6 +1,7 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { renderHeroSection } from './template-hero-sections.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -309,6 +310,114 @@ const templates = [
     metrics: [['25yr', 'timeline'], ['18k', 'records'], ['4', 'ways to help']],
     sections: ['Story hero', 'Evidence timeline', 'Impact cards', 'Donate', 'Updates'],
     inspiration: ['Webby Best Home Page honoree Ensaaf', 'public service award websites', 'accessible campaign storytelling']
+  },
+  {
+    id: 'reference-property-search-overlay',
+    category: 'real-estate',
+    theme: 'winter',
+    referenceInspired: true,
+    heroPattern: 'property-search-overlay',
+    title: 'Property Search Overlay',
+    client: 'AsterKey',
+    badge: 'Property search',
+    headline: 'Where affordability meets sustainability.',
+    subhead: 'A property platform hero with an immediate search task, glass filters, buyer proof, and listing intent above the fold.',
+    cta: 'Search homes',
+    secondary: 'View neighbourhoods',
+    palette: ['#0f172a', '#e2e8f0', '#111827'],
+    metrics: [['1.8k', 'active homes'], ['42', 'green-rated areas'], ['24h', 'viewing response']],
+    sections: ['Search', 'Featured homes', 'Neighbourhoods', 'Buyer proof', 'Book viewing'],
+    inspiration: ['uploaded reference: property search overlay', 'real estate search hero', 'glass filter interface']
+  },
+  {
+    id: 'reference-mountain-journey',
+    category: 'portfolio',
+    theme: 'night',
+    referenceInspired: true,
+    heroPattern: 'travel-chips',
+    title: 'Mountain Journey Hero',
+    client: 'Gateway',
+    badge: 'Travel concierge',
+    headline: 'Crafting journeys, not just trips.',
+    subhead: 'A full-bleed travel hero with headline emphasis, facility chips, social proof, and a concierge-style action.',
+    cta: 'Consult us',
+    secondary: 'Explore journeys',
+    palette: ['#0f172a', '#f8fafc', '#94a3b8'],
+    metrics: [['27', 'routes'], ['4.9', 'guest rating'], ['1:1', 'trip design']],
+    sections: ['Tour guide', 'Travel package', 'Accommodation', 'Transport', 'Food', 'Online delivery'],
+    inspiration: ['uploaded reference: mountain full-bleed travel hero', 'destination landing page', 'facility chip interface']
+  },
+  {
+    id: 'reference-saas-carousel-growth',
+    category: 'saas',
+    theme: 'night',
+    referenceInspired: true,
+    heroPattern: 'centered-carousel',
+    title: 'SaaS Carousel Growth',
+    client: 'EoS',
+    badge: 'Business automation',
+    headline: 'More growth, less work. Get your time back.',
+    subhead: 'A centered SaaS homepage with highlighted outcome words, a rounded media carousel, and a clean product-led CTA.',
+    cta: 'Take control now',
+    secondary: 'See workflow',
+    palette: ['#1d1738', '#a7f3d0', '#ffffff'],
+    metrics: [['31%', 'hours recovered'], ['8', 'workflows live'], ['2wk', 'setup sprint']],
+    sections: ['Product', 'Problems', 'Features', 'Resources', 'Pricing'],
+    inspiration: ['uploaded reference: centered SaaS carousel hero', 'dark product hero', 'rounded customer card carousel']
+  },
+  {
+    id: 'reference-spaceage-product-stage',
+    category: 'ecommerce',
+    theme: 'night',
+    referenceInspired: true,
+    heroPattern: 'kinetic-persona',
+    title: 'SpaceAge Product Stage',
+    client: 'SpaceAge',
+    badge: 'Launch experience',
+    headline: 'A launch page with atmosphere, motion, and product focus.',
+    subhead: 'A dark cinematic stage for fashion, products, creators, and immersive campaigns with metrics and preview media.',
+    cta: 'Watch launch',
+    secondary: 'View collection',
+    palette: ['#11131d', '#ef4444', '#22d3ee'],
+    metrics: [['01', 'hero product'], ['4', 'launch chapters'], ['90s', 'motion reel']],
+    sections: ['Launch', 'Collection', 'Story', 'Preview', 'Reserve'],
+    inspiration: ['uploaded reference: SpaceAge dark hero', 'cinematic product stage', 'floating preview panel']
+  },
+  {
+    id: 'reference-interior-split-panel',
+    category: 'real-estate',
+    theme: 'sunset',
+    referenceInspired: true,
+    heroPattern: 'interior-split-panel',
+    title: 'Interior Split Panel',
+    client: 'HouseCut',
+    badge: 'Interior studio',
+    headline: 'A loft apartment arranged around modern comfort.',
+    subhead: 'A split hero using an immersive room image and a warm editorial panel for interior designers, venues, and lifestyle brands.',
+    cta: 'Plan the room',
+    secondary: 'View spaces',
+    palette: ['#f97316', '#111827', '#f8fafc'],
+    metrics: [['14', 'room concepts'], ['3wk', 'design sprint'], ['1:1', 'consultation']],
+    sections: ['Spaces', 'Services', 'Materials', 'Process', 'Consultation'],
+    inspiration: ['uploaded reference: interior split orange panel', 'home interior landing page', 'warm editorial hero']
+  },
+  {
+    id: 'reference-architecture-strip',
+    category: 'real-estate',
+    theme: 'corporate',
+    referenceInspired: true,
+    heroPattern: 'architecture-strip',
+    title: 'Architecture Strip',
+    client: 'Formline',
+    badge: 'Architecture studio',
+    headline: 'Building shapes for the future.',
+    subhead: 'A minimal architecture hero with oversized typography, restrained copy, and a panoramic project strip.',
+    cta: 'Discuss project',
+    secondary: 'View portfolio',
+    palette: ['#111827', '#f8fafc', '#cbd5e1'],
+    metrics: [['36', 'built projects'], ['11', 'cities'], ['A+', 'energy target']],
+    sections: ['Projects', 'Approach', 'Studio', 'Sustainability', 'Contact'],
+    inspiration: ['uploaded reference: architecture minimal hero', 'panoramic project strip', 'minimal architecture website']
   }
 ];
 
@@ -318,11 +427,14 @@ await mkdir(path.join(outDir, 'templates'), { recursive: true });
 const referenceManifest = templates.map(template => ({
   id: template.id,
   title: template.title,
-  source: template.awardInspired
+  source: template.referenceInspired
+    ? 'Uploaded user reference image set - layout inspiration only; no external code or image assets copied'
+    : template.awardInspired
     ? 'Award-site research inspiration only - no winning site code, layouts, or assets copied'
     : 'Dribbble search reference only - no images copied or stored',
   awardInspired: Boolean(template.awardInspired),
-  pattern: template.awardPattern || 'industry-template',
+  referenceInspired: Boolean(template.referenceInspired),
+  pattern: template.heroPattern || template.awardPattern || 'industry-template',
   searches: template.inspiration.map(term => `https://dribbble.com/search/${encodeURIComponent(term)}`),
   researchSources: template.awardInspired ? [
     'https://www.awwwards.com/websites/sites_of_the_day/',
@@ -350,7 +462,7 @@ function renderGallery() {
     return `<article class="card bg-base-100 shadow-xl border border-base-300 overflow-hidden">
       <figure class="h-56"><img src="${image}" alt="" class="h-full w-full object-cover"></figure>
       <div class="card-body">
-        <div class="flex flex-wrap gap-2"><span class="badge badge-primary">${template.badge}</span><span class="badge badge-outline">${template.theme}</span>${template.awardInspired ? '<span class="badge badge-secondary">award-inspired</span>' : ''}</div>
+        <div class="flex flex-wrap gap-2"><span class="badge badge-primary">${template.badge}</span><span class="badge badge-outline">${template.theme}</span>${template.awardInspired ? '<span class="badge badge-secondary">award-inspired</span>' : ''}${template.referenceInspired ? '<span class="badge badge-accent">reference pattern</span>' : ''}</div>
         <h2 class="card-title text-2xl">${escapeHtml(template.title)}</h2>
         <p>${escapeHtml(template.subhead)}</p>
         <div class="flex gap-2">${template.palette.map(color => `<span class="h-6 w-6 rounded-full border border-base-300" style="background:${color}"></span>`).join('')}</div>
@@ -413,7 +525,7 @@ function renderTemplate(template) {
             ${template.metrics.map(([value, label]) => `<div class="border-r border-base-300 p-4 last:border-r-0"><div class="text-2xl font-black md:text-4xl">${escapeHtml(value)}</div><div class="mt-1 text-xs text-base-content/60 md:text-sm">${escapeHtml(label)}</div></div>`).join('')}
           </div>
         </div>
-        ${renderHeroVisual(template, images)}
+        ${renderHeroSection(template, images)}
       </div>
     </section>
     <section id="sections" class="bg-base-200 py-20">
@@ -456,152 +568,6 @@ function renderTemplate(template) {
       </div>
     </section>
   </main>`);
-}
-
-function renderHeroVisual(template, images) {
-  if (template.awardPattern === 'museum-editorial') {
-    return `<div class="relative min-h-[430px] overflow-hidden rounded-[2rem] bg-neutral p-4 text-neutral-content shadow-2xl md:min-h-[560px]">
-      <div class="absolute inset-0 grid grid-cols-12 gap-px opacity-20">${Array.from({ length: 48 }, () => '<span class="border border-white/20"></span>').join('')}</div>
-      <figure class="absolute right-6 top-8 h-[72%] w-[58%] overflow-hidden rounded-box border border-white/20 shadow-2xl"><img src="${images[0]}" alt="" class="h-full w-full object-cover grayscale contrast-125"></figure>
-      <div class="relative z-10 flex min-h-[390px] flex-col justify-between md:min-h-[520px]">
-        <div class="max-w-sm"><span class="badge badge-primary">Current exhibition</span><p class="mt-4 text-sm text-neutral-content/70">Archive notes, room sequence, curator context, and ticket path.</p></div>
-        <div class="max-w-xl rounded-box border border-white/15 bg-neutral/70 p-5 backdrop-blur"><strong class="text-4xl font-black">01 / ${escapeHtml(template.client)}</strong><p class="mt-2 text-neutral-content/75">A restrained editorial system for art, archive, and cultural institutions.</p></div>
-      </div>
-    </div>`;
-  }
-
-  if (template.awardPattern === 'cinematic-luxury') {
-    return `<div class="relative min-h-[430px] overflow-hidden rounded-[2rem] bg-[#120f0a] p-5 text-[#f8f1df] shadow-2xl md:min-h-[560px]">
-      <img src="${images[0]}" alt="" class="absolute inset-0 h-full w-full object-cover opacity-45 agency-slow-zoom">
-      <div class="absolute inset-0 bg-[linear-gradient(90deg,#120f0a_0%,rgba(18,15,10,.82)_34%,rgba(18,15,10,.2)_100%)]"></div>
-      <div class="relative z-10 flex min-h-[390px] flex-col justify-end md:min-h-[520px]">
-        <div class="max-w-lg border-l border-[#d6b46a] pl-6"><span class="text-sm uppercase tracking-[.35em] text-[#d6b46a]">Private release</span><h3 class="mt-4 text-5xl font-black leading-none">Quiet detail. High intent.</h3><p class="mt-4 text-[#f8f1df]/70">Dark editorial framing, sparse proof, and a concierge-first conversion path.</p></div>
-      </div>
-    </div>`;
-  }
-
-  if (template.awardPattern === 'data-story') {
-    return `<div class="relative min-h-[430px] rounded-[2rem] bg-base-200 p-5 shadow-2xl md:min-h-[560px]">
-      <div class="grid min-h-[390px] gap-4 md:min-h-[520px] md:grid-cols-[1.1fr_.9fr]">
-        <div class="card bg-base-100 shadow-xl"><div class="card-body"><span class="badge badge-primary">Live signal map</span><div class="mt-4 grid flex-1 grid-cols-7 gap-2">${Array.from({ length: 49 }, (_, index) => `<span class="aspect-square rounded ${index % 5 === 0 ? 'bg-primary' : index % 7 === 0 ? 'bg-accent' : 'bg-base-300'}"></span>`).join('')}</div></div></div>
-        <div class="grid gap-4">${template.metrics.map(([value, label], index) => `<div class="card bg-base-100 shadow-xl"><div class="card-body"><span class="text-4xl font-black">${escapeHtml(value)}</span><p>${escapeHtml(label)}</p><progress class="progress progress-primary" value="${70 - index * 12}" max="100"></progress></div></div>`).join('')}</div>
-      </div>
-    </div>`;
-  }
-
-  if (template.awardPattern === 'kinetic-agency') {
-    return `<div class="relative min-h-[430px] overflow-hidden rounded-[2rem] bg-neutral text-neutral-content shadow-2xl md:min-h-[560px]">
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(168,85,247,.55),transparent_30rem),radial-gradient(circle_at_80%_70%,rgba(34,211,238,.45),transparent_28rem)]"></div>
-      <div class="relative z-10 flex min-h-[390px] flex-col justify-between p-5 md:min-h-[520px] md:p-8">
-        <div class="flex flex-wrap gap-3">${template.sections.slice(0, 5).map(item => `<span class="badge badge-outline badge-lg text-neutral-content">${escapeHtml(item)}</span>`).join('')}</div>
-        <div class="grid gap-3 text-5xl font-black uppercase leading-none md:text-7xl">${['Strategy', 'Design', 'Launch'].map((word, index) => `<div class="${index % 2 ? 'translate-x-8 text-primary' : 'text-secondary'}">${word}</div>`).join('')}</div>
-        <div class="marquee-row text-lg font-bold opacity-80">Sprint system / launch proof / brand motion / conversion loops</div>
-      </div>
-    </div>`;
-  }
-
-  if (template.awardPattern === 'immersive-product') {
-    return `<div class="relative min-h-[430px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-neutral via-secondary to-warning p-5 text-white shadow-2xl md:min-h-[560px]">
-      <div class="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30"></div>
-      <div class="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/15"></div>
-      <div class="relative z-10 grid min-h-[390px] place-items-center md:min-h-[520px]">
-        <div class="relative h-72 w-72 rounded-[3rem] bg-white/15 p-8 shadow-2xl backdrop-blur"><div class="h-full rounded-[2rem] bg-white/80 shadow-inner"></div><span class="absolute -right-8 top-8 badge badge-primary">Feature 01</span><span class="absolute -left-10 bottom-12 badge badge-secondary">Material story</span><span class="absolute right-8 -bottom-4 badge badge-accent">Early access</span></div>
-      </div>
-    </div>`;
-  }
-
-  if (template.awardPattern === 'human-cause') {
-    return `<div class="relative min-h-[430px] rounded-[2rem] bg-base-200 p-5 shadow-2xl md:min-h-[560px]">
-      <div class="grid min-h-[390px] gap-4 md:min-h-[520px] md:grid-cols-[.85fr_1.15fr]">
-        <div class="card bg-neutral text-neutral-content shadow-xl"><div class="card-body justify-end"><span class="badge badge-warning">Human story</span><h3 class="text-4xl font-black">Evidence, care, and action in one page.</h3></div></div>
-        <div class="relative rounded-box bg-base-100 p-6 shadow-xl">
-          <div class="absolute left-10 top-8 bottom-8 w-px bg-primary"></div>
-          ${['Story opened', 'Evidence reviewed', 'People mobilised', 'Action taken'].map((item, index) => `<div class="relative z-10 ml-10 mb-8 rounded-box border border-base-300 bg-base-100 p-4 shadow"><span class="badge badge-primary">${index + 1}</span><strong class="ml-3">${escapeHtml(item)}</strong></div>`).join('')}
-        </div>
-      </div>
-    </div>`;
-  }
-
-  if (template.category === 'food-drink') {
-    return `<div class="relative min-h-[420px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-warning via-primary to-accent p-6 shadow-2xl md:min-h-[520px]">
-      <div class="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/25 blur-sm"></div>
-      <div class="absolute -bottom-20 left-10 h-72 w-72 rounded-full bg-secondary/30 blur-xl"></div>
-      <div class="relative grid h-full min-h-[360px] place-items-center md:min-h-[470px]">
-        <div class="flex items-end justify-center gap-4 rotate-[-4deg]">
-          ${template.palette.map((color, index) => `<div class="relative w-20 rounded-[1.6rem] border-4 border-white/70 bg-white/40 shadow-2xl backdrop-blur" style="height:${230 + index * 28}px"><div class="absolute left-1/2 top-[-34px] h-12 w-9 -translate-x-1/2 rounded-t-xl bg-neutral"></div><div class="absolute inset-x-3 bottom-4 rounded-2xl bg-white/85 p-3 text-center text-sm font-black text-neutral">${escapeHtml(['Mango', 'Berry', 'Leaf'][index] || template.client)}</div><div class="absolute inset-x-4 top-14 h-24 rounded-full" style="background:${color}"></div></div>`).join('')}
-        </div>
-      </div>
-      <div class="absolute bottom-6 left-6 right-6 rounded-box border border-white/30 bg-base-100/90 p-5 shadow-xl backdrop-blur">
-        <strong class="text-2xl">${escapeHtml(template.title)}</strong>
-        <p class="mt-2 text-base-content/70">Bright product blocks, flavour comparison, and fast shopping actions.</p>
-      </div>
-    </div>`;
-  }
-
-  if (template.category === 'saas') {
-    return `<div class="relative min-h-[420px] rounded-[2rem] bg-neutral p-4 text-neutral-content shadow-2xl md:min-h-[520px] md:p-5">
-      <div class="mockup-browser border border-white/15 bg-base-100 text-base-content shadow-2xl">
-        <div class="mockup-browser-toolbar"><div class="input input-bordered w-full">northstar.app/dashboard</div></div>
-        <div class="grid gap-4 bg-base-200 p-5 md:grid-cols-3">
-          <div class="stats stats-vertical shadow md:col-span-1">${template.metrics.map(([value, label]) => `<div class="stat"><div class="stat-value text-2xl">${escapeHtml(value)}</div><div class="stat-desc">${escapeHtml(label)}</div></div>`).join('')}</div>
-          <div class="card bg-base-100 shadow-xl md:col-span-2"><div class="card-body"><div class="mb-3 h-4 w-32 rounded bg-primary"></div><div class="grid gap-3">${[64, 88, 52, 78].map(width => `<div class="h-5 rounded bg-base-300" style="width:${width}%"></div>`).join('')}</div><div class="mt-5 grid grid-cols-4 gap-2">${[1, 2, 3, 4].map(() => `<div class="h-20 rounded-box bg-primary/20"></div>`).join('')}</div></div></div>
-          <div class="card bg-primary text-primary-content shadow-xl md:col-span-3"><div class="card-body flex-row items-center justify-between"><strong>Automation health</strong><span class="badge badge-neutral">Live</span></div></div>
-        </div>
-      </div>
-    </div>`;
-  }
-
-  if (template.category === 'trades' || template.category === 'healthcare' || template.category === 'local-business') {
-    return `<div class="relative min-h-[420px] rounded-[2rem] bg-base-200 p-4 shadow-2xl md:min-h-[520px] md:p-6">
-      <div class="grid h-full min-h-[370px] gap-4 md:min-h-[470px] md:grid-cols-2">
-        <div class="card bg-base-100 shadow-xl"><div class="card-body"><span class="badge badge-primary">Fast response</span><h3 class="text-3xl font-black">${escapeHtml(template.cta)}</h3><p>${escapeHtml(template.subhead)}</p><button class="btn btn-primary rounded-full">${escapeHtml(template.cta)}</button></div></div>
-        <figure class="hidden overflow-hidden rounded-box shadow-xl md:block"><img src="${images[0]}" alt="" class="h-full w-full object-cover"></figure>
-        <div class="stats stats-vertical shadow md:col-span-2 md:stats-horizontal">${template.metrics.map(([value, label]) => `<div class="stat"><div class="stat-value">${escapeHtml(value)}</div><div class="stat-desc">${escapeHtml(label)}</div></div>`).join('')}</div>
-      </div>
-    </div>`;
-  }
-
-  if (template.category === 'restaurant' || template.category === 'fitness') {
-    return `<div class="relative min-h-[420px] overflow-hidden rounded-[2rem] bg-neutral p-4 text-neutral-content shadow-2xl md:min-h-[520px] md:p-5">
-      <img src="${images[0]}" alt="" class="absolute inset-0 h-full w-full object-cover opacity-55 agency-slow-zoom">
-      <div class="absolute inset-0 bg-gradient-to-t from-neutral via-neutral/70 to-neutral/20"></div>
-      <div class="relative flex min-h-[370px] flex-col justify-end gap-4 md:min-h-[470px]">
-        <div class="menu rounded-box bg-base-100/95 p-5 text-base-content shadow-2xl backdrop-blur">
-          <div class="mb-3 flex items-center justify-between"><strong class="text-2xl">${escapeHtml(template.client)}</strong><span class="badge badge-primary">${escapeHtml(template.badge)}</span></div>
-          {items}
-        </div>
-      </div>
-    </div>`.replace('{items}', template.sections.slice(0, 4).map((item, index) => `<div class="flex items-center justify-between border-t border-base-300 py-3"><span>${escapeHtml(item)}</span><b>${index === 0 ? template.cta : 'Explore'}</b></div>`).join(''));
-  }
-
-  if (template.category === 'portfolio' || template.category === 'ecommerce' || template.category === 'beauty' || template.category === 'real-estate') {
-    return `<div class="relative grid h-[420px] grid-cols-6 grid-rows-6 gap-3 rounded-[2rem] bg-base-200 p-4 shadow-2xl md:h-[560px]">
-      ${images.slice(0, 5).map((image, index) => `<figure class="${galleryHeroCell(index)} overflow-hidden rounded-box shadow-xl"><img src="${image}" alt="" class="h-full w-full object-cover transition duration-300 hover:scale-105"></figure>`).join('')}
-      <div class="absolute bottom-6 left-6 right-6 rounded-box border border-base-300 bg-base-100/90 p-5 shadow-xl backdrop-blur">
-        <strong class="text-2xl">${escapeHtml(template.title)}</strong>
-        <p class="mt-2 text-base-content/70">${escapeHtml(template.secondary)} with a polished visual path.</p>
-      </div>
-    </div>`;
-  }
-
-  return `<div class="relative min-h-[420px] overflow-hidden rounded-[2rem] shadow-2xl md:min-h-[520px]">
-    <img src="${images[0]}" alt="" class="absolute inset-0 h-full w-full object-cover agency-slow-zoom">
-    <div class="absolute inset-0 bg-gradient-to-t from-neutral/80 to-transparent"></div>
-    <div class="absolute bottom-6 left-6 right-6 rounded-box border border-white/20 bg-base-100/90 p-6 backdrop-blur">
-      <strong class="text-2xl">${escapeHtml(template.title)}</strong>
-      <p class="mt-2 text-base-content/70">${escapeHtml(template.secondary)} with a clear conversion path.</p>
-    </div>
-  </div>`;
-}
-
-function galleryHeroCell(index) {
-  return [
-    'col-span-4 row-span-4',
-    'col-span-2 row-span-3',
-    'col-span-2 row-span-3',
-    'col-span-3 row-span-2',
-    'col-span-3 row-span-2'
-  ][index] || 'col-span-2 row-span-2';
 }
 
 function sectionHeading(template) {
