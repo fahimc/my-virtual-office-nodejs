@@ -50,6 +50,45 @@ export function renderHeroSection(template, images) {
   return defaultMediaHero(template, images);
 }
 
+export function renderFullBleedHero(template, images) {
+  const pattern = template.heroPattern || patternForTemplate(template);
+  const layout = fullBleedLayoutForPattern(pattern);
+  const image = images[0];
+  const imageTwo = images[1] || image;
+  const contentAlign = layout === 'center'
+    ? 'mx-auto text-center items-center'
+    : layout === 'bottom'
+      ? 'justify-end'
+      : 'justify-center';
+  const contentWidth = layout === 'center' ? 'max-w-5xl' : 'max-w-3xl';
+  const overlay = layout === 'center'
+    ? 'bg-[linear-gradient(180deg,rgba(0,0,0,.52),rgba(0,0,0,.68)),radial-gradient(circle_at_50%_35%,rgba(255,255,255,.18),transparent_28rem)]'
+    : layout === 'bottom'
+      ? 'bg-[linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.80)),linear-gradient(90deg,rgba(0,0,0,.45),transparent)]'
+      : 'bg-[linear-gradient(90deg,rgba(0,0,0,.76),rgba(0,0,0,.44),rgba(0,0,0,.16)),linear-gradient(180deg,rgba(0,0,0,.22),rgba(0,0,0,.58))]';
+
+  return `<section class="template-full-bleed-hero relative min-h-[calc(100svh-4rem)] overflow-hidden bg-neutral text-white">
+    <img src="${image}" alt="" class="absolute inset-0 h-full w-full object-cover agency-slow-zoom">
+    <div class="absolute inset-0 ${overlay}"></div>
+    <div class="absolute inset-x-0 top-0 z-10 h-24 bg-gradient-to-b from-black/45 to-transparent"></div>
+    ${layout === 'split' ? `<figure class="pointer-events-none absolute bottom-8 right-[max(1.5rem,6vw)] hidden w-[min(34rem,34vw)] overflow-hidden rounded-[2rem] border border-white/20 bg-white/10 p-2 shadow-2xl backdrop-blur lg:block"><img src="${imageTwo}" alt="" class="h-[24rem] w-full rounded-[1.45rem] object-cover"></figure>` : ''}
+    <div class="relative z-10 mx-auto flex min-h-[calc(100svh-4rem)] w-[min(1320px,calc(100%-2rem))] flex-col ${contentAlign} py-16 md:py-24">
+      <div class="${contentWidth} template-hero-copy">
+        <span class="badge badge-primary badge-lg mb-5 shadow-lg">${escapeHtml(template.badge)}</span>
+        <h1 class="text-balance text-4xl font-black leading-[.94] tracking-normal text-white drop-shadow-[0_3px_18px_rgba(0,0,0,.55)] sm:text-5xl md:text-7xl xl:text-8xl">${escapeHtml(template.headline)}</h1>
+        <p class="${layout === 'center' ? 'mx-auto' : ''} mt-6 max-w-2xl text-lg leading-relaxed text-white/88 drop-shadow-[0_2px_12px_rgba(0,0,0,.55)] md:text-2xl">${escapeHtml(template.subhead)}</p>
+        <div class="${layout === 'center' ? 'justify-center' : ''} mt-7 flex flex-wrap gap-3">
+          <a class="btn btn-primary rounded-full shadow-xl" href="#contact">${escapeHtml(template.cta)}</a>
+          <a class="btn rounded-full border-white/55 bg-white/12 text-white shadow-xl backdrop-blur hover:bg-white hover:text-neutral" href="#sections">${escapeHtml(template.secondary)}</a>
+        </div>
+        <div class="${layout === 'center' ? 'mx-auto' : ''} mt-8 grid max-w-2xl grid-cols-3 overflow-hidden rounded-box border border-white/24 bg-black/30 shadow-2xl backdrop-blur-md">
+          ${template.metrics.map(([value, label]) => `<div class="border-r border-white/20 p-4 last:border-r-0"><div class="text-2xl font-black text-white md:text-4xl">${escapeHtml(value)}</div><div class="mt-1 text-xs text-white/76 md:text-sm">${escapeHtml(label)}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
 export function patternForTemplate(template) {
   if (template.awardPattern === 'museum-editorial') return 'museum-editorial';
   if (template.awardPattern === 'cinematic-luxury') return 'cinematic-statement';
@@ -63,6 +102,13 @@ export function patternForTemplate(template) {
   if (['restaurant', 'fitness'].includes(template.category)) return 'cinematic-statement';
   if (['portfolio', 'ecommerce', 'beauty', 'real-estate'].includes(template.category)) return 'editorial-gallery';
   return 'default-media';
+}
+
+function fullBleedLayoutForPattern(pattern) {
+  if (['cinematic-statement', 'travel-chips', 'centered-carousel'].includes(pattern)) return 'center';
+  if (['museum-editorial', 'human-cause-timeline', 'architecture-strip'].includes(pattern)) return 'bottom';
+  if (['dashboard-browser', 'data-story-map', 'kinetic-persona'].includes(pattern)) return 'split';
+  return 'left';
 }
 
 function propertySearchOverlay(template, images) {

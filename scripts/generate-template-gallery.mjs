@@ -1,7 +1,7 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { renderHeroSection } from './template-hero-sections.mjs';
+import { renderFullBleedHero, renderHeroSection } from './template-hero-sections.mjs';
 import { enrichedPalettes, paletteCollection, paletteStyleBlock, recommendedPaletteForTemplate } from './color-palette-engine.mjs';
 import { enrichedFontGroups, fontCollection, fontImportBlock, fontStyleBlock, recommendedFontGroupForTemplate } from './font-engine.mjs';
 
@@ -539,25 +539,8 @@ function renderTemplate(template) {
         <a class="btn btn-primary rounded-full" href="#contact">${escapeHtml(template.cta)}</a>
       </nav>
     </header>
+    ${renderFullBleedHero(template, images)}
     ${renderDesignControls(defaultPaletteId, defaultFontGroupId)}
-    <section class="relative bg-base-100">
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--color-primary)_22%,transparent),transparent_32rem),radial-gradient(circle_at_85%_20%,color-mix(in_srgb,var(--color-secondary)_16%,transparent),transparent_28rem)]"></div>
-      <div class="relative mx-auto grid min-h-[calc(100vh-4rem)] w-[min(1280px,calc(100%-2rem))] items-center gap-10 py-14 lg:grid-cols-[.94fr_1.06fr] lg:py-20">
-        <div>
-          <span class="badge badge-primary badge-lg mb-5">${escapeHtml(template.badge)}</span>
-          <h1 class="max-w-4xl text-4xl font-black leading-[.95] sm:text-5xl md:text-6xl xl:text-7xl">${escapeHtml(template.headline)}</h1>
-          <p class="max-w-2xl py-6 text-xl leading-relaxed text-base-content/70">${escapeHtml(template.subhead)}</p>
-          <div class="flex flex-wrap gap-3">
-            <a class="btn btn-primary rounded-full" href="#contact">${escapeHtml(template.cta)}</a>
-            <a class="btn btn-outline rounded-full" href="#sections">${escapeHtml(template.secondary)}</a>
-          </div>
-          <div class="mt-8 grid max-w-2xl grid-cols-3 overflow-hidden rounded-box border border-base-300 bg-base-100 shadow">
-            ${template.metrics.map(([value, label]) => `<div class="border-r border-base-300 p-4 last:border-r-0"><div class="text-2xl font-black md:text-4xl">${escapeHtml(value)}</div><div class="mt-1 text-xs text-base-content/60 md:text-sm">${escapeHtml(label)}</div></div>`).join('')}
-          </div>
-        </div>
-        ${renderHeroSection(template, images)}
-      </div>
-    </section>
     <section id="sections" class="bg-base-200 py-20">
       <div class="mx-auto w-[min(1180px,calc(100%-2rem))]">
         <div class="mb-8 max-w-3xl">
@@ -579,6 +562,16 @@ function renderTemplate(template) {
         <div class="grid gap-4 sm:grid-cols-2">
           ${images.slice(1, 5).map((image, index) => `<figure class="overflow-hidden rounded-box shadow-xl ${index === 0 ? 'sm:row-span-2' : ''}"><img src="${image}" alt="" class="h-full min-h-56 w-full object-cover transition duration-300 hover:scale-105"></figure>`).join('')}
         </div>
+      </div>
+    </section>
+    <section class="bg-base-200 py-20">
+      <div class="mx-auto grid w-[min(1180px,calc(100%-2rem))] items-center gap-8 lg:grid-cols-[1.05fr_.95fr]">
+        <div>
+          <span class="badge badge-primary badge-lg mb-4">Hero system</span>
+          <h2 class="text-4xl font-black md:text-6xl">${escapeHtml(template.title)} visual direction.</h2>
+          <p class="mt-5 text-lg text-base-content/70">The full-width hero uses generated campaign imagery, protected overlay contrast, reusable DaisyUI buttons, and responsive text sizing for client review.</p>
+        </div>
+        ${renderHeroSection(template, images)}
       </div>
     </section>
     <section class="bg-base-200 py-20">
