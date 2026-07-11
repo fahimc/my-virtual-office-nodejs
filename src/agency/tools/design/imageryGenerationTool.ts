@@ -19,6 +19,16 @@ export interface ImageryGenerationInput {
   count?: number;
 }
 
+const TEXT_FREE_IMAGE_RULES = [
+  'The final image must contain zero written language.',
+  'No readable text, no fake text, no pseudo text, no placeholder copy, no letter-like marks, no number-like marks, no glyphs, no logos, no watermarks.',
+  'Do not create a website screenshot, landing page mockup, UI screen, dashboard, design board, poster, magazine layout, presentation slide, infographic, title card, or brand-guideline page.',
+  'Do not include signs, captions, badges, buttons, labels, packaging labels, menus, charts, diagrams, book covers, paper documents, whiteboards, sticky notes, clothing logos, wall graphics, or monitor text.',
+  'If devices appear, every screen must be blank, dark, blurred, turned away, or out of focus with no interface and no typography.',
+  'If paper, boards, packaging, walls, or clothing appear, they must be plain, unmarked, or abstract with no symbols.',
+  'Use real-world subject matter, photography, texture, materials, light, people, environment, and composition instead of embedded words.'
+];
+
 export class ImageryGenerationService {
   constructor(
     private readonly store: MemoryStore,
@@ -57,8 +67,7 @@ export class ImageryGenerationService {
       input.direction.summary,
       `Palette: ${input.direction.palette.map(item => `${item.name} ${item.hex}`).join(', ')}`,
       `Imagery style: ${input.direction.imageryStyle}`,
-      `Mood: ${input.direction.targetEmotion}`,
-      'Professional commercial website image, no watermarks, no fake UI text unless explicitly requested.'
+      `Mood: ${input.direction.targetEmotion}`
     ].join('\n');
     const usePremiumHero = input.mode === 'premium';
     const requestedCount = Math.max(3, Math.min(input.count || 5, 8));
@@ -68,17 +77,24 @@ export class ImageryGenerationService {
         intendedUse: usePremiumHero ? 'premium_hero' : 'final_homepage_hero',
         tier: usePremiumHero ? 'premium' : 'standard',
         size: '1536x1024',
-        prompt: `${visualLanguage}\nCreate the main homepage hero image for ${business}. It should support this project goal: ${input.designBrief.projectGoal}. Leave clean negative space for headline and CTA overlay.`
+        prompt: this.createAssetPrompt(input, {
+          title: 'Homepage hero image',
+          intendedUse: usePremiumHero ? 'premium_hero' : 'final_homepage_hero',
+          business,
+          visualLanguage,
+          composition: 'wide editorial composition with a calm low-detail region for live HTML headline and buttons',
+          purpose: `support the project goal: ${input.designBrief.projectGoal}`
+        })
       }
     ];
     const sectionIdeas = [
-      ['Services section image', 'service_illustration', 'Show the core service/product experience in a polished editorial way.'],
-      ['About page image', 'about_page_image', 'Show the brand story, team, making process, or customer experience with warm credibility.'],
-      ['Proof section image', 'content_image', 'Show proof, quality, process, trust, or results without using readable text.'],
-      ['Background texture image', 'background', 'Create a subtle background image or atmospheric detail suitable behind content blocks.'],
-      ['CTA section image', 'section_image', 'Create an energetic conversion-focused support image for a call-to-action section.'],
-      ['Content image', 'content_image', 'Create a flexible interior page image that can be reused on services or blog pages.'],
-      ['Blog thumbnail image', 'blog_thumbnail', 'Create a clean editorial thumbnail for future content marketing.']
+      ['Services section image', 'service_illustration', 'show the core service or product experience through people, objects, space, materials, and atmosphere'],
+      ['About page image', 'about_page_image', 'show the team, process, craft, or customer experience with warm credibility'],
+      ['Proof section image', 'content_image', 'show quality, process, trust, or results through real-world visual evidence'],
+      ['Background texture image', 'background', 'create a subtle atmospheric texture or environment detail for content sections'],
+      ['CTA section image', 'section_image', 'create an energetic support visual for a conversion section'],
+      ['Content image', 'content_image', 'create a flexible editorial interior-page support image'],
+      ['Blog thumbnail image', 'blog_thumbnail', 'create a clean editorial thumbnail-style source image']
     ] as const;
     for (const [title, intendedUse, instruction] of sectionIdeas.slice(0, requestedCount - 1)) {
       specs.push({
@@ -86,10 +102,83 @@ export class ImageryGenerationService {
         intendedUse,
         tier: intendedUse === 'background' || intendedUse === 'blog_thumbnail' ? 'draft' : 'standard',
         size: '1024x1024',
-        prompt: `${visualLanguage}\n${instruction}\nBrand/business context: ${business}. Audience: ${input.designBrief.targetAudience}.`
+        prompt: this.createAssetPrompt(input, {
+          title,
+          intendedUse,
+          business,
+          visualLanguage,
+          composition: 'polished editorial crop with natural negative space and no embedded layout elements',
+          purpose: `${instruction}. Audience: ${input.designBrief.targetAudience}.`
+        })
       });
     }
     return specs;
+  }
+
+  private createAssetPrompt(
+    input: ImageryGenerationInput,
+    spec: {
+      title: string;
+      intendedUse: ImageGenerationUse;
+      business: string;
+      visualLanguage: string;
+      composition: string;
+      purpose: string;
+    }
+  ): string {
+    const subject = this.imageSubjectFor(input, spec);
+    return [
+      'Use case: photorealistic-natural',
+      'Asset type: text-free website source image. This is an image asset only, not a webpage, not a UI mockup, not a brand board.',
+      `Client context: ${spec.business || 'client business'}.`,
+      `Business type: ${input.designBrief.businessType}.`,
+      `Target audience: ${input.designBrief.targetAudience}.`,
+      `Visual direction:\n${spec.visualLanguage}`,
+      `Scene/backdrop: ${subject}`,
+      `Primary request: ${spec.purpose}.`,
+      `Composition/framing: ${spec.composition}. Keep important subjects away from the quiet overlay area.`,
+      'Lighting/mood: premium commercial photography, cinematic but natural, high-quality depth, no stock-photo cliche.',
+      'Color palette: follow the design direction palette through light, wardrobe, surfaces, props, or environment tones. Do not use text to communicate brand ideas.',
+      `Constraints: ${TEXT_FREE_IMAGE_RULES.join(' ')}`,
+      'Quality gate: before finalizing, inspect the image for any letter-like, number-like, glyph-like, logo-like, or watermark-like marks. If any exist, replace them with blank surfaces, realistic texture, soft blur, or non-symbolic objects.'
+    ].join('\n');
+  }
+
+  private imageSubjectFor(input: ImageryGenerationInput, spec: { title: string; intendedUse: ImageGenerationUse }): string {
+    const context = `${input.designBrief.businessName} ${input.designBrief.businessType} ${input.designBrief.projectGoal} ${input.direction.imageryStyle}`.toLowerCase();
+    const isHero = spec.title.toLowerCase().includes('hero');
+    if (/(fruit|drink|juice|beverage|smoothie|food|restaurant|cafe|catering)/.test(context)) {
+      if (isHero) return 'fresh product photography with fruit, drinks, condensation, ice, botanicals, glass, liquid movement, and a clean empty area for live overlay copy';
+      if (spec.intendedUse === 'about_page_image') return 'hands preparing ingredients, bottles, fruit, clean counters, natural light, and people in the background with no labels or packaging text';
+      if (spec.intendedUse === 'background') return 'macro fruit skin, chilled glass, ice, liquid, mist, and soft color gradients with no packaging or labels';
+      return 'category-specific beverage ingredients, serving moments, shelves without labels, lifestyle context, and polished product details';
+    }
+    if (/(agency|marketing|branding|web design|digital|automation|consultancy|consultant|professional service)/.test(context)) {
+      if (isHero) return 'premium digital studio environment with people collaborating, architectural light, blank or dark device screens, unmarked notebooks, textured walls, and a calm open area for live overlay copy';
+      if (spec.intendedUse === 'service_illustration') return 'modular creative workspace details, hands arranging unmarked cards, blank devices, material swatches, and studio tools without letters or symbols';
+      if (spec.intendedUse === 'about_page_image') return 'authentic agency team collaboration in a modern studio, laptops angled away or blank, plain walls, no posters, no whiteboard writing, no screen UI';
+      if (spec.intendedUse === 'background') return 'abstract studio atmosphere with soft light, glass, paper texture, shadows, and color washes, with no writing or symbols';
+      return 'client meeting and strategy atmosphere shown through people, blank screens, plain surfaces, architecture, and confident editorial lighting';
+    }
+    if (/(saas|software|platform|dashboard|analytics|app|tech|ai|cybersecurity)/.test(context)) {
+      if (isHero) return 'modern technology workspace with abstract hardware, atmospheric glass, servers or device silhouettes, blank screens, and a quiet area for live overlay copy';
+      if (spec.intendedUse === 'background') return 'abstract technology texture, light trails, glass, soft grids without symbols, and premium dark or light gradients';
+      return 'technology product environment with blank screens, abstract data-like light, people using devices, and no visible UI, charts, numbers, or text';
+    }
+    if (/(plumber|electrician|builder|repair|trade|construction|heating|roof|cleaner|local service)/.test(context)) {
+      if (isHero) return 'trustworthy local service scene with clean tools, vehicle-free environment, uniform details without logos, home or workshop context, and quiet space for live overlay copy';
+      if (spec.intendedUse === 'background') return 'macro materials, tools, clean surfaces, light, and practical detail with no labels or brand marks';
+      return 'skilled hands, tools, finished work, customer interaction, tidy job site details, and no signage, labels, or documents';
+    }
+    if (/(property|real estate|estate agent|interior|architecture|home|housing)/.test(context)) {
+      if (isHero) return 'aspirational interior or exterior architecture photography with natural light, strong composition, and quiet space for live overlay copy';
+      return 'architectural details, rooms, materials, and lifestyle moments without signs, plaques, documents, or visible screen text';
+    }
+    if (/(portfolio|creator|photographer|artist|designer|personal brand)/.test(context)) {
+      if (isHero) return 'editorial creative studio portrait or workspace with art materials, blank surfaces, natural light, and quiet space for live overlay copy';
+      return 'creative process details, studio materials, camera or laptop with blank screen, and polished editorial atmosphere';
+    }
+    return 'premium business environment with real people, tactile materials, blank screens, plain surfaces, architectural light, and a quiet area for live overlay copy';
   }
 
   private async generateAsset(
@@ -124,7 +213,17 @@ export class ImageryGenerationService {
     const id = createId('image');
     const generated = process.env.OPENAI_API_KEY
       ? await this.callOpenAiImageGeneration({ prompt: spec.prompt, model: profile.model, quality: profile.quality, size: spec.size, id, projectId: input.projectId })
-      : await this.writeMockImage({ id, projectId: input.projectId, title: spec.title, direction: input.direction.name });
+          .catch(async error => {
+            const fallback = await this.writeMockImage({ id, projectId: input.projectId, title: spec.title, direction: input.direction.name, prompt: spec.prompt });
+            return {
+              ...fallback,
+              notes: [
+                'Reused generated local reference imagery so the design workflow could continue.',
+                `OpenAI image generation failed and local reference imagery was used instead: ${error instanceof Error ? error.message.slice(0, 180) : String(error).slice(0, 180)}`
+              ]
+            };
+          })
+      : await this.writeMockImage({ id, projectId: input.projectId, title: spec.title, direction: input.direction.name, prompt: spec.prompt });
     return {
       id,
       projectId: input.projectId,
@@ -161,8 +260,7 @@ export class ImageryGenerationService {
         prompt: input.prompt,
         quality: input.quality,
         size: input.size,
-        n: 1,
-        response_format: 'b64_json'
+        n: 1
       })
     });
     if (!response.ok) {
@@ -183,14 +281,17 @@ export class ImageryGenerationService {
     throw new Error('OpenAI image generation returned an unsupported image payload');
   }
 
-  private async writeMockImage(input: { id: string; projectId: string; title: string; direction: string }) {
+  private async writeMockImage(input: { id: string; projectId: string; title: string; direction: string; prompt: string }) {
+    const reference = await this.copyGeneratedReferenceImage(input);
+    if (reference) return reference;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#111827"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs>
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#111827"/><stop offset=".52" stop-color="#1f3b57"/><stop offset="1" stop-color="#16c7d4"/></linearGradient></defs>
   <rect width="1536" height="1024" fill="url(#g)"/>
-  <circle cx="1180" cy="230" r="180" fill="#ffffff" opacity=".14"/>
-  <circle cx="340" cy="760" r="260" fill="#ffffff" opacity=".10"/>
-  <text x="96" y="150" fill="#fff" font-family="Arial, sans-serif" font-size="54" font-weight="700">${escapeXml(input.title)}</text>
-  <text x="96" y="220" fill="#fff" opacity=".76" font-family="Arial, sans-serif" font-size="30">${escapeXml(input.direction)}</text>
+  <rect x="840" y="170" width="420" height="300" rx="34" fill="#ffffff" opacity=".18"/>
+  <rect x="900" y="240" width="430" height="320" rx="34" fill="#ffffff" opacity=".12"/>
+  <rect x="770" y="540" width="500" height="250" rx="42" fill="#0f172a" opacity=".32"/>
+  <circle cx="1180" cy="230" r="140" fill="#ffffff" opacity=".13"/>
+  <circle cx="410" cy="740" r="230" fill="#ffffff" opacity=".08"/>
 </svg>`;
     const file = await this.writeGeneratedFile(input.projectId, `${input.id}.svg`, Buffer.from(svg));
     return {
@@ -198,8 +299,43 @@ export class ImageryGenerationService {
       filePath: file.filePath,
       url: file.url,
       revisedPrompt: undefined,
-      notes: ['OPENAI_API_KEY is not configured; saved a local mock image so the design workflow can continue without spend.']
+      notes: ['OPENAI_API_KEY is not configured; saved a local non-text fallback image so the design workflow can continue without spend.']
     };
+  }
+
+  private async copyGeneratedReferenceImage(input: { id: string; projectId: string; title: string; prompt: string }) {
+    const prompt = input.prompt.toLowerCase();
+    const category = /(agency|marketing|branding|automation|professional service|web design)/.test(prompt)
+      ? 'agency-premium-system'
+      : /(saas|software|platform|dashboard|b2b)/.test(prompt)
+        ? 'saas-command-center'
+        : /(trade|plumber|electrician|builder|repair)/.test(prompt)
+          ? 'local-trades-proof'
+          : /(fruit|drink|juice|beverage)/.test(prompt)
+            ? 'fruit-commerce-splash'
+            : 'agency-premium-system';
+    const preferred = input.title.toLowerCase().includes('hero') ? 'hero' : 'section';
+    const candidates = [
+      path.join(this.workspaceRoot, 'public', 'template-gallery', 'generated-imagery', category, `${preferred}-${category}.webp`),
+      path.join(this.workspaceRoot, 'public', 'template-gallery', 'generated-imagery', category, `hero-${category}.webp`),
+      path.join(this.workspaceRoot, 'public', 'template-gallery', 'generated-imagery', 'awarded-kinetic-agency', 'hero-awarded-kinetic-agency.webp')
+    ];
+    for (const candidate of candidates) {
+      try {
+        const buffer = await fs.readFile(candidate);
+        const file = await this.writeGeneratedFile(input.projectId, `${input.id}.webp`, buffer);
+        return {
+          provider: 'local_mock' as const,
+          filePath: file.filePath,
+          url: file.url,
+          revisedPrompt: undefined,
+          notes: [`OPENAI_API_KEY is not configured; reused generated ${category} reference imagery for this industry.`]
+        };
+      } catch {
+        // Try the next available generated reference image.
+      }
+    }
+    return undefined;
   }
 
   private async writeGeneratedFile(projectId: string, fileName: string, buffer: Buffer) {

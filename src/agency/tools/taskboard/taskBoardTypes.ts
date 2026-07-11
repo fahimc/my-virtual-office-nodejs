@@ -46,6 +46,7 @@ export type DesignTaskType =
   | 'imagery_generation'
   | 'mobile_design'
   | 'design_qa'
+  | 'brand_guidelines'
   | 'design_approval'
   | 'builder_handoff'
   | 'post_build_design_qa'

@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zestora Fruit Drinks Brand Guidelines</title>
+  <style>
+    @page { size: A4; margin: 0; }
+    :root {
+      --primary:#FFB703;
+      --secondary:#C026D3;
+      --accent:#22C55E;
+      --light:#FFB703;
+      --dark:#C026D3;
+      --ink:#111827;
+      --muted:#667085;
+      --paper:#f3f1ea;
+      --line:rgba(17,24,39,.14);
+      --white:#ffffff;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--paper); }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .book { width: 210mm; margin: 0 auto; }
+    .sheet {
+      position: relative;
+      width: 210mm;
+      min-height: 297mm;
+      overflow: hidden;
+      background: var(--white);
+      page-break-after: always;
+      padding: 20mm;
+    }
+    .sheet:last-child { page-break-after: auto; }
+    .sheet--cover {
+      color: #fff;
+      background:
+        radial-gradient(circle at 82% 18%, rgba(255,255,255,.3), transparent 27%),
+        linear-gradient(135deg, rgba(0,0,0,.14), rgba(0,0,0,.42)),
+        linear-gradient(135deg, var(--primary), var(--accent));
+      display: grid;
+      align-content: space-between;
+    }
+    .cover-mark { display: flex; align-items: center; gap: 12px; font-weight: 900; letter-spacing: .02em; }
+    .mark-box {
+      width: 42px; height: 42px; border: 2px solid rgba(255,255,255,.75); border-radius: 14px;
+      display: grid; place-items: center; font-weight: 950;
+    }
+    .cover-kicker {
+      width: max-content;
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: 999px;
+      padding: 9px 14px;
+      background: rgba(255,255,255,.14);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 {
+      max-width: 150mm;
+      margin-top: 24mm;
+      font-size: 58pt;
+      line-height: .9;
+      letter-spacing: -.02em;
+    }
+    h2 {
+      max-width: 145mm;
+      font-size: 33pt;
+      line-height: .95;
+      letter-spacing: -.015em;
+    }
+    h3 { font-size: 15pt; line-height: 1.1; letter-spacing: -.01em; }
+    .cover-copy { max-width: 128mm; margin-top: 10mm; color: rgba(255,255,255,.86); font-size: 13pt; }
+    .cover-meta { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 14mm; color: rgba(255,255,255,.78); font-size: 9pt; }
+    .palette-strip { display: flex; gap: 5px; }
+    .palette-strip span { width: 30px; height: 54px; border-radius: 999px; border: 1px solid rgba(255,255,255,.42); }
+    .page-title { display: flex; justify-content: space-between; gap: 18mm; align-items: start; margin-bottom: 16mm; }
+    .folio { color: var(--muted); font-size: 9pt; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+    .intro { max-width: 112mm; color: var(--muted); font-size: 11pt; margin-top: 5mm; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7mm; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 8mm;
+      background: #fff;
+      box-shadow: 0 18px 45px rgba(17,24,39,.07);
+    }
+    .panel--dark { background: var(--dark); color: #fff; border: 0; }
+    .panel--tint { background: linear-gradient(135deg, rgba(255,255,255,.9), color-mix(in srgb, var(--secondary) 18%, white)); }
+    .label {
+      color: var(--accent);
+      font-size: 8pt;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 5mm;
+    }
+    .body-copy { color: var(--muted); font-size: 10.5pt; }
+    .large-statement { font-size: 27pt; line-height: 1; letter-spacing: -.02em; font-weight: 900; }
+    .wordmark-demo {
+      display: grid;
+      place-items: center;
+      min-height: 56mm;
+      border: 1px dashed rgba(17,24,39,.22);
+      border-radius: 18px;
+      background: linear-gradient(135deg, #fff, color-mix(in srgb, var(--light) 64%, white));
+      font-size: 34pt;
+      font-weight: 950;
+      letter-spacing: -.04em;
+    }
+    .clearspace-demo { margin-top: 7mm; padding: 8mm; border-radius: 14px; background: #f8fafc; color: var(--muted); font-size: 9pt; }
+    .dont-card { padding: 5mm; border-radius: 12px; background: #fff1f2; color: #7f1d1d; font-size: 9pt; font-weight: 700; }
+    .color-table { display: grid; gap: 4mm; }
+    .color-row {
+      display: grid;
+      grid-template-columns: 28mm 1fr 30mm;
+      gap: 6mm;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 4mm;
+      background: #fff;
+    }
+    .chip { height: 22mm; border-radius: 12px; border: 1px solid rgba(17,24,39,.18); }
+    .color-name { font-weight: 900; font-size: 12pt; }
+    .color-meta { color: var(--muted); font-size: 8.5pt; }
+    .contrast-badge { text-align: center; border-radius: 999px; padding: 3mm 2mm; font-weight: 900; font-size: 8pt; background: #f8fafc; }
+    .type-card { min-height: 43mm; }
+    .type-card h3 { font-size: 17pt; }
+    .small { color: var(--muted); font-size: 8.5pt; margin-top: 4mm; }
+    .specimen {
+      margin-top: 12mm;
+      padding: 10mm;
+      border-radius: 18px;
+      background: var(--dark);
+      color: #fff;
+    }
+    .specimen strong { display: block; font-size: 31pt; line-height: .95; letter-spacing: -.02em; margin-bottom: 4mm; }
+    .list { display: grid; gap: 4mm; padding: 0; list-style: none; margin: 0; }
+    .list li { position: relative; padding-left: 7mm; color: var(--muted); font-size: 9.5pt; }
+    .list li:before { content: ""; position: absolute; left: 0; top: .55em; width: 3mm; height: 3mm; border-radius: 50%; background: var(--accent); }
+    .component-card { border-left: 4px solid var(--accent); padding: 5mm; border-radius: 12px; background: #f8fafc; }
+    .component-card p:last-child { color: var(--muted); font-size: 8.5pt; }
+    .footer-note { position: absolute; left: 20mm; right: 20mm; bottom: 13mm; display: flex; justify-content: space-between; color: #98a2b3; font-size: 8pt; }
+    @media screen {
+      .book { padding: 24px 0; }
+      .sheet { margin: 0 auto 28px; box-shadow: 0 24px 80px rgba(15,23,42,.18); }
+    }
+    @media screen and (max-width: 840px) {
+      .book { width: 100%; padding: 0; }
+      .sheet { width: 100%; min-height: auto; padding: 30px 24px 70px; border-bottom: 8px solid var(--paper); box-shadow: none; }
+      .sheet--cover { min-height: 720px; }
+      h1 { font-size: 56px; }
+      h2 { font-size: 38px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .color-row { grid-template-columns: 80px 1fr; }
+      .contrast-badge { grid-column: 2; text-align: left; }
+      .footer-note { position: static; margin-top: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="book">
+    <section class="sheet sheet--cover">
+      <div class="cover-mark"><span class="mark-box">ZF</span><span>Zestora Fruit Drinks</span></div>
+      <div>
+        <div class="cover-kicker">Brand identity guidelines</div>
+        <h1>Zestora Fruit Drinks</h1>
+        <p class="cover-copy">Juicy Commerce - A bright ecommerce direction with flavour-led product cards, bold rounded typography, and fruit-colour accents.</p>
+      </div>
+      <div class="cover-meta">
+        <p>Prepared by the AI Agency design studio<br>11/07/2026</p>
+        <div class="palette-strip"><span style="background:#FFB703"></span><span style="background:#C026D3"></span><span style="background:#22C55E"></span><span style="background:#F97316"></span><span style="background:#FFF7E8"></span></div>
+      </div>
+    </section>
+
+    <section class="sheet">
+      <header class="page-title"><div><p class="folio">01</p><h2>Brand foundation</h2><p class="intro">The strategic decisions that keep the brand recognizable across the website, sales material, and client communications.</p></div></header>
+      <div class="grid-2">
+        <article class="panel panel--dark"><p class="label">Creative direction</p><p class="large-statement">Juicy Commerce</p></article>
+        <article class="panel panel--tint"><p class="label">Personality</p><p class="large-statement">colourful, energetic, natural, friendly</p></article>
+      </div>
+      <div class="grid-2" style="margin-top:7mm">
+        <article class="panel"><p class="label">Voice and tone</p><p class="body-copy">Clear, confident, specific, and conversion-focused without sounding generic.</p></article>
+        <article class="panel"><p class="label">Layout principle</p><p class="body-copy">Use reusable sections with a 12-column desktop grid and single-column mobile flow.</p></article>
+      </div>
+      <footer class="footer-note"><span>Zestora Fruit Drinks brand guidelines</span><span>Foundation</span></footer>
+    </section>
+
+    <section class="sheet">
+      <header class="page-title"><div><p class="folio">02</p><h2>Logo and clear space</h2><p class="intro">Rules for using the primary wordmark consistently without crowding, distortion, or low-contrast placement.</p></div></header>
+      <div class="wordmark-demo">Zestora Fruit Drinks</div>
+      <div class="grid-2" style="margin-top:8mm">
+        <article class="panel"><p class="label">Primary lockup</p><p class="body-copy">Use the primary wordmark on light surfaces. Keep the mark simple and avoid placing it on busy imagery without a solid or blurred backing.</p></article>
+        <article class="panel"><p class="label">Clear space</p><p class="body-copy">Keep clear space around the logo at least equal to the height of the first capital letter. Minimum digital width: Do not use the primary logo below 120px wide on digital surfaces.</p></article>
+      </div>
+      <div class="grid-3" style="margin-top:8mm"><div class="dont-card">Do not stretch or distort the logo</div><div class="dont-card">Do not recolour it outside the approved palette</div><div class="dont-card">Do not place it over low-contrast image areas</div></div>
+      <footer class="footer-note"><span>Zestora Fruit Drinks brand guidelines</span><span>Logo</span></footer>
+    </section>
+
+    <section class="sheet">
+      <header class="page-title"><div><p class="folio">03</p><h2>Colour system</h2><p class="intro">A practical palette with contrast notes so the site can stay expressive and readable.</p></div></header>
+      <div class="color-table"><article class="color-row">
+    <div class="chip" style="background:#FFB703"></div>
+    <div>
+      <p class="color-name">01 Mango</p>
+      <p class="color-meta">#FFB703 - Hero accent</p>
+    </div>
+    <div class="contrast-badge">1.75 / 10.16</div>
+  </article><article class="color-row">
+    <div class="chip" style="background:#C026D3"></div>
+    <div>
+      <p class="color-name">02 Berry</p>
+      <p class="color-meta">#C026D3 - Flavour accent</p>
+    </div>
+    <div class="contrast-badge">4.71 / 3.77</div>
+  </article><article class="color-row">
+    <div class="chip" style="background:#22C55E"></div>
+    <div>
+      <p class="color-name">03 Leaf</p>
+      <p class="color-meta">#22C55E - Natural proof</p>
+    </div>
+    <div class="contrast-badge">2.28 / 7.79</div>
+  </article><article class="color-row">
+    <div class="chip" style="background:#F97316"></div>
+    <div>
+      <p class="color-name">04 Citrus</p>
+      <p class="color-meta">#F97316 - CTA warmth</p>
+    </div>
+    <div class="contrast-badge">2.80 / 6.33</div>
+  </article><article class="color-row">
+    <div class="chip" style="background:#FFF7E8"></div>
+    <div>
+      <p class="color-name">05 Cream</p>
+      <p class="color-meta">#FFF7E8 - Background</p>
+    </div>
+    <div class="contrast-badge">1.06 / 16.66</div>
+  </article><article class="color-row">
+    <div class="chip" style="background:#172033"></div>
+    <div>
+      <p class="color-name">06 Charcoal</p>
+      <p class="color-meta">#172033 - Text</p>
+    </div>
+    <div class="contrast-badge">16.27 / 1.09</div>
+  </article></div>
+      <footer class="footer-note"><span>Zestora Fruit Drinks brand guidelines</span><span>Colour</span></footer>
+    </section>
+
+    <section class="sheet">
+      <header class="page-title"><div><p class="folio">04</p><h2>Typography system</h2><p class="intro">A simple hierarchy for headlines, body copy, buttons, labels, forms, and reusable components.</p></div></header>
+      <div class="grid-3">
+    <article class="type-card">
+      <p class="label">Headings</p>
+      <h3>Rounded bold display sans</h3>
+      <p>700-900 - Use the approved modular scale; keep mobile headings compact and readable.</p>
+      <p class="small">Hero, section headings, campaign statements</p>
+    </article>
+    <article class="type-card">
+      <p class="label">Body</p>
+      <h3>Inter/system-ui</h3>
+      <p>400-500 - 16-18px body copy with 1.5-1.7 line height.</p>
+      <p class="small">Paragraphs, product copy, service explanations</p>
+    </article>
+    <article class="type-card">
+      <p class="label">Interface</p>
+      <h3>Inter/system-ui</h3>
+      <p>600-700 - 14-16px labels with clear tap targets.</p>
+      <p class="small">Buttons, navigation, badges, forms</p>
+    </article></div>
+      <div class="specimen"><strong>Fresh flavour, clear action.</strong><p>A bright ecommerce direction with flavour-led product cards, bold rounded typography, and fruit-colour accents.</p></div>
+      <footer class="footer-note"><span>Zestora Fruit Drinks brand guidelines</span><span>Typography</span></footer>
+    </section>
+
+    <section class="sheet">
+      <header class="page-title"><div><p class="folio">05</p><h2>Imagery and voice</h2><p class="intro">Image direction and copy rules to avoid generic production language and keep the site client-facing.</p></div></header>
+      <div class="grid-2">
+        <article class="panel"><p class="label">Imagery rules</p><ul class="list"><li>Chilled bottles, fresh fruit, splashes, leaves, ice, and bright natural lighting</li><li>Avoid images with embedded text because the website applies live text overlays.</li><li>Leave negative space for headlines and CTAs in hero images.</li><li>Use real or generated category-specific imagery before abstract decoration.</li></ul></article>
+        <article class="panel"><p class="label">Copy should do this</p><ul class="list"><li>Lead with concrete customer value</li><li>Use plain language</li><li>Keep calls to action action-oriented</li><li>Support claims with proof</li></ul></article>
+      </div>
+      <div class="panel" style="margin-top:8mm"><p class="label">Copy should avoid</p><ul class="list"><li>Internal production labels</li><li>Template wording</li><li>Vague premium/modern filler</li><li>Overpromising unsupported outcomes</li></ul></div>
+      <footer class="footer-note"><span>Zestora Fruit Drinks brand guidelines</span><span>Imagery</span></footer>
+    </section>
+
+    <section class="sheet">
+      <header class="page-title"><div><p class="folio">06</p><h2>Components and accessibility</h2><p class="intro">Implementation guidance for the Builder Agent and QA checks before the client sees a preview.</p></div></header>
+      <div class="grid-2">
+    <article class="component-card">
+      <p class="label">Hero</p>
+      <p>Explain offer and drive primary CTA. Anatomy: headline, supporting copy, primary CTA, proof cue. Variants: split, centered.</p>
+    </article>
+    <article class="component-card">
+      <p class="label">Navigation</p>
+      <p>Move users through core pages. Anatomy: logo, links, CTA. Variants: desktop, mobile drawer.</p>
+    </article>
+    <article class="component-card">
+      <p class="label">ServiceCard</p>
+      <p>Present service or feature clearly. Anatomy: title, summary, benefit, link. Variants: standard, featured.</p>
+    </article>
+    <article class="component-card">
+      <p class="label">CTASection</p>
+      <p>Convert after proof. Anatomy: heading, copy, button. Variants: band, card.</p>
+    </article>
+    <article class="component-card">
+      <p class="label">ContactForm</p>
+      <p>Capture enquiries. Anatomy: name, email, message, submit. Variants: compact, full.</p>
+    </article></div>
+      <div class="grid-2" style="margin-top:8mm">
+        <article class="panel panel--dark"><p class="label">Contrast standard</p><p class="body-copy" style="color:rgba(255,255,255,.82)">Target WCAG AA contrast. Body text should be at least 4.5:1; large display text should be at least 3:1.</p></article>
+        <article class="panel"><p class="label">Accessibility rules</p><ul class="list"><li>Check every foreground/background token pair before publishing.</li><li>Buttons must remain at least 44px tall on touch devices.</li><li>Do not rely on colour alone to communicate state.</li><li>Use live HTML text over images, never text baked into generated hero imagery.</li></ul></article>
+      </div>
+      <footer class="footer-note"><span>Zestora Fruit Drinks brand guidelines</span><span>Components</span></footer>
+    </section>
+
+    <section class="sheet">
+      <header class="page-title"><div><p class="folio">07</p><h2>Production checklist</h2><p class="intro">A compact handoff checklist for designers, builders, and reviewers.</p></div></header>
+      <div class="grid-2">
+        <article class="panel"><p class="label">Use this</p><ul class="list"><li>Use the approved palette through CSS variables and DaisyUI/Tailwind tokens.</li><li>Repeat the primary CTA after proof-heavy sections.</li><li>Keep imagery, typography, and buttons consistent across page templates.</li></ul></article>
+        <article class="panel"><p class="label">Avoid this</p><ul class="list"><li>Do not mix a second UI library without approval.</li><li>Do not create one-off colours outside the token set.</li><li>Do not use placeholder or production-process labels in client-facing pages.</li></ul></article>
+      </div>
+      <div class="panel panel--tint" style="margin-top:9mm">
+        <p class="label">Builder handoff</p>
+        <p class="large-statement">Use these guidelines as the client-facing source of truth for design tokens, imagery, copy tone, and component polish.</p>
+      </div>
+      <footer class="footer-note"><span>Zestora Fruit Drinks brand guidelines</span><span>Checklist</span></footer>
+    </section>
+  </main>
+</body>
+</html>

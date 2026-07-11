@@ -5,6 +5,8 @@ import type { MemoryStore } from '../memory/memoryStore.js';
 
 export interface AgentPresenceUpdate {
   agentId: string;
+  name: string;
+  role: string;
   status: AgentStatus;
   summary: string;
   updatedAt: string;
@@ -24,7 +26,7 @@ export class AgentRuntime {
 
   register(agent: AgentDefinition): void {
     this.agents.set(agent.id, agent);
-    this.presence.set(agent.id, { agentId: agent.id, status: 'idle', summary: `${agent.name} is available.`, updatedAt: new Date().toISOString() });
+    this.presence.set(agent.id, { agentId: agent.id, name: agent.name, role: agent.role, status: 'idle', summary: `${agent.name} is available.`, updatedAt: new Date().toISOString() });
   }
 
   get(agentId: string): AgentDefinition {
@@ -49,7 +51,15 @@ export class AgentRuntime {
       projectId: context.projectId,
       workflowRunId: context.workflowRunId,
       status: async (id, status, summary) => {
-        this.presence.set(id, { agentId: id, status, summary, updatedAt: new Date().toISOString() });
+        const definition = this.agents.get(id);
+        this.presence.set(id, {
+          agentId: id,
+          name: definition?.name || id,
+          role: definition?.role || id,
+          status,
+          summary,
+          updatedAt: new Date().toISOString()
+        });
       }
     };
     return agent.execute(input, executionContext);

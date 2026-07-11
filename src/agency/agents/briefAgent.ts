@@ -37,11 +37,14 @@ export const briefAgent: AgentDefinition<{ originalBrief: string }, StructuredBr
 export function structureBriefHeuristically(originalBrief: string): StructuredBrief {
   const lower = originalBrief.toLowerCase();
   const projectName = extractProjectName(originalBrief);
-  const isEcommerce = /(ecommerce|e-commerce|shop|checkout|basket|cart|product|add to basket|mixed case|subscription)/i.test(originalBrief);
+  const isAgency = /(digital agency|marketing agency|web design|branding|ai automation|seo|digital marketing|professional marketing website|lead generation)/i.test(originalBrief);
+  const isEcommerce = !isAgency && /(ecommerce|e-commerce|online shop|checkout|basket|cart|add to basket|mixed case|product catalogue|product catalog|subscription box)/i.test(originalBrief);
   const isFoodDrink = /(fruit|drink|juice|cafe|restaurant|bakery|menu|flavour|flavor|bottle)/i.test(originalBrief);
-  const pages = extractPages(originalBrief, isEcommerce);
+  const pages = extractPages(originalBrief, isEcommerce, isAgency);
   const features = [
-    isEcommerce ? 'Product catalogue and ecommerce checkout' : lower.includes('booking') ? 'Booking/contact workflow' : 'Lead capture form',
+    isEcommerce ? 'Product catalogue and ecommerce checkout' : isAgency ? 'Lead capture and consultation enquiry workflow' : lower.includes('booking') ? 'Booking/contact workflow' : 'Lead capture form',
+    isAgency ? 'Service pages for web design, branding, AI automation, and digital marketing' : undefined,
+    isAgency && /(case stud|portfolio|work|results)/i.test(originalBrief) ? 'Case studies and portfolio proof' : undefined,
     lower.includes('wholesale') ? 'Wholesale enquiry workflow' : lower.includes('stockist') ? 'Stockist finder or list' : 'Contact form routing',
     lower.includes('email') || lower.includes('subscribe') ? 'Email signup integration' : undefined,
     lower.includes('review') ? 'Reviews and trust signals' : undefined,
@@ -49,12 +52,14 @@ export function structureBriefHeuristically(originalBrief: string): StructuredBr
   ].filter((item): item is string => Boolean(item));
   return {
     businessSummary: summarizeBrief(originalBrief, projectName),
-    targetAudience: lower.includes('wholesale') || lower.includes('b2b') ? 'Retail customers, families, health-conscious buyers, and wholesale decision makers' : 'Prospective customers',
+    targetAudience: isAgency
+      ? 'Founders, small business owners, and marketing decision makers looking for websites, brand systems, automation, and growth support'
+      : lower.includes('wholesale') || lower.includes('b2b') ? 'Retail customers, families, health-conscious buyers, and wholesale decision makers' : 'Prospective customers',
     pagesNeeded: pages,
     featuresNeeded: features,
     stylePreferences: [
       lower.includes('premium') ? 'premium' : undefined,
-      isFoodDrink ? 'vibrant' : 'professional',
+      isFoodDrink && !isAgency ? 'vibrant' : 'professional',
       lower.includes('colourful') || lower.includes('colorful') ? 'colourful' : undefined,
       lower.includes('mobile') ? 'mobile-first' : undefined,
       lower.includes('trust') ? 'trustworthy' : undefined,
@@ -62,6 +67,8 @@ export function structureBriefHeuristically(originalBrief: string): StructuredBr
     ].filter((item): item is string => Boolean(item)),
     contentRequirements: isEcommerce
       ? ['Homepage hero', 'Product cards', 'Benefits', 'Reviews', 'Wholesale CTA', 'Email signup', 'FAQ']
+      : isAgency
+        ? ['Homepage hero', 'Service descriptions', 'Case studies or proof', 'Process', 'Lead capture CTA', 'FAQ']
       : ['Hero message', 'Service descriptions', 'Trust signals', 'Call to action'],
     assetsRequired: ['Logo', 'Brand colors', 'Images or image direction'],
     technicalRequirements: [
@@ -72,7 +79,7 @@ export function structureBriefHeuristically(originalBrief: string): StructuredBr
     ],
     assumptions: ['Single-language site', 'Client will provide final brand assets if not already available'],
     missingInformation: lower.length < 80 ? ['More detail on business goals and audience'] : [],
-    estimatedComplexity: isEcommerce || lower.includes('crm') || lower.includes('booking') ? 'medium' : 'small'
+    estimatedComplexity: isEcommerce || isAgency || lower.includes('crm') || lower.includes('booking') ? 'medium' : 'small'
   };
 }
 
@@ -89,8 +96,25 @@ function summarizeBrief(text: string, projectName: string): string {
   return `${projectName}: ${summary.slice(0, 260) || 'Website project'}`;
 }
 
-function extractPages(text: string, isEcommerce: boolean): string[] {
+function extractPages(text: string, isEcommerce: boolean, isAgency = false): string[] {
   const lower = text.toLowerCase();
+  if (isAgency) {
+    return [
+      'Home',
+      'Services',
+      lower.includes('web design') ? 'Web Design' : undefined,
+      lower.includes('branding') ? 'Branding' : undefined,
+      lower.includes('automation') || lower.includes('ai') ? 'AI Automation' : undefined,
+      lower.includes('marketing') ? 'Digital Marketing' : undefined,
+      lower.includes('case') || lower.includes('portfolio') || lower.includes('work') ? 'Case Studies' : 'Work',
+      'About',
+      lower.includes('process') ? 'Process' : undefined,
+      lower.includes('pricing') ? 'Pricing' : undefined,
+      lower.includes('blog') ? 'Blog' : undefined,
+      lower.includes('faq') || lower.includes('frequently asked') ? 'FAQ' : undefined,
+      'Contact'
+    ].filter((item): item is string => Boolean(item));
+  }
   const candidates = [
     'Home',
     isEcommerce ? 'Shop' : 'Services',

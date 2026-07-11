@@ -14,7 +14,9 @@
     "templates:refresh": "npm run templates:gallery && npm run build:css",
     "templates:review": "node scripts/review-template-legibility.mjs",
     "templates:imagery": "npm run templates:gallery && node scripts/generate-template-imagery.mjs && npm run templates:gallery && npm run build:css",
-    "assets:placeholders": "node scripts/download-placeholder-images.mjs"
+    "assets:placeholders": "node scripts/download-placeholder-images.mjs",
+    "brand:guidelines": "npm run build && node scripts/generate-brand-guidelines.mjs",
+    "brand:guidelines:agency": "npm run build && node scripts/generate-brand-guidelines.mjs --agency"
   },
   "dependencies": {
     "express": "^4.19.2",

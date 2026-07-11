@@ -14,6 +14,8 @@ export type ArtifactType =
   | 'prototype'
   | 'imagery_plan'
   | 'generated_image'
+  | 'brand_guidelines'
+  | 'brand_guidelines_pdf'
   | 'design_handoff'
   | 'design_qa'
   | 'post_build_design_review'

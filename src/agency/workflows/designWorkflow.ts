@@ -20,6 +20,7 @@ import {
   createWireframe,
   selectDirection
 } from '../tools/design/designArtifactFactory.js';
+import { createBrandGuidelinesFiles } from '../tools/design/brandGuidelinesTool.js';
 import type { ArtifactType } from '../schemas/artifact.schema.js';
 import { VisualReviewService } from '../tools/design/visualReviewService.js';
 
@@ -92,8 +93,9 @@ export class DesignWorkflow {
     const designBrief = data.design.briefs.find(item => item.projectId === projectId);
     if (!designBrief) throw new Error('Design brief missing');
     const directions = data.design.creativeDirections.filter(item => item.projectId === projectId);
+    const orderedDirections = [selectedDirection, ...directions.filter(item => item.id !== selectedDirection.id)];
     const selected: SelectedDirection = {
-      ...selectDirection(directions.length ? directions : [selectedDirection], 'approval', approvalId),
+      ...selectDirection(orderedDirections.length ? orderedDirections : [selectedDirection], 'approval', approvalId),
       selectedDirectionId: selectedDirection.id,
       approvedByUser: true
     };
@@ -155,6 +157,12 @@ export class DesignWorkflow {
     await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'design_qa', state: {}, createdAt: '', updatedAt: '' }, qaReport.passed ? 'design.qa.passed' : 'design.qa.failed', { qaReport });
 
     const handoff = createHandoff({ selectedDirection: selected, direction: selectedDirection, sitemap, wireframes, tokens, componentSpec, imageryPlan });
+    const brandGuidelines = await createBrandGuidelinesFiles({ designBrief, direction: selectedDirection, tokens, componentSpec, handoff });
+    await this.saveArtifact(projectId, 'brand_guidelines', 'brand-guidelines.html', 'Brand guidelines HTML', { guidelines: brandGuidelines.guidelines }, brandGuidelines.htmlUrl);
+    await this.saveArtifact(projectId, 'brand_guidelines_pdf', 'brand-guidelines.pdf', 'Brand guidelines PDF', { guidelines: brandGuidelines.guidelines }, brandGuidelines.pdfUrl);
+    await this.completeTask(projectId, 'brand_guidelines', { guidelines: brandGuidelines.guidelines, htmlUrl: brandGuidelines.htmlUrl, pdfUrl: brandGuidelines.pdfUrl });
+    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'brand_guidelines', state: {}, createdAt: '', updatedAt: '' }, 'design.brand_guidelines.created', { brandGuidelines: brandGuidelines.guidelines });
+
     await this.saveDesign(projectId, 'handoffs', handoff, 'design_handoff', 'design-handoff.md', 'Builder handoff');
     await this.completeTask(projectId, 'builder_handoff', { handoff });
     await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'handoff', state: {}, createdAt: '', updatedAt: '' }, 'design.handoff.created', { handoff });
@@ -211,6 +219,7 @@ export class DesignWorkflow {
       ['Prototype', 'prototype'],
       ['Website Imagery', 'imagery_generation'],
       ['Design QA', 'design_qa'],
+      ['Brand Guidelines', 'brand_guidelines'],
       ['Design Approval', 'design_approval'],
       ['Builder Handoff', 'builder_handoff'],
       ['Post-Build Design QA', 'post_build_design_qa']
@@ -244,7 +253,7 @@ export class DesignWorkflow {
     await this.saveArtifact(projectId, artifactType, path, title, value as Record<string, unknown>);
   }
 
-  private async saveArtifact(projectId: string, type: ArtifactType, path: string, title: string, metadata: Record<string, unknown>) {
+  private async saveArtifact(projectId: string, type: ArtifactType, path: string, title: string, metadata: Record<string, unknown>, url?: string) {
     await this.store.update(data => {
       data.artifacts.push({
         id: createId('artifact'),
@@ -252,6 +261,7 @@ export class DesignWorkflow {
         type,
         title,
         path: `project/design/${path}`,
+        url,
         metadata,
         createdByAgentId: 'design',
         createdAt: nowIso()

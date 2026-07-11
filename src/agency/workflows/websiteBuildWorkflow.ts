@@ -55,7 +55,21 @@ export class WebsiteBuildWorkflow {
         await this.completeCompanyTask(project.id, 'design', { design });
         await this.workflowRuntime.emit(run, 'design.completed', design);
       }
-      if (!state.designOptionsApproved) {
+      const existingDesignHandoff = await this.getDesignHandoff(project.id);
+      const existingSelectedDirection = await this.getSelectedDirection(project.id);
+      if (!state.designOptionsApproved && existingDesignHandoff && existingSelectedDirection) {
+        await this.workflowRuntime.patch(run.id, {
+          status: 'running',
+          currentStep: 'design_handoff_ready',
+          state: {
+            ...state,
+            plan,
+            design,
+            designOptionsApproved: true,
+            selectedDesignOption: existingSelectedDirection
+          }
+        });
+      } else if (!state.designOptionsApproved) {
         const customer = (await this.store.read()).customers.find(item => item.id === project.customerId);
         if (!customer) throw new Error(`Customer not found for project ${project.id}`);
         const designGate = this.designWorkflow
@@ -230,6 +244,14 @@ export class WebsiteBuildWorkflow {
     return data.design.handoffs.filter(item => item.projectId === projectId).at(-1);
   }
 
+  private async getSelectedDirection(projectId: string) {
+    const data = await this.store.read();
+    const selected = data.design.selectedDirections.filter(item => item.projectId === projectId).at(-1);
+    return selected
+      ? data.design.creativeDirections.find(item => item.projectId === projectId && item.id === selected.selectedDirectionId)
+      : undefined;
+  }
+
   private createCodexBuildPrompt(input: {
     plan: { tasks: string[]; summary: string };
     design: { direction: string; sections: string[] };
@@ -274,7 +296,15 @@ export class WebsiteBuildWorkflow {
     const project = await this.projectMemory.get(projectId);
     if (!project) throw new Error(`Project not found: ${projectId}`);
     await this.projectMemory.update(projectId, { status: 'changes_requested' });
-    const run = await this.workflowRuntime.create('websiteBuildWorkflow', { projectId, feedback, changeRequest: true }, projectId);
+    const selectedDesignOption = await this.getSelectedDirection(projectId);
+    const designHandoff = await this.getDesignHandoff(projectId);
+    const run = await this.workflowRuntime.create('websiteBuildWorkflow', {
+      projectId,
+      feedback,
+      changeRequest: true,
+      designOptionsApproved: Boolean(selectedDesignOption || designHandoff),
+      selectedDesignOption
+    }, projectId);
     await this.projectMemory.update(projectId, { currentWorkflowRunId: run.id });
     await this.workflowRuntime.emit(run, 'changes.requested', { feedback });
     return { workflowRunId: run.id };

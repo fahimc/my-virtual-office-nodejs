@@ -351,25 +351,28 @@
     renderAgents(officeState.agents || []);
     renderActivity(officeState.activity || []);
     renderArtifacts(officeState.artifacts || []);
-    renderApproval(officeState.approvals || []);
+    renderApproval(officeState.approvals || [], project);
     renderCompany(officeState);
     renderResume(officeState);
   }
 
   function renderTimeline(timeline) {
+    timeline = Array.isArray(timeline) ? timeline : [];
     els.timeline.innerHTML = timeline.map(item => `<li class="${item.status === 'completed' ? 'done' : item.status === 'active' ? 'active' : ''}">${item.step}</li>`).join('');
   }
 
   function renderAgents(agents) {
+    agents = Array.isArray(agents) ? agents : [];
     els.agents.innerHTML = agents.map(agent => `
       <div>
-        <b>${agent.name || agent.agentId}</b>
+        <b>${agent.name || agent.role || agent.agentId || agent.id || 'Agent'}</b>
         <span>${agent.role || agent.status}: ${agent.summary || ''}</span>
       </div>
     `).join('');
   }
 
   function renderActivity(activity) {
+    activity = Array.isArray(activity) ? activity : [];
     els.activity.innerHTML = activity.slice(-8).reverse().map(item => `
       <li>
         <b>${item.title}</b>
@@ -379,6 +382,7 @@
   }
 
   function renderArtifacts(artifacts) {
+    artifacts = Array.isArray(artifacts) ? artifacts : [];
     if (!artifacts.length) {
       els.artifacts.innerHTML = '';
       return;
@@ -403,12 +407,22 @@
     refreshIcons();
   }
 
-  function renderApproval(approvals) {
+  function renderApproval(approvals, project) {
+    approvals = Array.isArray(approvals) ? approvals : [];
     const pending = approvals.find(item => item.status === 'pending');
-    els.approval.classList.toggle('hidden', !pending);
+    const previewUrl = project && project.previewUrl ? project.previewUrl : '';
+    els.approval.classList.toggle('hidden', !pending && !previewUrl);
     if (!pending) {
       state.renderedApprovalKey = '';
-      els.approval.innerHTML = '';
+      els.approval.innerHTML = previewUrl ? `
+        <h4>Latest preview</h4>
+        <p>The newest preview is available while the agency continues the workflow.</p>
+        <p><a href="${previewUrl}" target="_blank" rel="noreferrer">${previewUrl}</a></p>
+        <div class="agency-actions">
+          <a class="button-link" href="${previewUrl}" target="_blank" rel="noreferrer"><i data-lucide="external-link"></i><span>Open preview</span></a>
+        </div>
+      ` : '';
+      if (previewUrl) refreshIcons();
       return;
     }
     const approvalKey = `${pending.id}:${pending.type}:${pending.status}`;
@@ -476,17 +490,24 @@
   }
 
   function renderTaskBoard(columns) {
-    els.taskBoard.innerHTML = columns.filter(column => column.tasks.length || ['ready', 'in_progress', 'review', 'done', 'failed'].includes(column.status)).map(column => `
+    columns = Array.isArray(columns) ? columns : [];
+    els.taskBoard.innerHTML = columns.filter(column => {
+      const tasks = Array.isArray(column.tasks) ? column.tasks : [];
+      return tasks.length || ['ready', 'in_progress', 'review', 'done', 'failed'].includes(column.status);
+    }).map(column => {
+      const tasks = Array.isArray(column.tasks) ? column.tasks : [];
+      return `
       <section class="task-column">
         <h5>${column.status.replaceAll('_', ' ')}</h5>
-        ${column.tasks.slice(0, 4).map(task => `
+        ${tasks.slice(0, 4).map(task => `
           <div class="task-card" title="${task.description || ''}">
             <b>${task.title}</b>
             <small>${task.type} - ${task.assignedAgentId || 'unassigned'} ${task.approvalRequired ? '<span class="approval-badge">approval</span>' : ''}</small>
           </div>
         `).join('')}
       </section>
-    `).join('');
+    `;
+    }).join('');
   }
 
   function renderDesignStudio(design) {
@@ -494,6 +515,7 @@
     const selected = design.selectedDirection;
     const direction = (design.creativeDirections || []).find(item => selected && item.id === selected.selectedDirectionId) || (design.creativeDirections || [])[0];
     const pendingDesignApproval = (design.approvals || [])[0];
+    const designNeedsCompletion = Boolean(selected && !design.handoff);
     const designArtifacts = design.artifacts || [];
     const generatedImages = design.generatedImages || [];
     const imageryPlan = design.imageryPlan;
@@ -542,6 +564,33 @@
           <textarea id="designStudioFeedback" placeholder="Request changes to the design directions"></textarea>
           <div class="agency-actions">
             <button id="requestDesignStudioChanges" type="button"><i data-lucide="message-square"></i><span>Request design changes</span></button>
+          </div>
+        </section>
+      ` : ''}
+      ${!pendingDesignApproval && designNeedsCompletion && (design.creativeDirections || []).length ? `
+        <section class="design-review-panel">
+          <div class="agency-panel-heading">
+            <h4>Selected Direction</h4>
+            <span>resume or change</span>
+          </div>
+          <p class="design-help-text">The approval was recorded, but production design artifacts are not complete yet. Continue with the selected direction or choose another direction before handoff.</p>
+          <div class="creative-direction-review-list compact">
+            ${(design.creativeDirections || []).map((option, index) => `
+              <article class="creative-direction-review-card ${selected && selected.selectedDirectionId === option.id ? 'selected' : ''}">
+                <div class="creative-direction-card-header">
+                  <div class="creative-direction-title">
+                    <b>${option.name}</b>
+                    <span>${option.summary}</span>
+                  </div>
+                  <button type="button" class="select-direction-option" data-index="${index}">
+                    <i data-lucide="${selected && selected.selectedDirectionId === option.id ? 'play' : 'check'}"></i>
+                    <span>${selected && selected.selectedDirectionId === option.id ? 'Continue' : 'Use this'}</span>
+                  </button>
+                </div>
+                <div class="design-token-row">${(option.palette || []).map(color => `<i class="design-swatch" title="${color.name}: ${color.hex}" style="background:${color.hex}"></i>`).join('')}</div>
+                <a href="/design-concepts/${state.projectId}/${option.id}/" target="_blank" rel="noreferrer">Open full design</a>
+              </article>
+            `).join('')}
           </div>
         </section>
       ` : ''}
@@ -618,12 +667,20 @@
       els.designStudioBody.querySelectorAll('.approve-direction-option').forEach(button => {
         button.addEventListener('click', () => {
           const option = (design.creativeDirections || [])[Number(button.dataset.index || 0)];
+          markDirectionButtonWorking(button, 'Starting');
           approveDesignOptions(pendingDesignApproval, option);
         });
       });
       const requestButton = document.getElementById('requestDesignStudioChanges');
       if (requestButton) requestButton.addEventListener('click', () => requestChanges(pendingDesignApproval.id, document.getElementById('designStudioFeedback')?.value || ''));
     }
+    els.designStudioBody.querySelectorAll('.select-direction-option').forEach(button => {
+      button.addEventListener('click', () => {
+        const option = (design.creativeDirections || [])[Number(button.dataset.index || 0)];
+        markDirectionButtonWorking(button, 'Starting');
+        selectDesignDirection(option);
+      });
+    });
     refreshIcons();
   }
 
@@ -719,6 +776,24 @@
     const result = await api(`/approval/${approval.id}/approve`, { method: 'POST', body: { selectedDesignOption } });
     renderOfficeState(result.officeState);
     if (state.workflowRunId) startPolling();
+  }
+
+  async function selectDesignDirection(direction) {
+    if (!direction || !state.projectId) return;
+    setReception('Design Production', 'Design Agent', `Continuing design production with ${direction.name}.`);
+    const result = await api(`/design/${state.projectId}/select-direction`, {
+      method: 'POST',
+      body: { directionId: direction.id }
+    });
+    renderOfficeState(result.officeState);
+    startPolling();
+  }
+
+  function markDirectionButtonWorking(button, label) {
+    button.disabled = true;
+    button.classList.add('is-working');
+    button.innerHTML = `<i data-lucide="loader-2"></i><span>${label}</span>`;
+    refreshIcons();
   }
 
   async function requestChanges(id, feedbackOverride) {

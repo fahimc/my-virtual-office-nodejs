@@ -536,6 +536,34 @@
   flex: 0 0 auto;
 }
 
+.button-link {
+  min-height: 38px;
+  border: 1px solid #40506f;
+  border-radius: 6px;
+  background: #263754;
+  color: #f4f8ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.creative-direction-review-card button:disabled {
+  opacity: .72;
+  cursor: wait;
+}
+
+.creative-direction-review-card button.is-working svg {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .design-review-panel textarea {
   width: 100%;
   min-height: 76px;

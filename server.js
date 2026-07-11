@@ -8,6 +8,7 @@ import nodemailer from 'nodemailer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+loadEnvFile(path.join(__dirname, '.env'));
 const PORT = Number(process.env.PORT || process.env.VO_PORT || 3000);
 const DATA_DIR = path.join(__dirname, 'data');
 const DEFAULT_CONFIG = path.join(DATA_DIR, 'default-office-config.json');
@@ -33,10 +34,43 @@ try {
   console.warn('Agency API is not available until TypeScript is built:', error.message);
 }
 
+function loadEnvFile(filePath) {
+  try {
+    const content = readFileSync(filePath, 'utf8');
+    for (const rawLine of content.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith('#')) continue;
+      const separator = line.indexOf('=');
+      if (separator === -1) continue;
+      const key = line.slice(0, separator).trim();
+      const value = line.slice(separator + 1).trim().replace(/^['"]|['"]$/g, '');
+      if (key && process.env[key] === undefined) {
+        process.env[key] = value;
+      }
+    }
+  } catch {
+    // Local .env is optional; production hosts should use managed environment variables.
+  }
+}
+
+async function readJsonFileWithRetry(filePath, attempts = 5) {
+  let lastError;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      return JSON.parse(await fs.readFile(filePath, 'utf8'));
+    } catch (error) {
+      lastError = error;
+      if (!(error instanceof SyntaxError) || attempt === attempts - 1) break;
+      await new Promise(resolve => setTimeout(resolve, 40 + attempt * 40));
+    }
+  }
+  throw lastError;
+}
+
 app.get(['/previews/:projectId', '/previews/:projectId/'], async (req, res) => {
   try {
     const storePath = path.join(DATA_DIR, 'agency-store.json');
-    const data = JSON.parse(await fs.readFile(storePath, 'utf8'));
+    const data = await readJsonFileWithRetry(storePath);
     const project = data.projects?.find(item => item.id === req.params.projectId);
     if (!project) return res.status(404).send('Preview project not found');
     const artifacts = (data.artifacts || []).filter(item => item.projectId === project.id);
@@ -49,7 +83,7 @@ app.get(['/previews/:projectId', '/previews/:projectId/'], async (req, res) => {
 app.get(['/design-concepts/:projectId/:directionId', '/design-concepts/:projectId/:directionId/'], async (req, res) => {
   try {
     const storePath = path.join(DATA_DIR, 'agency-store.json');
-    const data = JSON.parse(await fs.readFile(storePath, 'utf8'));
+    const data = await readJsonFileWithRetry(storePath);
     const project = data.projects?.find(item => item.id === req.params.projectId);
     if (!project) return res.status(404).send('Design concept project not found');
     const artifacts = (data.artifacts || []).filter(item => item.projectId === project.id);
@@ -532,7 +566,7 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
   const content = buildTemplateContent(context, brief, template);
   const tokens = designTokensFromDirection(direction, context);
   const profile = templateProfileFor(template, context, direction);
-  content.images = placeholderImagesFor(profile.imageCategory, 18);
+  content.images = previewImagesFor(project.id, data, profile.imageCategory, 18);
   content.profile = profile;
   const isConcept = Boolean(options.concept);
   return `<!doctype html>
@@ -583,18 +617,23 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     .mark { width:38px; height:38px; border-radius:14px; background:linear-gradient(135deg,var(--brand),var(--accent)); display:grid; place-items:center; color:#fff; box-shadow:0 12px 30px color-mix(in srgb, var(--brand) 32%, transparent); }
     nav { color:var(--muted); font-size:14px; }
     .btn { text-decoration:none; font-weight:900; }
+    .btn-primary { color:var(--color-primary-content) !important; }
+    .actions .btn-primary { color:#fff !important; }
+    .badge { width:auto; height:auto; min-height:0; padding:.44rem .82rem; line-height:1.15; white-space:normal; text-align:center; }
+    .eyebrow.badge { display:inline-flex; max-width:100%; align-items:center; justify-content:center; border-radius:999px; }
     main { overflow:hidden; }
     .container { width:min(1160px, calc(100% - 40px)); margin:0 auto; }
-    .hero { min-height:calc(100vh - 72px); display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,.9fr); gap:48px; align-items:center; padding:54px 0 42px; }
+    .hero { min-height:calc(100vh - 72px); display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,.9fr); gap:48px; align-items:center; justify-items:stretch; padding:54px 0 42px; }
+    .hero > * { min-width:0; grid-column:auto; grid-row:auto; }
     .eyebrow { font-size:13px; font-weight:850; }
     h1 { font-size:clamp(48px,7vw,102px); line-height:.9; margin:18px 0 20px; letter-spacing:0; max-width:850px; }
     h2 { font-size:clamp(30px,4vw,58px); line-height:1; margin:0 0 16px; letter-spacing:0; }
     h3 { font-size:22px; margin:0; letter-spacing:0; }
     p { line-height:1.65; color:#334155; font-size:17px; }
     .lead { max-width:670px; font-size:20px; color:#253247; }
-    .actions { margin-top:28px; }
+    .actions { margin-top:28px; flex-wrap:wrap; }
     .proof-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:34px; max-width:720px; }
-    .proof-pill { min-height:46px; justify-content:center; font-weight:850; color:#1f2937; }
+    .proof-pill { min-height:46px; justify-content:center; font-weight:850; color:#1f2937; padding:.65rem .95rem; }
     .visual-stage { position:relative; min-height:560px; border-radius:42px; background:linear-gradient(145deg, color-mix(in srgb, var(--brand) 84%, white), color-mix(in srgb, var(--accent) 70%, white)); box-shadow:var(--shadow); overflow:hidden; }
     .visual-stage.photo-stage { display:grid; place-items:end stretch; background:var(--ink); isolation:isolate; }
     .visual-stage.photo-stage img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.78; transform:scale(1.04); animation:slowZoom 18s ease-in-out infinite alternate; }
@@ -619,9 +658,9 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     .section-head p { max-width:520px; margin:0; }
     .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
     .product-card,.feature-card,.review-card,.panel,.media-card { animation:riseIn .7s ease both; animation-delay:var(--delay,0ms); }
-    .product-card { overflow:hidden; }
-    .product-visual { height:210px; border-radius:28px; background:linear-gradient(135deg, color-mix(in srgb, var(--flavour) 72%, #fff), #fff); display:grid; place-items:center; overflow:hidden; position:relative; }
-    .product-visual img { width:100%; height:100%; object-fit:cover; mix-blend-mode:multiply; opacity:.9; transition:transform 260ms ease; }
+    .product-card { overflow:hidden; border-radius:28px; }
+    .product-visual { height:230px; border-radius:0; background:linear-gradient(135deg, color-mix(in srgb, var(--flavour) 72%, #fff), #fff); display:grid; place-items:center; overflow:hidden; position:relative; margin:0; }
+    .product-visual img { width:100%; height:100%; object-fit:cover; opacity:.92; transition:transform 260ms ease; }
     .product-card:hover .product-visual img { transform:scale(1.07); }
     .mini-bottle { width:58px; height:150px; border-radius:20px 20px 24px 24px; background:linear-gradient(180deg,#fff,var(--flavour)); border:2px solid rgba(255,255,255,.8); box-shadow:0 18px 34px rgba(15,23,42,.16); position:relative; }
     .mini-bottle:before { content:""; position:absolute; width:28px; height:28px; border-radius:8px 8px 4px 4px; background:var(--ink); top:-24px; left:50%; transform:translateX(-50%); }
@@ -629,7 +668,7 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     .price { font-weight:950; font-size:20px; }
     .tiny-button { font-weight:850; }
     .media-split { display:grid; grid-template-columns:minmax(0,.9fr) minmax(320px,1.1fr); gap:28px; align-items:stretch; }
-    .media-card { min-height:460px; border-radius:42px; overflow:hidden; position:relative; box-shadow:var(--shadow); background:var(--ink); }
+    .media-card { min-height:460px; border-radius:0; overflow:hidden; position:relative; box-shadow:var(--shadow); background:var(--ink); }
     .media-card img { width:100%; height:100%; object-fit:cover; display:block; }
     .media-card .overlay { position:absolute; left:22px; right:22px; bottom:22px; padding:20px; border-radius:24px; background:rgba(255,255,255,.88); border:1px solid rgba(255,255,255,.5); }
     .metric-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:22px; }
@@ -660,7 +699,38 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
     @keyframes floatBottle { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-12px) rotate(2deg); } }
     .bottle { animation:floatBottle 5s ease-in-out infinite; animation-delay:var(--delay,0ms); }
     @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
-    @media (max-width:900px) { nav { display:none; } .hero,.split,.band,.newsletter,.media-split { grid-template-columns:1fr; } .visual-stage,.media-card { min-height:430px; } .proof-row,.grid,.metric-row,.process,.faq-grid,.gallery { grid-template-columns:1fr; } .gallery figure:first-child { grid-row:auto; } .section { padding:62px 0; } h1 { font-size:clamp(42px,14vw,76px); } }
+    @media (max-width:900px) {
+      nav { display:none; }
+      .site-header { min-height:64px; padding:12px 16px; }
+      .container { width:min(100% - 32px, 1160px); }
+      .hero,.split,.band,.newsletter,.media-split { grid-template-columns:1fr; }
+      .hero { min-height:auto; gap:28px; align-items:start; padding:42px 0 56px; }
+      h1 { font-size:clamp(38px,11.5vw,52px); line-height:1.02; max-width:100%; margin:16px 0 16px; }
+      h2 { font-size:clamp(30px,9vw,44px); line-height:1.05; }
+      .lead { font-size:18px; max-width:100%; }
+      .actions { gap:10px; }
+      .actions.join { display:flex; }
+      .actions .btn { border-radius:999px !important; }
+      .proof-row { grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:24px; max-width:100%; }
+      .proof-pill { min-height:42px; white-space:normal; text-align:center; padding:.6rem .8rem; }
+      .visual-stage,.media-card { min-height:360px; border-radius:30px; }
+      .stage-caption { margin:16px; padding:18px; border-radius:22px; }
+      .grid,.metric-row,.process,.faq-grid,.gallery { grid-template-columns:1fr; }
+      .gallery figure:first-child { grid-row:auto; }
+      .section { padding:62px 0; }
+      .band { padding:34px 24px; }
+    }
+    @media (max-width:600px) {
+      body { overflow-x:hidden; }
+      .hero > div:first-child { max-width:100%; overflow:hidden; }
+      h1 { font-size:clamp(30px,8.2vw,36px); line-height:1.1; max-width:9.2em; }
+      .lead { font-size:16px; max-width:34ch; }
+      .proof-row { grid-template-columns:1fr; }
+      .actions .btn { width:100%; }
+      .section-head { display:grid; align-items:start; }
+      .eyebrow.badge { justify-content:flex-start; text-align:left; }
+      .visual-stage,.media-card { min-height:330px; }
+    }
   </style>
 </head>
 <body data-theme="agency-preview" class="bg-base-100 text-base-content">
@@ -747,13 +817,15 @@ function projectContext(project, data = {}) {
   const customer = data.customers?.find(item => item.id === project.customerId) || {};
   const original = String(project.originalBrief || '');
   const structured = project.structuredBrief || {};
-  const explicitName = original.match(/project name\s*\n+\s*\*\*?([^*\n]+)\*\*?/i)?.[1] || original.match(/project name\s*[:\-]\s*([^\n]+)/i)?.[1];
+  const clientName = original.match(/client\s*:\s*([^\n]+)/i)?.[1];
+  const explicitName = original.match(/project name\s*\n+\s*\*\*?([^*\n]+)\*\*?/i)?.[1] || original.match(/project name\s*[:\-]\s*([^\n]+)/i)?.[1] || clientName;
+  const industry = original.match(/industry\s*:\s*([^\n]+)/i)?.[1] || original.match(/website type\s*:\s*([^\n]+)/i)?.[1];
   const brand = cleanText(explicitName || customer.businessName || project.title || structured.businessSummary || 'Client Brand').slice(0, 52);
   const overview = original.match(/business overview\s*\n+([\s\S]*?)(?:\n---|\n##|\n#|$)/i)?.[1];
-  const tagline = original.match(/brand tagline\s*\n+\s*\*\*?([^*\n]+)\*\*?/i)?.[1] || 'Real fruit. Full flavour. Pure refreshment.';
+  const tagline = original.match(/brand tagline\s*\n+\s*\*\*?([^*\n]+)\*\*?/i)?.[1] || 'Sharper websites. Stronger enquiries. Smarter growth.';
   return {
     brand,
-    businessType: customer.businessType || structured.businessSummary || '',
+    businessType: cleanText(industry || customer.businessType || structured.businessSummary || ''),
     originalBrief: original,
     summary: cleanText(overview || structured.businessSummary || original).slice(0, 340),
     tagline: cleanText(tagline),
@@ -765,15 +837,17 @@ function projectContext(project, data = {}) {
 
 function inferTemplate(context) {
   const text = `${context.businessType} ${context.originalBrief}`.toLowerCase();
-  if (/(shop|ecommerce|e-commerce|checkout|basket|product|drink|juice|bottle|mixed case)/.test(text)) return 'ecommerceTemplate';
+  if (isAgencyContext(context)) return 'agencyTemplate';
   if (/(software|saas|subscription|platform|b2b app)/.test(text)) return 'saasTemplate';
+  if (/(shop|ecommerce|e-commerce|checkout|basket|cart|online store|mixed case|drink|juice|bottle)/.test(text)) return 'ecommerceTemplate';
   if (/(portfolio|photographer|creator|designer)/.test(text)) return 'portfolioTemplate';
   if (/(plumber|electrician|clinic|salon|restaurant|cafe|local)/.test(text)) return 'localBusinessTemplate';
   return 'agencyTemplate';
 }
 
 function buildTemplateContent(context, brief, template) {
-  const isDrink = /(fruit|drink|juice|beverage|flavour|flavor|bottle|mixed case)/i.test(context.originalBrief);
+  const isAgency = isAgencyContext(context);
+  const isDrink = !isAgency && /(fruit|drink|juice|beverage|flavour|flavor|bottle|mixed case)/i.test(`${context.businessType} ${context.originalBrief}`);
   const products = isDrink ? [
     { name: 'Mango Burst', short: 'Mango', color: '#FFB703', desc: 'Smooth tropical mango with a rich, naturally sweet finish.', price: 'from GBP 2.49' },
     { name: 'Strawberry Splash', short: 'Strawberry', color: '#FB7185', desc: 'Bright strawberry refreshment with a clean juicy finish.', price: 'from GBP 2.49' },
@@ -781,23 +855,28 @@ function buildTemplateContent(context, brief, template) {
     { name: 'Berry Blast', short: 'Berry', color: '#A855F7', desc: 'A bold mixed berry drink with a crisp, refreshing edge.', price: 'from GBP 2.79' },
     { name: 'Orange Sunrise', short: 'Orange', color: '#FB923C', desc: 'Smooth citrus flavour for breakfast, lunchboxes and sunny breaks.', price: 'from GBP 2.49' },
     { name: 'Watermelon Wave', short: 'Watermelon', color: '#22C55E', desc: 'Light watermelon, apple and lime for warmer days.', price: 'from GBP 2.49' }
+  ] : isAgency ? [
+    { name: 'Web Design', short: 'Sites', color: '#2563EB', desc: 'High-converting websites with clear offers, strong design systems, and fast static previews.', price: 'Core' },
+    { name: 'Brand Identity', short: 'Brand', color: '#7C3AED', desc: 'Visual direction, guidelines, messaging, and reusable components for a consistent launch.', price: 'Studio' },
+    { name: 'AI Automation', short: 'AI', color: '#16A34A', desc: 'Intake, follow-up, content, and workflow automation that removes manual bottlenecks.', price: 'Growth' },
+    { name: 'Digital Marketing', short: 'Growth', color: '#F97316', desc: 'Campaign pages, SEO foundations, and lead capture journeys built around measurable action.', price: 'Scale' }
   ] : [
     { name: 'Strategy Session', short: 'Plan', color: '#2563EB', desc: 'A focused session to clarify goals, offers, audiences, and next steps.', price: 'Popular' },
     { name: 'Launch Website', short: 'Site', color: '#7C3AED', desc: 'A polished website built to present the offer clearly and capture enquiries.', price: 'Core' },
     { name: 'Growth Support', short: 'Grow', color: '#16A34A', desc: 'Ongoing improvements for content, conversion, and customer communication.', price: 'Add-on' }
   ];
-  const pages = context.pages.length ? context.pages : template === 'ecommerceTemplate' ? ['Home', 'Shop', 'Mixed Case', 'About', 'Wholesale', 'Contact'] : ['Home', 'Services', 'About', 'Contact'];
+  const pages = isAgency ? ['Home', 'Services', 'Work', 'Process', 'About', 'Contact'] : context.pages.length ? context.pages : template === 'ecommerceTemplate' ? ['Home', 'Shop', 'Mixed Case', 'About', 'Wholesale', 'Contact'] : ['Home', 'Services', 'About', 'Contact'];
   const brand = context.brand;
   return {
     brand,
     brandInitial: brand.slice(0, 1).toUpperCase(),
     nav: pages.slice(0, 5),
-    heroEyebrow: isDrink ? 'Fresh fruit drinks' : 'Professional services',
-    headline: isDrink ? 'Fruit flavour that hits differently.' : cleanText(brief.businessSummary || `${brand} website`).slice(0, 80),
-    subhead: isDrink ? 'Discover refreshing real-fruit drinks, colourful flavour packs, mixed cases, and wholesale options for shops, cafes, gyms and events.' : context.summary,
-    primaryCta: isDrink ? 'Shop the Drinks' : 'Start a Project',
-    secondaryCta: isDrink ? 'Build a Mixed Case' : 'See Services',
-    proofs: isDrink ? ['Real fruit juice', 'No artificial colours', 'UK delivery'] : ['Responsive', 'Accessible', 'Built for conversion'],
+    heroEyebrow: isDrink ? 'Fresh fruit drinks' : isAgency ? 'Digital agency' : 'Professional services',
+    headline: isDrink ? 'Fruit flavour that hits differently.' : isAgency ? 'Websites, brands, and automation built to win better clients.' : professionalHeadline(context, brand),
+    subhead: isDrink ? 'Discover refreshing real-fruit drinks, colourful flavour packs, mixed cases, and wholesale options for shops, cafes, gyms and events.' : isAgency ? 'A professional marketing site for web design, branding, AI automation, and digital growth services, shaped around trust, proof, and qualified enquiries.' : professionalSubhead(context),
+    primaryCta: isDrink ? 'Shop the Drinks' : isAgency ? 'Book a Strategy Call' : 'Start a Project',
+    secondaryCta: isDrink ? 'Build a Mixed Case' : isAgency ? 'View Services' : 'See Services',
+    proofs: isDrink ? ['Real fruit juice', 'No artificial colours', 'UK delivery'] : isAgency ? ['Web design', 'Branding', 'AI automation'] : ['Responsive', 'Accessible', 'Built for conversion'],
     metrics: isDrink ? [
       ['6', 'launch flavours'],
       ['24h', 'chilled dispatch window'],
@@ -807,83 +886,101 @@ function buildTemplateContent(context, brief, template) {
       ['48h', 'fast response target'],
       ['AA', 'accessibility-minded layout']
     ],
-    storyEyebrow: isDrink ? 'From fridge to first sip' : 'Built around the customer journey',
-    storyHeading: isDrink ? 'A bright shopping journey that makes every flavour easy to understand.' : 'A polished website journey with the right proof at the right moment.',
-    storyText: isDrink ? 'The page opens with appetite appeal, moves into flavour comparison, then gives wholesale buyers and retail customers separate paths without making the experience feel busy.' : 'The layout moves from a clear promise to services, proof, process, and contact so visitors always know why they should trust the business and what to do next.',
+    storyEyebrow: isDrink ? 'From fridge to first sip' : isAgency ? 'Positioning and proof' : 'Built around the customer journey',
+    storyHeading: isDrink ? 'A bright shopping journey that makes every flavour easy to understand.' : isAgency ? 'A polished agency journey from offer clarity to qualified enquiry.' : 'A polished website journey with the right proof at the right moment.',
+    storyText: isDrink ? 'The page opens with appetite appeal, moves into flavour comparison, then gives wholesale buyers and retail customers separate paths without making the experience feel busy.' : isAgency ? 'The page leads with a clear agency promise, moves into services and case-study proof, then makes it easy for serious prospects to book a conversation.' : 'The layout moves from a clear promise to services, proof, process, and contact so visitors always know why they should trust the business and what to do next.',
     productEyebrow: isDrink ? 'Flavour range' : 'Services',
-    productHeading: isDrink ? 'Meet the flavour range' : 'Choose the support you need',
-    productIntro: isDrink ? 'Explore the launch flavours, compare pack options, and find the drinks that fit your fridge, event, or next stock order.' : 'Clear service options help visitors understand what is available and take the next step with confidence.',
+    productHeading: isDrink ? 'Meet the flavour range' : isAgency ? 'Services designed for sharper growth' : 'Choose the support you need',
+    productIntro: isDrink ? 'Explore the launch flavours, compare pack options, and find the drinks that fit your fridge, event, or next stock order.' : isAgency ? 'Each service is framed around a business outcome: clearer positioning, better leads, faster delivery, and stronger client experience.' : 'Clear service options help visitors understand what is available and take the next step with confidence.',
     products,
-    benefitEyebrow: isDrink ? 'Why Zestora' : 'Why choose us',
-    benefitHeading: isDrink ? 'Why customers choose Zestora' : 'Why customers choose us',
-    benefitIntro: isDrink ? 'Every section is shaped around simple product proof: flavour, freshness, convenience, and trust before checkout.' : 'The page makes the offer easy to scan, supports quick decisions, and guides visitors toward enquiry.',
+    benefitEyebrow: isDrink ? 'Why Zestora' : isAgency ? 'Why clients choose the agency' : 'Why choose us',
+    benefitHeading: isDrink ? 'Why customers choose Zestora' : isAgency ? 'Clear thinking, strong design, and practical automation.' : 'Why customers choose us',
+    benefitIntro: isDrink ? 'Every section is shaped around simple product proof: flavour, freshness, convenience, and trust before checkout.' : isAgency ? 'The site proves the agency can think strategically, design with taste, and build systems that actually help clients move faster.' : 'The page makes the offer easy to scan, supports quick decisions, and guides visitors toward enquiry.',
     benefits: isDrink ? [
       { title: 'Real fruit character', text: 'Bright flavour notes, clear ingredients, and simple product proof help shoppers choose quickly.' },
       { title: 'Easy to shop', text: 'Product cards make flavour, pack options, pricing, ratings, and basket actions easy to compare.' },
       { title: 'Wholesale pathway', text: 'Retailers and hospitality buyers get a direct enquiry route without distracting consumer shoppers.' }
+    ] : isAgency ? [
+      { title: 'Design-led strategy', text: 'The offer is framed around outcomes, proof, and a clear next step rather than a generic list of services.' },
+      { title: 'Automation fluency', text: 'AI and workflow services are positioned as practical business leverage, not vague future-facing theatre.' },
+      { title: 'Conversion discipline', text: 'Every section supports qualified enquiries with service clarity, trust markers, and repeated calls to action.' }
     ] : [
       { title: 'Clear offer', text: 'Visitors can understand the service, benefits, and next step without hunting through the page.' },
       { title: 'Trust first', text: 'Proof points, testimonials, and practical details support confident enquiries.' },
       { title: 'Mobile friendly', text: 'The experience is designed for quick reading and simple action on every screen size.' }
     ],
-    caseEyebrow: isDrink ? 'Mix and match' : 'Flexible support',
-    caseHeading: isDrink ? "Can't pick one? Try them all." : 'Start small, then grow',
-    caseText: isDrink ? 'Create a mixed case with your favourite flavours, keep track of bottle counts, and add the full box to your basket in one tap.' : 'Choose the level of support that fits today, then add more services when the business is ready.',
-    caseBuilderText: isDrink ? 'Pick six bottles, balance your flavours, and create a case that fits your fridge or event.' : 'Plan the next step around your goals, budget, and timeline.',
-    caseCta: isDrink ? 'Build Your Case' : 'Get Started',
-    galleryEyebrow: isDrink ? 'Fresh moments' : 'Visual direction',
-    galleryHeading: isDrink ? 'Colour, chill, pour, repeat.' : 'A richer visual system for modern visitors.',
-    galleryCaptions: isDrink ? ['Fresh ingredients', 'Cold shelf impact', 'Mixed case moments', 'Wholesale-ready'] : ['Clear first impression', 'Human proof', 'Useful details', 'Conversion moments'],
+    caseEyebrow: isDrink ? 'Mix and match' : isAgency ? 'Project fit' : 'Flexible support',
+    caseHeading: isDrink ? "Can't pick one? Try them all." : isAgency ? 'Start with the work that moves the business first.' : 'Start small, then grow',
+    caseText: isDrink ? 'Create a mixed case with your favourite flavours, keep track of bottle counts, and add the full box to your basket in one tap.' : isAgency ? 'Package strategy, design, automation, and marketing into a focused roadmap instead of selling disconnected deliverables.' : 'Choose the level of support that fits today, then add more services when the business is ready.',
+    caseBuilderText: isDrink ? 'Pick six bottles, balance your flavours, and create a case that fits your fridge or event.' : isAgency ? 'Plan the first sprint around positioning, website delivery, launch content, and follow-up automation.' : 'Plan the next step around your goals, budget, and timeline.',
+    caseCta: isDrink ? 'Build Your Case' : isAgency ? 'Plan a Sprint' : 'Get Started',
+    galleryEyebrow: isDrink ? 'Fresh moments' : isAgency ? 'Agency system' : 'Visual direction',
+    galleryHeading: isDrink ? 'Colour, chill, pour, repeat.' : isAgency ? 'Strategy, design, build, and automation in one system.' : 'A richer visual system for modern visitors.',
+    galleryCaptions: isDrink ? ['Fresh ingredients', 'Cold shelf impact', 'Mixed case moments', 'Wholesale-ready'] : isAgency ? ['Strategy workshop', 'Design system', 'Build pipeline', 'Launch review'] : ['Clear first impression', 'Human proof', 'Useful details', 'Conversion moments'],
     processEyebrow: isDrink ? 'How it works' : 'Simple process',
-    processHeading: isDrink ? 'From flavour pick to doorstep delivery.' : 'From first enquiry to a sharper website.',
+    processHeading: isDrink ? 'From flavour pick to doorstep delivery.' : isAgency ? 'From unclear brief to launched growth system.' : 'From first enquiry to a sharper website.',
     processSteps: isDrink ? [
       ['Choose flavours', 'Pick single flavours or start with a mixed case.'],
       ['Build your box', 'Balance favourites, seasonal specials, and discovery bottles.'],
       ['Checkout clearly', 'See delivery, pack sizes, and key product details before payment.'],
       ['Restock easily', 'Join the launch list or ask about wholesale cases.']
+    ] : isAgency ? [
+      ['Diagnose', 'Clarify the audience, offer, conversion goal, and strongest trust signals.'],
+      ['Design', 'Create a distinctive visual direction, component system, and brand-guideline handoff.'],
+      ['Build', 'Turn the approved handoff into a responsive, accessible, reusable website.'],
+      ['Automate', 'Connect follow-up, intake, notifications, and improvement loops where they add value.']
     ] : [
       ['Share the goal', 'Explain the business, audience, offer, and current blockers.'],
       ['Shape the direction', 'Align the page structure, messaging, visuals, and conversion path.'],
       ['Launch with proof', 'Publish a clear experience that earns trust quickly.'],
       ['Improve over time', 'Use feedback and analytics to sharpen the next version.']
     ],
-    reviewHeading: isDrink ? 'Proof that tastes like a repeat order' : 'Trust and proof',
-    reviewIntro: isDrink ? 'Customer quotes and product proof help new shoppers feel confident before checkout.' : 'Real proof, helpful details, and direct calls to action help visitors move from interest to enquiry.',
+    reviewHeading: isDrink ? 'Proof that tastes like a repeat order' : isAgency ? 'Proof that turns attention into enquiries' : 'Trust and proof',
+    reviewIntro: isDrink ? 'Customer quotes and product proof help new shoppers feel confident before checkout.' : isAgency ? 'The preview is structured to show case-study evidence, process confidence, and clear reasons to start a conversation.' : 'Real proof, helpful details, and direct calls to action help visitors move from interest to enquiry.',
     reviews: isDrink ? [
       { quote: 'Bright, refreshing, and not too sweet. Mango Burst disappeared from the fridge in a day.', name: 'Aisha R.', meta: 'Purchased Mango Burst' },
       { quote: 'The mixed case is ideal for events. Every flavour has its own moment.', name: 'Ben M.', meta: 'Discovery box customer' },
       { quote: 'Exactly the kind of colourful drink our cafe fridge needed.', name: 'Hannah P.', meta: 'Wholesale buyer' }
+    ] : isAgency ? [
+      { quote: 'The offer finally felt premium, specific, and easy to buy into.', name: 'Founder', meta: 'Brand and website sprint' },
+      { quote: 'The automation ideas were practical, not gimmicky, and saved real follow-up time.', name: 'Ops Lead', meta: 'AI workflow project' },
+      { quote: 'The new site made our services much easier to understand.', name: 'Marketing Director', meta: 'Digital agency client' }
     ] : [
       { quote: 'Clear, polished, and easy to act on.', name: 'Sarah K.', meta: 'Client' },
       { quote: 'The offer finally feels simple to explain.', name: 'James R.', meta: 'Founder' },
       { quote: 'We started getting better enquiries within the first week.', name: 'Priya M.', meta: 'Director' }
     ],
-    wholesaleHeading: isDrink ? 'Want to stock Zestora?' : 'Ready to talk?',
-    wholesaleText: isDrink ? 'Shops, cafes, restaurants, gyms and distributors can enquire about pricing, cases, samples and launch availability.' : 'Send a few details and get a practical next step for the website, campaign, or service package.',
+    wholesaleHeading: isDrink ? 'Want to stock Zestora?' : isAgency ? 'Ready to sharpen the next launch?' : 'Ready to talk?',
+    wholesaleText: isDrink ? 'Shops, cafes, restaurants, gyms and distributors can enquire about pricing, cases, samples and launch availability.' : isAgency ? 'Share the goal, the current blockers, and the kind of client you want to win. The first step is a focused strategy conversation.' : 'Send a few details and get a practical next step for the website, campaign, or service package.',
     wholesaleCta: isDrink ? 'Make a Wholesale Enquiry' : 'Book a Call',
-    newsletterEyebrow: isDrink ? 'Launch list' : 'Updates',
-    newsletterHeading: isDrink ? 'Get the juicy updates.' : 'Stay in the loop',
-    newsletterText: isDrink ? 'Get launch discounts, new flavour drops, competitions and product updates straight to your inbox.' : 'Get useful updates, offers, and practical guidance straight to your inbox.',
+    newsletterEyebrow: isDrink ? 'Launch list' : isAgency ? 'Agency notes' : 'Updates',
+    newsletterHeading: isDrink ? 'Get the juicy updates.' : isAgency ? 'Get practical growth notes.' : 'Stay in the loop',
+    newsletterText: isDrink ? 'Get launch discounts, new flavour drops, competitions and product updates straight to your inbox.' : isAgency ? 'Short notes on better websites, brand systems, automation, and lead-generation decisions.' : 'Get useful updates, offers, and practical guidance straight to your inbox.',
     newsletterCta: isDrink ? 'Join the Fruit List' : 'Subscribe',
     faqs: isDrink ? [
       ['Can I build a mixed case?', 'Yes. The shopping flow is designed around choosing different flavours and reviewing the case before checkout.'],
       ['Do you support wholesale orders?', 'Yes. Shops, cafes, gyms and event buyers can use the wholesale enquiry path.'],
       ['Are final ingredients confirmed?', 'The page is ready for final product claims once the client supplies approved ingredient and nutrition details.'],
       ['Is the site mobile-first?', 'Yes. Product cards, case building, and enquiry actions are designed for quick thumb-friendly browsing.']
+    ] : isAgency ? [
+      ['What kind of projects are a fit?', 'Websites, brand identity, service positioning, automation, AI workflow, and digital marketing projects with a clear commercial goal.'],
+      ['Do you only design websites?', 'No. The strongest work combines offer strategy, visual design, build quality, and practical automation.'],
+      ['Can this start with a small sprint?', 'Yes. A focused discovery or landing-page sprint can establish direction before a larger build.'],
+      ['Will the website be easy to update?', 'The system is built from reusable sections, tokens, and components so future pages stay consistent.']
     ] : [
       ['What happens after I enquire?', 'The team reviews your goals and replies with the best next step.'],
       ['Can the website grow later?', 'Yes. The structure supports new pages, services, testimonials, and campaign sections.'],
       ['Is it suitable for mobile visitors?', 'Yes. The page prioritises readable copy, clear actions, and touch-friendly sections.'],
       ['Can the copy be edited?', 'Yes. The preview is structured so content can be refined before launch.']
     ],
-    footerText: isDrink ? `${brand} - real-fruit refreshment, mixed cases, and wholesale enquiries.` : `${brand} - practical support for better websites, clearer offers, and stronger enquiries.`
+    footerText: isDrink ? `${brand} - real-fruit refreshment, mixed cases, and wholesale enquiries.` : isAgency ? `${brand} - websites, branding, automation, and growth systems for better enquiries.` : `${brand} - practical support for better websites, clearer offers, and stronger enquiries.`
   };
 }
 
 function designTokensFromDirection(direction, context) {
   const palette = direction?.palette || [];
   const byName = name => palette.find(item => item.name?.toLowerCase().includes(name))?.hex;
-  const fruit = /(fruit|drink|juice|beverage|bottle)/i.test(context.originalBrief);
+  const fruit = !isAgencyContext(context) && /(fruit|drink|juice|beverage|bottle)/i.test(`${context.businessType} ${context.originalBrief}`);
   const brand = byName('mango') || byName('electric') || palette[0]?.hex || (fruit ? '#FFB703' : '#2563EB');
   const accent = byName('leaf') || byName('watermelon') || byName('coral') || palette[2]?.hex || '#22C55E';
   return {
@@ -914,7 +1011,10 @@ function loadPlaceholderManifest() {
 
 function templateProfileFor(template, context, direction) {
   const text = `${template} ${context.businessType} ${context.originalBrief} ${direction?.name || ''}`.toLowerCase();
-  if (/(drink|juice|fruit|beverage|shop|ecommerce|product|checkout)/.test(text)) {
+  if (isAgencyContext(context)) {
+    return { name: 'Premium agency growth system', imageCategory: 'agency', description: 'Strategy, design, automation, and lead-generation proof are arranged as a serious agency website.', motion: 'editorial-rise' };
+  }
+  if (/(drink|juice|fruit|beverage|shop|ecommerce|checkout|basket|cart)/.test(text)) {
     return { name: 'Bright product-led shopping', imageCategory: 'food-drink', description: 'Colour, product clarity, and quick buying paths keep the page lively without losing trust.', motion: 'float-and-reveal' };
   }
   if (/(software|saas|dashboard|platform|subscription)/.test(text)) {
@@ -949,8 +1049,49 @@ function placeholderImagesFor(category, count = 12) {
   return pool.slice(0, count);
 }
 
+function previewImagesFor(projectId, data, category, count = 12) {
+  const generated = (data.generatedImages || [])
+    .filter(item => item.projectId === projectId && item.url)
+    .sort((a, b) => {
+      const rankDelta = imageRank(a) - imageRank(b);
+      if (rankDelta) return rankDelta;
+      const createdA = Number.isFinite(Date.parse(a.createdAt || '')) ? Date.parse(a.createdAt || '') : 0;
+      const createdB = Number.isFinite(Date.parse(b.createdAt || '')) ? Date.parse(b.createdAt || '') : 0;
+      return createdB - createdA;
+    })
+    .map(item => ({ file: item.url, title: item.title, generated: true }));
+  const used = new Set(generated.map(item => item.file));
+  const fallback = placeholderImagesFor(category, count).filter(item => !used.has(item.file));
+  return [...generated, ...fallback].slice(0, count);
+}
+
+function imageRank(image) {
+  const title = String(image.title || '').toLowerCase();
+  if (title.includes('hero')) return 0;
+  if (title.includes('services')) return 1;
+  if (title.includes('about')) return 2;
+  if (title.includes('proof')) return 3;
+  if (title.includes('background')) return 4;
+  return 9;
+}
+
 function imageUrl(image) {
-  return image?.file || '';
+  return image?.file || image?.url || '';
+}
+
+function isAgencyContext(context) {
+  return /(digital agency|marketing agency|web design|branding|ai automation|digital marketing|professional marketing website|agency|lead generation)/i.test(`${context.businessType} ${context.originalBrief}`);
+}
+
+function professionalHeadline(context, brand) {
+  if (/software|saas|platform|dashboard/i.test(`${context.businessType} ${context.originalBrief}`)) return 'A calmer way to understand and act on the product.';
+  return `${brand} helps customers move from interest to action.`;
+}
+
+function professionalSubhead(context) {
+  const summary = cleanText(context.summary || '');
+  if (!summary) return 'A clear, professional website shaped around trust, proof, service clarity, and conversion.';
+  return summary.length > 220 ? `${summary.slice(0, 217).trim()}...` : summary;
 }
 
 function renderHeroVisual(content) {

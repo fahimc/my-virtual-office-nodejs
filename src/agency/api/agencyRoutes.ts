@@ -142,8 +142,12 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
             }
           });
           const selectedDesignOption = req.body.selectedDesignOption || (approval.payload.designOptions as unknown[] | undefined)?.[0];
-          if (selectedDesignOption) await system.designWorkflow.completeAfterApproval(approval.projectId, selectedDesignOption, approval.id);
-          await queueWebsiteBuild(workflowRunId);
+          if (selectedDesignOption) {
+            await system.jobQueue.enqueue('designWorkflow.completeAfterApproval', { projectId: approval.projectId, selectedDesignOption, approvalId: approval.id, workflowRunId }, async payload => {
+              await system.designWorkflow.completeAfterApproval(payload.projectId, payload.selectedDesignOption, payload.approvalId);
+              if (payload.workflowRunId) await queueWebsiteBuild(payload.workflowRunId);
+            });
+          }
         }
       }
     } else if (approval.type === 'preview') {
@@ -224,10 +228,28 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   }));
 
   router.post('/design/:projectId/select-direction', route(async (req, res) => {
-    const direction = req.body.direction || req.body.selectedDirection;
+    const data = await system.store.read();
+    const directionId = String(req.body.directionId || req.body.selectedDirectionId || '');
+    const direction = req.body.direction
+      || req.body.selectedDirection
+      || data.design.creativeDirections.find(item => item.projectId === req.params.projectId && item.id === directionId)
+      || data.design.creativeDirections.find(item => item.projectId === req.params.projectId);
     if (!direction) return void res.status(400).json({ error: 'direction is required' });
-    const result = await system.designWorkflow.completeAfterApproval(req.params.projectId, direction, req.body.approvalId);
-    res.json({ result, officeState: await system.officeState(req.params.projectId) });
+    const project = data.projects.find(item => item.id === req.params.projectId);
+    const existingHandoff = data.design.handoffs.find(item => item.projectId === req.params.projectId);
+    const existingSelection = data.design.selectedDirections.find(item => item.projectId === req.params.projectId && item.selectedDirectionId === direction.id);
+    if (!existingHandoff || !existingSelection || req.body.force === true) {
+      await system.jobQueue.enqueue('designWorkflow.selectDirection', {
+        projectId: req.params.projectId,
+        direction,
+        approvalId: req.body.approvalId,
+        workflowRunId: project?.currentWorkflowRunId
+      }, async payload => {
+        await system.designWorkflow.completeAfterApproval(payload.projectId, payload.direction, payload.approvalId);
+        if (payload.workflowRunId) await queueWebsiteBuild(payload.workflowRunId);
+      });
+    }
+    res.json({ queued: true, officeState: await system.officeState(req.params.projectId) });
   }));
 
   router.post('/design/:projectId/wireframes', route(async (req, res) => {

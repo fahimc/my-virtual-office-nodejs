@@ -31,7 +31,7 @@ export function buildDesignPanelState(data: AgencyStoreData, projectId?: string)
       imageGenerationEntries: costEntries.filter(item => item.toolName === 'design.openai_image_generation')
     },
     qaReport: qaReports.at(-1),
-    postBuildReview: qaReports.filter(report => report.designArtifactIds.length === 0).at(-1),
+    postBuildReview: qaReports.filter(report => (report.designArtifactIds || []).length === 0).at(-1),
     handoff,
     artifacts: artifacts.map(item => ({
       id: item.id,

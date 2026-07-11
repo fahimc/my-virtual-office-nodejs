@@ -361,7 +361,7 @@ export function createHandoff(input: { selectedDirection: SelectedDirection; dir
     animationSpec: [input.direction.animationStyle],
     assetList: generatedAssets.length ? ['Logo', ...generatedAssets, 'Case study proof assets'] : ['Logo', 'Final imagery', 'Case study proof assets'],
     accessibilityRequirements: input.componentSpec.accessibilityRules,
-    implementationNotes: ['Implement from this handoff, not from the original brief alone', 'Use design tokens for colours, spacing, radius, and shadows', 'Use generated imagery assets when present before falling back to placeholders', 'Preserve mobile layout priorities'],
+    implementationNotes: ['Implement from this handoff, not from the original brief alone', 'Use design tokens for colours, spacing, radius, and shadows', 'Use the brand guidelines PDF/HTML as the client-facing source for visual identity decisions', 'Use generated imagery assets when present before falling back to placeholders', 'Preserve mobile layout priorities'],
     acceptanceCriteria: ['Matches selected creative direction', 'Uses generated design tokens', 'All key sections present', 'Desktop/tablet/mobile layouts are polished', 'CTA hierarchy is clear'],
     handoffSummary: `${input.direction.name} handoff ready for Builder Agent.`
   };

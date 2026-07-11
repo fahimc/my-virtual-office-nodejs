@@ -29,6 +29,7 @@ export type AgencyEventType =
   | 'design.qa.started'
   | 'design.qa.failed'
   | 'design.qa.passed'
+  | 'design.brand_guidelines.created'
   | 'design.approval.requested'
   | 'design.approved'
   | 'design.changes_requested'
