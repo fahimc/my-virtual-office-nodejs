@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -178,17 +179,34 @@ async function generateOpenAiImage(input) {
       prompt: input.prompt,
       quality,
       size,
-      n: 1,
-      response_format: 'b64_json'
+      n: 1
     })
   });
   if (!response.ok) throw new Error(`OpenAI image generation failed: ${response.status} ${(await response.text()).slice(0, 500)}`);
   const json = await response.json();
+  const fileName = `${input.fileBase}.webp`;
   const b64 = json.data?.[0]?.b64_json;
-  if (!b64) throw new Error('OpenAI image response did not include b64_json');
-  const fileName = `${input.fileBase}.png`;
-  await writeFile(path.join(input.templateDir, fileName), Buffer.from(b64, 'base64'));
-  return { provider: 'openai', fileName };
+  if (b64) {
+    await writeOptimizedWebp(path.join(input.templateDir, fileName), Buffer.from(b64, 'base64'));
+    return { provider: 'openai', fileName };
+  }
+  const url = json.data?.[0]?.url;
+  if (url) {
+    const imageResponse = await fetch(url);
+    if (!imageResponse.ok) throw new Error(`OpenAI image URL download failed: ${imageResponse.status}`);
+    await writeOptimizedWebp(path.join(input.templateDir, fileName), Buffer.from(await imageResponse.arrayBuffer()));
+    return { provider: 'openai', fileName };
+  }
+  throw new Error('OpenAI image response did not include b64_json or url');
+}
+
+async function writeOptimizedWebp(filePath, buffer) {
+  const webp = await sharp(buffer)
+    .rotate()
+    .resize({ width: 1536, height: 1024, fit: 'inside', withoutEnlargement: true })
+    .webp({ quality: 84, effort: 5 })
+    .toBuffer();
+  await writeFile(filePath, webp);
 }
 
 async function generateMockImage(input) {
