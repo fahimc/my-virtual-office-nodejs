@@ -44,13 +44,17 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     const customerId = String(req.body.customerId || '');
     const originalBrief = String(req.body.originalBrief || '').trim();
     if (!customerId || !originalBrief) return void res.status(400).json({ error: 'customerId and originalBrief are required' });
-    res.json(await system.intakeWorkflow.structureBrief(customerId, originalBrief, req.body.workflowRunId));
+    res.json(await system.intakeWorkflow.structureBrief(customerId, originalBrief, req.body.workflowRunId, req.body.customer));
   }));
 
   router.post('/brief/approve', route(async (req, res) => {
     const workflowRunId = String(req.body.workflowRunId || '');
     if (!workflowRunId) return void res.status(400).json({ error: 'workflowRunId is required' });
-    const project = await system.intakeWorkflow.approveBrief(workflowRunId, req.body.structuredBrief as StructuredBrief | undefined);
+    const project = await system.intakeWorkflow.approveBrief(workflowRunId, req.body.structuredBrief as StructuredBrief | undefined, {
+      customerId: String(req.body.customerId || ''),
+      originalBrief: String(req.body.originalBrief || ''),
+      customer: req.body.customer
+    });
     const build = await system.websiteBuildWorkflow.start(project.id);
     await queueWebsiteBuild(build.workflowRunId);
     res.json({ project, workflowRunId: build.workflowRunId, officeState: await system.officeState(project.id) });

@@ -1,4 +1,4 @@
-import type { CustomerCreateInput } from '../schemas/customer.schema.js';
+import type { Customer, CustomerCreateInput } from '../schemas/customer.schema.js';
 import type { StructuredBrief } from '../schemas/brief.schema.js';
 import type { CustomerMemory } from '../memory/customerMemory.js';
 import type { ProjectMemory } from '../memory/projectMemory.js';
@@ -54,11 +54,11 @@ export class IntakeWorkflow {
     return customer;
   }
 
-  async structureBrief(customerId: string, originalBrief: string, workflowRunId?: string): Promise<{ structuredBrief: StructuredBrief; workflowRunId: string }> {
+  async structureBrief(customerId: string, originalBrief: string, workflowRunId?: string, customer?: Customer): Promise<{ structuredBrief: StructuredBrief; workflowRunId: string }> {
+    await this.ensureCustomerRecord(customer);
     const run = workflowRunId
-      ? await this.workflowRuntime.get(workflowRunId)
+      ? await this.workflowRuntime.get(workflowRunId) || await this.createRecoveredRun(customerId, originalBrief, undefined, workflowRunId)
       : await this.workflowRuntime.create('intakeWorkflow', {}, undefined);
-    if (!run) throw new Error('Workflow run not found');
     await this.workflowRuntime.patch(run.id, {
       status: 'running',
       currentStep: 'brief_structuring',
@@ -75,9 +75,14 @@ export class IntakeWorkflow {
     return { structuredBrief, workflowRunId: run.id };
   }
 
-  async approveBrief(workflowRunId: string, structuredBrief?: StructuredBrief) {
-    const run = await this.workflowRuntime.get(workflowRunId);
-    if (!run) throw new Error(`Workflow run not found: ${workflowRunId}`);
+  async approveBrief(workflowRunId: string, structuredBrief?: StructuredBrief, recovery?: { customerId?: string; originalBrief?: string; customer?: Customer }) {
+    await this.ensureCustomerRecord(recovery?.customer);
+    const run = await this.workflowRuntime.get(workflowRunId) || await this.createRecoveredRun(
+      String(recovery?.customerId || ''),
+      String(recovery?.originalBrief || ''),
+      structuredBrief,
+      workflowRunId
+    );
     const customerId = String(run.state.customerId || '');
     const originalBrief = String(run.state.originalBrief || '');
     const approvedBrief = structuredBrief || run.state.structuredBrief as StructuredBrief;
@@ -92,5 +97,44 @@ export class IntakeWorkflow {
     await this.workflowRuntime.emit({ ...run, projectId: project.id }, 'brief.approved', { structuredBrief: approvedBrief });
     await this.workflowRuntime.emit({ ...run, projectId: project.id }, 'project.created', { project });
     return project;
+  }
+
+  private async createRecoveredRun(customerId: string, originalBrief: string, structuredBrief?: StructuredBrief, previousWorkflowRunId?: string) {
+    const run = await this.workflowRuntime.create('intakeWorkflow', {
+      stage: structuredBrief ? 'brief_approval_recovered' : 'brief_submit_recovered',
+      waitingForUser: Boolean(structuredBrief),
+      customerId,
+      originalBrief,
+      structuredBrief,
+      recoveredFromWorkflowRunId: previousWorkflowRunId
+    });
+    await this.workflowRuntime.patch(run.id, {
+      status: structuredBrief ? 'waiting_for_user' : 'running',
+      currentStep: structuredBrief ? 'brief_approval' : 'brief_structuring',
+      state: {
+        ...run.state,
+        customerId,
+        originalBrief,
+        structuredBrief
+      }
+    });
+    return run;
+  }
+
+  private async ensureCustomerRecord(customer?: Customer): Promise<void> {
+    if (!customer?.id || !customer.email) return;
+    await this.store.update(data => {
+      const existing = data.customers.find(item => item.id === customer.id || item.email.toLowerCase() === customer.email.toLowerCase());
+      if (existing) {
+        Object.assign(existing, customer, { updatedAt: nowIso() });
+        return;
+      }
+      data.customers.push({
+        ...customer,
+        email: customer.email.toLowerCase(),
+        createdAt: customer.createdAt || nowIso(),
+        updatedAt: nowIso()
+      });
+    });
   }
 }

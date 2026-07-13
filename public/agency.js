@@ -42,7 +42,9 @@
   const state = {
     mode: 'new',
     email: '',
+    customer: null,
     customerId: '',
+    originalBrief: '',
     projectId: '',
     workflowRunId: '',
     renderedApprovalKey: '',
@@ -131,6 +133,7 @@
     try {
       const lookup = await api('/customer/lookup', { method: 'POST', body: { email: state.email, returning: state.mode === 'returning' } });
       if (state.mode === 'returning' && lookup.customer) {
+        state.customer = lookup.customer;
         state.customerId = lookup.customer.id;
         setReception('Returning Customer', 'Client Concierge', `Welcome back. I found ${lookup.projects.length} project record${lookup.projects.length === 1 ? '' : 's'}.`);
         els.actions.append(iconButton('Start new brief', 'file-plus-2', showBriefForm));
@@ -151,6 +154,7 @@
   function showCustomerForm(customer) {
     hideInputs();
     if (customer) {
+      state.customer = customer;
       state.customerId = customer.id;
       showBriefForm();
       return;
@@ -181,6 +185,7 @@
           notes: els.customerNotes.value.trim()
         }
       });
+      state.customer = result.customer;
       state.customerId = result.customer.id;
       showBriefForm();
     } catch (error) {
@@ -201,12 +206,14 @@
     hideInputs();
     setReception('Structuring Brief', 'Briefing Agent', 'The agency is turning the brief into a structured specification.');
     try {
+      state.originalBrief = els.brief.value.trim();
       const result = await api('/brief/submit', {
         method: 'POST',
         body: {
           customerId: state.customerId,
+          customer: state.customer,
           workflowRunId: state.workflowRunId,
-          originalBrief: els.brief.value.trim()
+          originalBrief: state.originalBrief
         }
       });
       state.workflowRunId = result.workflowRunId;
@@ -291,7 +298,16 @@
     setReception('Agency Working', 'Project Team', 'Brief approved. Agents are now working through planning, design, copy, build, QA, and preview.');
     try {
       const structuredBrief = structuredBriefFromForm();
-      const result = await api('/brief/approve', { method: 'POST', body: { workflowRunId: state.workflowRunId, structuredBrief } });
+      const result = await api('/brief/approve', {
+        method: 'POST',
+        body: {
+          workflowRunId: state.workflowRunId,
+          customerId: state.customerId,
+          customer: state.customer,
+          originalBrief: state.originalBrief || els.brief.value.trim(),
+          structuredBrief
+        }
+      });
       state.projectId = result.project.id;
       state.workflowRunId = result.workflowRunId;
       renderOfficeState(result.officeState);
