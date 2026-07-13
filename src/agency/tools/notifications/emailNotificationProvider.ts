@@ -1,14 +1,10 @@
-import { createRequire } from 'node:module';
-
-const require = createRequire(import.meta.url);
-
 export class EmailNotificationProvider {
   async send(input: { to?: string; title: string; message: string }) {
     if (!input.to) return { delivered: false, channel: 'email', reason: 'missing recipient', ...input };
     if (!process.env.SMTP_HOST) return { delivered: false, channel: 'email', reason: 'SMTP_HOST is not configured', ...input };
 
-    const nodemailer = require('nodemailer');
-    const transporter = nodemailer.createTransport({
+    const nodemailer = await import('nodemailer');
+    const transporter = nodemailer.default.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT || 587),
       secure: process.env.SMTP_SECURE === 'true',
