@@ -1,8 +1,8 @@
-const serverless = require('serverless-http');
+import serverless from 'serverless-http';
 
 let cachedHandler;
 
-exports.handler = async (event, context) => {
+export async function handler(event, context) {
   if (!cachedHandler) {
     const mod = await import('../../server.js');
     await mod.initializeRuntime();
@@ -15,4 +15,4 @@ exports.handler = async (event, context) => {
   };
 
   return cachedHandler(rewritten, context);
-};
+}
