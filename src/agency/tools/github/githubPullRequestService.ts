@@ -1,15 +1,23 @@
 import { createId, nowIso, type MemoryStore } from '../../memory/memoryStore.js';
 import type { GitHubPullRequestRecord } from '../../schemas/github.schema.js';
+import { githubCreatePullRequest } from './githubApi.js';
 
 export class GitHubPullRequestService {
   constructor(private readonly store: MemoryStore) {}
 
   async create(input: Omit<GitHubPullRequestRecord, 'id' | 'status' | 'url' | 'createdAt' | 'updatedAt'> & { url?: string }): Promise<GitHubPullRequestRecord> {
     const timestamp = nowIso();
+    const remote = await githubCreatePullRequest({
+      repo: input.repo,
+      title: input.title,
+      body: input.body,
+      branchName: input.branchName,
+      draft: true
+    }).catch(() => undefined);
     const pr: GitHubPullRequestRecord = {
       id: createId('github-pr'),
       status: 'open',
-      url: input.url || `https://github.local/${input.repo}/pull/${Date.now()}`,
+      url: remote?.url || input.url || `https://github.local/${input.repo}/pull/${Date.now()}`,
       createdAt: timestamp,
       updatedAt: timestamp,
       ...input

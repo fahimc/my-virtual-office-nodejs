@@ -19,7 +19,8 @@ export class CodexExecRunner {
     return this.runCodexExec(task);
   }
 
-  private runCodexExec(task: CodexTask): Promise<CodexResult> {
+  private async runCodexExec(task: CodexTask): Promise<CodexResult> {
+    await runCommand('git', ['checkout', '-B', task.branchName], task.repoPath);
     return new Promise(resolve => {
       const args = ['exec', task.taskPrompt];
       const child = spawn(defaultCodexConfig.executable, args, {
@@ -34,7 +35,7 @@ export class CodexExecRunner {
           status: 'failed',
           summary: 'Codex task timed out.',
           changedFiles: [],
-          commandsRun: [`${defaultCodexConfig.executable} ${args.join(' ')}`],
+          commandsRun: [`git checkout -B ${task.branchName}`, `${defaultCodexConfig.executable} ${args.join(' ')}`],
           testsRun: [],
           buildResult: 'timeout',
           diffSummary: '',
@@ -44,20 +45,46 @@ export class CodexExecRunner {
       }, task.maxRuntimeMs);
       child.stdout.on('data', chunk => output.push(String(chunk)));
       child.stderr.on('data', chunk => output.push(String(chunk)));
-      child.on('close', code => {
+      child.on('close', async code => {
         clearTimeout(timer);
+        const changedFiles = await gitChangedFiles(task.repoPath);
+        const diffSummary = await gitDiffSummary(task.repoPath);
         resolve({
           status: code === 0 ? 'needs_review' : 'failed',
           summary: output.join('').slice(-1000) || `Codex exited with ${code}`,
-          changedFiles: [],
-          commandsRun: [`${defaultCodexConfig.executable} ${args.join(' ')}`],
+          changedFiles,
+          commandsRun: [`git checkout -B ${task.branchName}`, `${defaultCodexConfig.executable} ${args.join(' ')}`],
           testsRun: [],
           buildResult: code === 0 ? 'completed' : 'failed',
-          diffSummary: '',
+          diffSummary,
           needsHumanReview: true,
           error: code === 0 ? undefined : `Codex exited with ${code}`
         });
       });
     });
   }
+}
+
+async function gitChangedFiles(cwd: string): Promise<string[]> {
+  const result = await runCommand('git', ['status', '--short'], cwd);
+  return result.stdout
+    .split(/\r?\n/)
+    .map(line => line.slice(3).trim())
+    .filter(Boolean);
+}
+
+async function gitDiffSummary(cwd: string): Promise<string> {
+  const result = await runCommand('git', ['diff', '--stat'], cwd);
+  return result.stdout.trim();
+}
+
+function runCommand(command: string, args: string[], cwd: string): Promise<{ stdout: string }> {
+  return new Promise(resolve => {
+    const child = spawn(command, args, { cwd, windowsHide: true });
+    const output: string[] = [];
+    child.stdout.on('data', chunk => output.push(String(chunk)));
+    child.stderr.on('data', chunk => output.push(String(chunk)));
+    child.on('error', () => resolve({ stdout: '' }));
+    child.on('close', () => resolve({ stdout: output.join('') }));
+  });
 }

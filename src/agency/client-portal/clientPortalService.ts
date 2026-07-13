@@ -13,6 +13,7 @@ import { FeedbackStore } from '../feedback/feedbackStore.js';
 import { VisualFeedbackTool } from '../feedback/visualFeedbackTool.js';
 import { CustomerFileUploadService } from '../files/customerFileUploadService.js';
 import { LocalStorageProvider } from '../files/localStorageProvider.js';
+import { MinioStorageProvider, minioConfigured } from '../files/minioStorageProvider.js';
 import { ClientMessageService } from '../messages/clientMessageService.js';
 import { ArtifactLibraryService } from '../files/artifactLibraryService.js';
 import { designDirectionView } from '../design-client/designDirectionViewer.js';
@@ -39,7 +40,7 @@ export class ClientPortalService {
     this.approvals = new ClientApprovalService(store, approvalService);
     this.feedbackStore = new FeedbackStore(store);
     this.visualFeedback = new VisualFeedbackTool(this.feedbackStore, taskBoard);
-    this.files = new CustomerFileUploadService(store, new LocalStorageProvider(workspaceRoot));
+    this.files = new CustomerFileUploadService(store, minioConfigured() ? new MinioStorageProvider() : new LocalStorageProvider(workspaceRoot));
     this.messages = new ClientMessageService(store);
     this.artifacts = new ArtifactLibraryService(store);
   }
@@ -110,7 +111,10 @@ export class ClientPortalService {
       });
     }
     const previewPending = internalPending.find(item => item.type === 'preview');
-    if (preview && (previewPending || project.status === 'awaiting_approval')) {
+    const hasPreviewApproval = preview
+      ? data.clientApprovals.some(item => item.projectId === projectId && item.type === 'preview' && item.previewVersionId === preview.id && item.status !== 'cancelled')
+      : false;
+    if (preview && !hasPreviewApproval && (previewPending || project.status === 'awaiting_approval')) {
       await this.approvals.ensure({
         projectId,
         customerId: project.customerId,

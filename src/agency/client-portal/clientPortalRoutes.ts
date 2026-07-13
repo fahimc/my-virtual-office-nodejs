@@ -5,6 +5,7 @@ import { ClientPortalService } from './clientPortalService.js';
 import { CustomerSessionService } from './customerSessionService.js';
 import { CustomerNotificationService } from './customerNotificationService.js';
 import { FeedbackTaskConverter } from '../feedback/feedbackTaskConverter.js';
+import { fallbackScreenshotSvg, HeadlessScreenshotService, type ScreenshotViewport } from '../previews/headlessScreenshotService.js';
 
 type AsyncHandler = (req: Request, res: Response) => Promise<void>;
 
@@ -345,6 +346,15 @@ export function createAgencyClientPortalRouter(options: CreateAgencySystemOption
     }) });
   }));
 
+  router.post('/create-access-link', route(async (req, res) => {
+    const data = await system.store.read();
+    const project = data.projects.find(item => item.id === req.body.projectId);
+    if (!project) return void res.status(404).json({ error: 'Project not found' });
+    const token = new CustomerSessionService().createToken(project.customerId);
+    const portalPath = `/portal/projects/${encodeURIComponent(project.id)}?portalToken=${encodeURIComponent(token)}`;
+    res.json({ projectId: project.id, customerId: project.customerId, portalPath, token });
+  }));
+
   router.post('/convert-feedback-to-task', route(async (req, res) => {
     const feedback = (await portal.feedbackStore.list(String(req.body.projectId))).find(item => item.id === req.body.feedbackId);
     if (!feedback) return void res.status(404).json({ error: 'Feedback not found' });
@@ -364,6 +374,7 @@ export function createAgencyPreviewRouter(options: CreateAgencySystemOptions): R
   const router = express.Router();
   const system = getAgencySystem(options);
   const portal = new ClientPortalService(system.store, system.approvalService, system.companyOS.taskBoard, system.auditLog, options.workspaceRoot);
+  const screenshots = new HeadlessScreenshotService(options.workspaceRoot);
 
   router.post('/create-version', async (req, res) => {
     try {
@@ -380,13 +391,56 @@ export function createAgencyPreviewRouter(options: CreateAgencySystemOptions): R
     }
   });
 
-  router.get('/capture-screenshots', (_req, res) => {
-    res.type('svg').send(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><rect width="1200" height="800" fill="#f8fafc"/><rect x="80" y="80" width="1040" height="640" rx="36" fill="#111827"/><rect x="140" y="150" width="520" height="64" rx="18" fill="#e5e7eb" opacity=".92"/><rect x="140" y="250" width="760" height="22" rx="11" fill="#cbd5e1" opacity=".82"/><rect x="140" y="295" width="620" height="22" rx="11" fill="#cbd5e1" opacity=".62"/><rect x="140" y="380" width="260" height="70" rx="24" fill="#3157d5"/><rect x="460" y="380" width="260" height="70" rx="24" fill="#ffffff" opacity=".16"/><rect x="760" y="150" width="260" height="420" rx="32" fill="#ffffff" opacity=".12"/><circle cx="930" cy="290" r="82" fill="#ffffff" opacity=".16"/></svg>`);
+  router.get('/capture-screenshots', async (req, res) => {
+    const viewport = parseViewport(req.query.viewport);
+    const projectId = typeof req.query.projectId === 'string' ? req.query.projectId : undefined;
+    const previewUrl = await previewUrlForScreenshot(system, projectId, typeof req.query.url === 'string' ? req.query.url : '/');
+    const result = await screenshots.capture({
+      projectId,
+      url: previewUrl,
+      viewport,
+      baseUrl: requestBaseUrl(req)
+    });
+    if (result.absolutePath) return void res.type('png').sendFile(result.absolutePath);
+    res.type('svg').send(fallbackScreenshotSvg(viewport));
   });
 
-  router.post('/capture-screenshots', (_req, res) => {
-    res.json({ screenshots: { desktop: '/api/agency/previews/capture-screenshots?viewport=desktop', tablet: '/api/agency/previews/capture-screenshots?viewport=tablet', mobile: '/api/agency/previews/capture-screenshots?viewport=mobile' } });
+  router.post('/capture-screenshots', (req, res) => {
+    const projectId = encodeURIComponent(String(req.body.projectId || 'general'));
+    const url = encodeURIComponent(String(req.body.url || req.body.previewUrl || '/'));
+    res.json({ screenshots: {
+      desktop: `/api/agency/previews/capture-screenshots?projectId=${projectId}&viewport=desktop&url=${url}`,
+      tablet: `/api/agency/previews/capture-screenshots?projectId=${projectId}&viewport=tablet&url=${url}`,
+      mobile: `/api/agency/previews/capture-screenshots?projectId=${projectId}&viewport=mobile&url=${url}`
+    } });
   });
 
   return router;
+}
+
+function parseViewport(value: unknown): ScreenshotViewport {
+  return value === 'mobile' || value === 'tablet' || value === 'desktop' ? value : 'desktop';
+}
+
+function requestBaseUrl(req: Request): string {
+  const proto = firstForwarded(req.headers['x-forwarded-proto']) || req.protocol || 'http';
+  const host = firstForwarded(req.headers['x-forwarded-host']) || req.headers.host || 'localhost:3000';
+  return `${proto}://${host}`;
+}
+
+function firstForwarded(value: string | string[] | undefined): string | undefined {
+  const first = Array.isArray(value) ? value[0] : value;
+  return first?.split(',')[0]?.trim();
+}
+
+async function previewUrlForScreenshot(system: ReturnType<typeof getAgencySystem>, projectId: string | undefined, url: string): Promise<string> {
+  if (!projectId || process.env.PREVIEW_REQUIRE_TOKEN !== 'true') return url;
+  const data = await system.store.read();
+  const latest = data.previewVersions
+    .filter(item => item.projectId === projectId && item.accessToken)
+    .sort((a, b) => b.versionNumber - a.versionNumber)[0];
+  if (!latest?.accessToken) return url;
+  const parsed = new URL(url, 'http://localhost:3000');
+  if (!parsed.searchParams.has('previewToken')) parsed.searchParams.set('previewToken', latest.accessToken);
+  return /^https?:\/\//i.test(url) ? parsed.toString() : parsed.pathname + parsed.search + parsed.hash;
 }

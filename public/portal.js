@@ -1,5 +1,6 @@
 const app = document.querySelector('#portal-app');
 const navLinks = [...document.querySelectorAll('[data-section-link]')];
+const portalToken = new URLSearchParams(location.search).get('portalToken');
 let state = null;
 let feedbackPoint = null;
 
@@ -153,7 +154,7 @@ function renderDesign(design) {
 
 function renderPreview(preview) {
   if (!preview) return '<article class="panel"><p class="empty">Preview is not ready yet.</p></article>';
-  const src = preview.previewUrl || `/previews/${state.project.id}/`;
+  const src = previewUrl(preview);
   return `<article class="panel">
     <div class="button-row">
       <a class="primary-action" href="${escapeAttr(src)}" target="_blank" rel="noreferrer">Open preview</a>
@@ -238,7 +239,7 @@ async function submitFeedback(event) {
     method: 'POST',
     body: {
       previewVersionId: preview?.id,
-      pageUrl: preview?.previewUrl,
+      pageUrl: preview ? previewUrl(preview) : undefined,
       viewport: { width: point.width, height: point.height },
       clickPosition: { x: point.x, y: point.y },
       comment: document.querySelector('#feedback-comment').value,
@@ -285,7 +286,10 @@ async function submitMessage(event) {
 async function api(url, options = {}) {
   const response = await fetch(url, {
     method: options.method || 'GET',
-    headers: options.body ? { 'Content-Type': 'application/json' } : undefined,
+    headers: {
+      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(portalToken ? { 'X-Portal-Token': portalToken } : {})
+    },
     body: options.body ? JSON.stringify(options.body) : undefined
   });
   const json = await response.json();
@@ -296,6 +300,19 @@ async function api(url, options = {}) {
 function projectIdFromPath() {
   const match = location.pathname.match(/\/portal\/projects\/([^/]+)/);
   return match?.[1];
+}
+
+function previewUrl(preview) {
+  const src = preview.previewUrl || `/previews/${state.project.id}/`;
+  if (!preview.accessToken) return src;
+  try {
+    const url = new URL(src, location.origin);
+    url.searchParams.set('previewToken', preview.accessToken);
+    return url.pathname + url.search + url.hash;
+  } catch {
+    const separator = src.includes('?') ? '&' : '?';
+    return `${src}${separator}previewToken=${encodeURIComponent(preview.accessToken)}`;
+  }
 }
 
 function updateActiveNav() {

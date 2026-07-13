@@ -9,6 +9,10 @@ export const deploymentTool: ToolDefinition<{ projectId: string; target: string;
   approvalRequired: true,
   approvalType: 'deployment',
   async execute(input) {
-    return { deployed: true, previewUrl: `https://preview.example.com/${input.projectId}` };
+    const baseUrl = process.env.LIVE_BASE_URL || process.env.PUBLIC_BASE_URL || 'http://localhost:3000';
+    const previewUrl = /^https?:\/\//i.test(input.target)
+      ? input.target
+      : `${baseUrl.replace(/\/$/, '')}/previews/${encodeURIComponent(input.projectId)}/`;
+    return { deployed: true, previewUrl };
   }
 };

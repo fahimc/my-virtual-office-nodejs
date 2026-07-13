@@ -77,6 +77,11 @@ app.get(['/previews/:projectId', '/previews/:projectId/'], async (req, res) => {
     const data = await readJsonFileWithRetry(storePath);
     const project = data.projects?.find(item => item.id === req.params.projectId);
     if (!project) return res.status(404).send('Preview project not found');
+    if (process.env.PREVIEW_REQUIRE_TOKEN === 'true') {
+      const token = typeof req.query.previewToken === 'string' ? req.query.previewToken : '';
+      const allowed = (data.previewVersions || []).some(item => item.projectId === project.id && item.accessToken === token);
+      if (!allowed) return res.status(403).send('Preview access token is required');
+    }
     const artifacts = (data.artifacts || []).filter(item => item.projectId === project.id);
     res.type('html').send(renderProjectPreview(project, artifacts, data));
   } catch (error) {

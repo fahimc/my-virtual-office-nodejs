@@ -1,13 +1,15 @@
 import type { ToolDefinition } from './toolRegistry.js';
+import { research } from './browser/researchService.js';
 
 export const browserTool: ToolDefinition<{ query: string }, { summary: string }> = {
   name: 'browser.research',
-  description: 'Research a topic in a browser/search provider. Stubbed until a browser provider is configured.',
+  description: 'Research a topic using public web fetch/search fallbacks.',
   inputSchema: '{ query: string }',
   outputSchema: '{ summary: string }',
   permissionLevel: 'safe',
   approvalRequired: false,
   async execute(input) {
-    return { summary: `Research stub for: ${input.query}` };
+    const result = await research({ query: input.query });
+    return { summary: `${result.summary}\nSources: ${result.citations.join(', ') || 'none'}` };
   }
 };
