@@ -6,14 +6,14 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-loadEnvFile(path.join(__dirname, '.env'));
+const APP_FILENAME = fileURLToPath(import.meta.url);
+const APP_DIR = path.dirname(APP_FILENAME);
+loadEnvFile(path.join(APP_DIR, '.env'));
 const SERVERLESS = process.env.NETLIFY === 'true' || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
 const PORT = Number(process.env.PORT || process.env.VO_PORT || 3000);
-const DATA_DIR = process.env.DATA_DIR || (SERVERLESS ? path.join('/tmp', 'my-virtual-office-nodejs-data') : path.join(__dirname, 'data'));
+const DATA_DIR = process.env.DATA_DIR || (SERVERLESS ? path.join('/tmp', 'my-virtual-office-nodejs-data') : path.join(APP_DIR, 'data'));
 const DEFAULT_CONFIG = path.join(DATA_DIR, 'default-office-config.json');
-const DEFAULT_CONFIG_SEED = path.join(__dirname, 'data', 'default-office-config.json');
+const DEFAULT_CONFIG_SEED = path.join(APP_DIR, 'data', 'default-office-config.json');
 const USER_CONFIG = path.join(DATA_DIR, 'office-config.json');
 const AGENTS_FILE = path.join(DATA_DIR, 'agents.json');
 const EMAILS_FILE = path.join(DATA_DIR, 'emails.json');
@@ -35,11 +35,11 @@ async function mountAgencyApis() {
     const { createAgencyRouter } = await import('./dist/agency/api/agencyRoutes.js');
     const { createCompanyRouter } = await import('./dist/agency/api/companyRoutes.js');
     const { createClientPortalRouter, createAgencyClientPortalRouter, createAgencyPreviewRouter } = await import('./dist/agency/client-portal/clientPortalRoutes.js');
-    app.use('/api/agency', createAgencyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
-    app.use('/api/company', createCompanyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
-    app.use('/api/portal', createClientPortalRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
-    app.use('/api/agency/client-portal', createAgencyClientPortalRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
-    app.use('/api/agency/previews', createAgencyPreviewRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+    app.use('/api/agency', createAgencyRouter({ dataDir: DATA_DIR, workspaceRoot: APP_DIR }));
+    app.use('/api/company', createCompanyRouter({ dataDir: DATA_DIR, workspaceRoot: APP_DIR }));
+    app.use('/api/portal', createClientPortalRouter({ dataDir: DATA_DIR, workspaceRoot: APP_DIR }));
+    app.use('/api/agency/client-portal', createAgencyClientPortalRouter({ dataDir: DATA_DIR, workspaceRoot: APP_DIR }));
+    app.use('/api/agency/previews', createAgencyPreviewRouter({ dataDir: DATA_DIR, workspaceRoot: APP_DIR }));
     agencyApisMounted = true;
   } catch (error) {
     console.warn('Agency API is not available until TypeScript is built:', error.message);
@@ -121,10 +121,10 @@ app.get(['/design-concepts/:projectId/:directionId', '/design-concepts/:projectI
 });
 
 app.get(['/portal', '/portal/*'], (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'portal.html'));
+  res.sendFile(path.join(APP_DIR, 'public', 'portal.html'));
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(APP_DIR, 'public')));
 
 const defaultSpawnedAgents = [
   {
@@ -1041,7 +1041,7 @@ function designTokensFromDirection(direction, context) {
 
 function loadPlaceholderManifest() {
   try {
-    return JSON.parse(readFileSync(path.join(__dirname, 'public', 'placeholders', 'manifest.json'), 'utf8'));
+    return JSON.parse(readFileSync(path.join(APP_DIR, 'public', 'placeholders', 'manifest.json'), 'utf8'));
   } catch {
     return { categories: {} };
   }
