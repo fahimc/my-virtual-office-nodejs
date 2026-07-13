@@ -27,18 +27,34 @@ const server = SERVERLESS ? undefined : createServer(app);
 const wss = server ? new WebSocketServer({ server }) : undefined;
 
 app.use(express.json({ limit: '25mb' }));
-try {
-  const { createAgencyRouter } = await import('./dist/agency/api/agencyRoutes.js');
-  const { createCompanyRouter } = await import('./dist/agency/api/companyRoutes.js');
-  const { createClientPortalRouter, createAgencyClientPortalRouter, createAgencyPreviewRouter } = await import('./dist/agency/client-portal/clientPortalRoutes.js');
-  app.use('/api/agency', createAgencyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
-  app.use('/api/company', createCompanyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
-  app.use('/api/portal', createClientPortalRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
-  app.use('/api/agency/client-portal', createAgencyClientPortalRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
-  app.use('/api/agency/previews', createAgencyPreviewRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
-} catch (error) {
-  console.warn('Agency API is not available until TypeScript is built:', error.message);
+let agencyApisMounted = false;
+
+async function mountAgencyApis() {
+  if (agencyApisMounted) return;
+  try {
+    const { createAgencyRouter } = await import('./dist/agency/api/agencyRoutes.js');
+    const { createCompanyRouter } = await import('./dist/agency/api/companyRoutes.js');
+    const { createClientPortalRouter, createAgencyClientPortalRouter, createAgencyPreviewRouter } = await import('./dist/agency/client-portal/clientPortalRoutes.js');
+    app.use('/api/agency', createAgencyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+    app.use('/api/company', createCompanyRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+    app.use('/api/portal', createClientPortalRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+    app.use('/api/agency/client-portal', createAgencyClientPortalRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+    app.use('/api/agency/previews', createAgencyPreviewRouter({ dataDir: DATA_DIR, workspaceRoot: __dirname }));
+    agencyApisMounted = true;
+  } catch (error) {
+    console.warn('Agency API is not available until TypeScript is built:', error.message);
+  }
 }
+
+app.use('/api', async (_req, res, next) => {
+  try {
+    await initializeRuntime();
+  } catch (error) {
+    res.status(500).json({ error: error instanceof Error ? error.message : String(error) });
+    return;
+  }
+  next();
+});
 
 function loadEnvFile(filePath) {
   try {
@@ -1277,6 +1293,7 @@ function startOfficeActivityLoop() {
 let runtimeReady;
 export async function initializeRuntime() {
   runtimeReady ||= (async () => {
+    await mountAgencyApis();
     await ensureConfig();
     await ensureAgents();
     await ensureEmails();
@@ -1287,11 +1304,17 @@ export async function initializeRuntime() {
 export { app };
 
 if (!SERVERLESS) {
-  await initializeRuntime();
-  startOfficeActivityLoop();
-  server.listen(PORT, () => {
-    console.log(`Virtual Office Node server running at http://localhost:${PORT}`);
-    console.log(`Ollama: ${OLLAMA_BASE_URL} model ${OLLAMA_MODEL}`);
-    console.log(`Email: ${smtpEnabled() ? 'SMTP enabled' : 'local outbox mode'}`);
-  });
+  initializeRuntime()
+    .then(() => {
+      startOfficeActivityLoop();
+      server.listen(PORT, () => {
+        console.log(`Virtual Office Node server running at http://localhost:${PORT}`);
+        console.log(`Ollama: ${OLLAMA_BASE_URL} model ${OLLAMA_MODEL}`);
+        console.log(`Email: ${smtpEnabled() ? 'SMTP enabled' : 'local outbox mode'}`);
+      });
+    })
+    .catch(error => {
+      console.error(error);
+      process.exit(1);
+    });
 }
