@@ -9,9 +9,11 @@ import nodemailer from 'nodemailer';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 loadEnvFile(path.join(__dirname, '.env'));
+const SERVERLESS = process.env.NETLIFY === 'true' || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
 const PORT = Number(process.env.PORT || process.env.VO_PORT || 3000);
-const DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = process.env.DATA_DIR || (SERVERLESS ? path.join('/tmp', 'my-virtual-office-nodejs-data') : path.join(__dirname, 'data'));
 const DEFAULT_CONFIG = path.join(DATA_DIR, 'default-office-config.json');
+const DEFAULT_CONFIG_SEED = path.join(__dirname, 'data', 'default-office-config.json');
 const USER_CONFIG = path.join(DATA_DIR, 'office-config.json');
 const AGENTS_FILE = path.join(DATA_DIR, 'agents.json');
 const EMAILS_FILE = path.join(DATA_DIR, 'emails.json');
@@ -21,8 +23,8 @@ const OFFICE_EMAIL_DOMAIN = process.env.OFFICE_EMAIL_DOMAIN || 'virtual-office.l
 const PLACEHOLDER_MANIFEST = loadPlaceholderManifest();
 
 const app = express();
-const server = createServer(app);
-const wss = new WebSocketServer({ server });
+const server = SERVERLESS ? undefined : createServer(app);
+const wss = server ? new WebSocketServer({ server }) : undefined;
 
 app.use(express.json({ limit: '25mb' }));
 try {
@@ -162,6 +164,12 @@ function logEntry(message) {
 async function ensureConfig() {
   await fs.mkdir(DATA_DIR, { recursive: true });
   try {
+    await fs.access(DEFAULT_CONFIG);
+  } catch {
+    const seed = await fs.readFile(DEFAULT_CONFIG_SEED, 'utf8');
+    await fs.writeFile(DEFAULT_CONFIG, seed);
+  }
+  try {
     await fs.access(USER_CONFIG);
   } catch {
     const seed = await fs.readFile(DEFAULT_CONFIG, 'utf8');
@@ -212,6 +220,7 @@ async function writeConfig(config) {
 }
 
 function broadcast(payload) {
+  if (!wss) return;
   const body = JSON.stringify(payload);
   for (const client of wss.clients) {
     if (client.readyState === 1) client.send(body);
@@ -1238,33 +1247,51 @@ app.use((error, _req, res, _next) => {
   res.status(error.statusCode || 500).json({ error: error.statusCode ? error.message : 'Server error' });
 });
 
-wss.on('connection', ws => {
-  ws.send(JSON.stringify({ type: 'snapshot', ...snapshot() }));
-});
+if (wss) {
+  wss.on('connection', ws => {
+    ws.send(JSON.stringify({ type: 'snapshot', ...snapshot() }));
+  });
+}
 
 const statuses = ['working', 'idle', 'meeting', 'break', 'walking', 'browsing', 'watching TV'];
-setInterval(() => {
-  const agents = getAgents();
-  const agent = agents[Math.floor(Math.random() * agents.length)];
-  agent.status = statuses[Math.floor(Math.random() * statuses.length)];
-  agent.target = {
-    x: Math.max(35, Math.min(965, agent.x + (Math.random() * 260 - 130))),
-    y: Math.max(110, Math.min(705, agent.y + (Math.random() * 220 - 110)))
-  };
-  if (Math.random() > 0.55) {
-    agent.bubble = `${agent.status}...`;
-    agent.bubbleUntil = Date.now() + 5000;
-  }
-  activityLog.push(logEntry(`${agent.name} is ${agent.status}`));
-  if (activityLog.length > 120) activityLog.shift();
-  broadcast({ type: 'activity', ...snapshot() });
-}, 4500);
 
-await ensureConfig();
-await ensureAgents();
-await ensureEmails();
-server.listen(PORT, () => {
-  console.log(`Virtual Office Node server running at http://localhost:${PORT}`);
-  console.log(`Ollama: ${OLLAMA_BASE_URL} model ${OLLAMA_MODEL}`);
-  console.log(`Email: ${smtpEnabled() ? 'SMTP enabled' : 'local outbox mode'}`);
-});
+function startOfficeActivityLoop() {
+  setInterval(() => {
+    const agents = getAgents();
+    const agent = agents[Math.floor(Math.random() * agents.length)];
+    agent.status = statuses[Math.floor(Math.random() * statuses.length)];
+    agent.target = {
+      x: Math.max(35, Math.min(965, agent.x + (Math.random() * 260 - 130))),
+      y: Math.max(110, Math.min(705, agent.y + (Math.random() * 220 - 110)))
+    };
+    if (Math.random() > 0.55) {
+      agent.bubble = `${agent.status}...`;
+      agent.bubbleUntil = Date.now() + 5000;
+    }
+    activityLog.push(logEntry(`${agent.name} is ${agent.status}`));
+    if (activityLog.length > 120) activityLog.shift();
+    broadcast({ type: 'activity', ...snapshot() });
+  }, 4500);
+}
+
+let runtimeReady;
+export async function initializeRuntime() {
+  runtimeReady ||= (async () => {
+    await ensureConfig();
+    await ensureAgents();
+    await ensureEmails();
+  })();
+  return runtimeReady;
+}
+
+export { app };
+
+if (!SERVERLESS) {
+  await initializeRuntime();
+  startOfficeActivityLoop();
+  server.listen(PORT, () => {
+    console.log(`Virtual Office Node server running at http://localhost:${PORT}`);
+    console.log(`Ollama: ${OLLAMA_BASE_URL} model ${OLLAMA_MODEL}`);
+    console.log(`Email: ${smtpEnabled() ? 'SMTP enabled' : 'local outbox mode'}`);
+  });
+}

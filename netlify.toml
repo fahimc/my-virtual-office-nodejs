@@ -1,6 +1,31 @@
 [build]
   publish = "public"
-  command = ""
+  command = "npm run build"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  included_files = ["dist/**", "data/default-office-config.json", "public/**"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/previews/*"
+  to = "/.netlify/functions/api/previews/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/design-concepts/*"
+  to = "/.netlify/functions/api/design-concepts/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/portal/*"
+  to = "/portal.html"
+  status = 200
 
 [[redirects]]
   from = "/*"
