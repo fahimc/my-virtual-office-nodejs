@@ -6,10 +6,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
 
-const APP_FILENAME = fileURLToPath(import.meta.url);
-const APP_DIR = path.dirname(APP_FILENAME);
-loadEnvFile(path.join(APP_DIR, '.env'));
 const SERVERLESS = process.env.NETLIFY === 'true' || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
+const LAMBDA_TASK_ROOT = process.env.LAMBDA_TASK_ROOT;
+const APP_FILENAME = LAMBDA_TASK_ROOT ? path.join(LAMBDA_TASK_ROOT, 'server.js') : fileURLToPath(import.meta.url);
+const APP_DIR = LAMBDA_TASK_ROOT || path.dirname(APP_FILENAME);
+loadEnvFile(path.join(APP_DIR, '.env'));
 const PORT = Number(process.env.PORT || process.env.VO_PORT || 3000);
 const DATA_DIR = process.env.DATA_DIR || (SERVERLESS ? path.join('/tmp', 'my-virtual-office-nodejs-data') : path.join(APP_DIR, 'data'));
 const DEFAULT_CONFIG = path.join(DATA_DIR, 'default-office-config.json');
