@@ -532,7 +532,22 @@
     els.designPhase.textContent = (design.phase || 'not_started').replaceAll('_', ' ');
     const selected = design.selectedDirection;
     const direction = (design.creativeDirections || []).find(item => selected && item.id === selected.selectedDirectionId) || (design.creativeDirections || [])[0];
-    const pendingDesignApproval = (design.approvals || [])[0];
+    const designDirections = design.creativeDirections || [];
+    const pendingDesignApproval = (design.approvals || [])[0] || (
+      design.phase === 'creative_direction_approval' && designDirections.length
+        ? {
+            id: `design-options-${state.projectId || 'current'}`,
+            projectId: state.projectId,
+            type: 'design_options',
+            title: 'Choose a creative direction',
+            description: 'Review the agency-grade creative directions before sitemap, wireframes, tokens, prototype, and build handoff are created.',
+            payload: {
+              workflowRunId: state.workflowRunId,
+              designOptions: designDirections
+            }
+          }
+        : null
+    );
     const designNeedsCompletion = Boolean(selected && !design.handoff);
     const designArtifacts = design.artifacts || [];
     const generatedImages = design.generatedImages || [];
@@ -541,14 +556,14 @@
     const tokenColors = design.tokens && design.tokens.colours ? Object.values(design.tokens.colours).slice(0, 8) : [];
     const existingDesignFeedback = document.getElementById('designStudioFeedback')?.value || '';
     els.designStudioBody.innerHTML = `
-      ${pendingDesignApproval && (design.creativeDirections || []).length ? `
+      ${pendingDesignApproval && designDirections.length ? `
         <section class="design-review-panel">
           <div class="agency-panel-heading">
             <h4>Creative Directions To Review</h4>
-            <span>${(design.creativeDirections || []).length} options</span>
+            <span>${designDirections.length} options</span>
           </div>
           <div class="creative-direction-review-list">
-            ${(design.creativeDirections || []).map((option, index) => `
+            ${designDirections.map((option, index) => `
               <article class="creative-direction-review-card">
                 <div class="creative-direction-card-header">
                   <div class="creative-direction-title">
@@ -585,7 +600,7 @@
           </div>
         </section>
       ` : ''}
-      ${!pendingDesignApproval && designNeedsCompletion && (design.creativeDirections || []).length ? `
+      ${!pendingDesignApproval && designNeedsCompletion && designDirections.length ? `
         <section class="design-review-panel">
           <div class="agency-panel-heading">
             <h4>Selected Direction</h4>
@@ -593,7 +608,7 @@
           </div>
           <p class="design-help-text">The approval was recorded, but production design artifacts are not complete yet. Continue with the selected direction or choose another direction before handoff.</p>
           <div class="creative-direction-review-list compact">
-            ${(design.creativeDirections || []).map((option, index) => `
+            ${designDirections.map((option, index) => `
               <article class="creative-direction-review-card ${selected && selected.selectedDirectionId === option.id ? 'selected' : ''}">
                 <div class="creative-direction-card-header">
                   <div class="creative-direction-title">

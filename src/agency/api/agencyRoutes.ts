@@ -61,8 +61,21 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     const approvalSnapshot = req.body.approval && typeof req.body.approval === 'object'
       ? req.body.approval as Partial<ApprovalRequest>
       : undefined;
-    const projectId = String(req.body.projectId || approvalSnapshot?.projectId || project?.id || selectedDesignOption?.projectId || '');
+    const workflowRunId = String(req.body.workflowRunId || approvalSnapshot?.payload?.workflowRunId || '');
+    const data = await system.store.read();
+    const workflow = workflowRunId
+      ? data.workflows.find(item => item.id === workflowRunId)
+      : undefined;
+    const projectId = String(req.body.projectId || approvalSnapshot?.projectId || project?.id || selectedDesignOption?.projectId || workflow?.projectId || '');
     if (!projectId || !selectedDesignOption) throw new Error(`Approval not found: ${req.params.id}`);
+    const workflowForProject = workflow || data.workflows.find(item =>
+      item.projectId === projectId &&
+      item.workflowName === 'websiteBuildWorkflow' &&
+      item.currentStep === 'design_options_approval'
+    );
+    const workflowDesignOptions = Array.isArray(workflowForProject?.state?.designOptions)
+      ? workflowForProject.state.designOptions
+      : [];
     const timestamp = nowIso();
     const approval: ApprovalRequest = {
       id: req.params.id,
@@ -75,10 +88,12 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
       riskLevel: approvalSnapshot?.riskLevel || 'low',
       payload: {
         ...(approvalSnapshot?.payload || {}),
-        workflowRunId: req.body.workflowRunId || approvalSnapshot?.payload?.workflowRunId,
+        workflowRunId: workflowRunId || workflowForProject?.id,
         designOptions: Array.isArray(approvalSnapshot?.payload?.designOptions)
           ? approvalSnapshot.payload.designOptions.map(option => normalizeDesignOption(option, projectId))
-          : [normalizeDesignOption(selectedDesignOption, projectId)],
+          : workflowDesignOptions.length
+            ? workflowDesignOptions.map(option => normalizeDesignOption(option, projectId))
+            : [normalizeDesignOption(selectedDesignOption, projectId)],
         resolution: { recovered: true, resolvedBy: 'user' }
       },
       createdAt: approvalSnapshot?.createdAt || timestamp,
