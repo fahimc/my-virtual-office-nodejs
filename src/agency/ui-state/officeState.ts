@@ -88,6 +88,7 @@ function buildDiagnostics(input: {
   const mockImageCount = projectImages.filter(item => item.provider === 'local_mock' || item.status === 'mocked').length;
   const failedImageCount = projectImages.filter(item => item.status === 'failed').length;
   const plannedImageCount = projectImages.filter(item => item.status === 'planned').length;
+  const stalePlannedImageCount = projectImages.filter(item => item.status === 'planned' && (!item.generationLeaseUntil || Date.parse(item.generationLeaseUntil) <= Date.now())).length;
   const openAiImagesConfigured = Boolean((process.env.OPENAI_API_KEY ?? process.env['\uFEFFOPENAI_API_KEY'])?.trim());
   if (input.project?.currentWorkflowRunId && !input.data.workflows.some(item => item.id === input.project?.currentWorkflowRunId)) {
     warnings.push('Project referenced a missing workflow; the latest project workflow was selected.');
@@ -98,6 +99,7 @@ function buildDiagnostics(input: {
   if (input.hasDesignHandoff && !input.selectedDirection) warnings.push('A design handoff exists without a selected creative direction.');
   if (input.project && !input.workflow) warnings.push('No website build workflow is attached to this project.');
   if (failedImageCount) warnings.push(`${failedImageCount} OpenAI image generation request(s) failed. Resume the workflow or regenerate imagery after checking provider status.`);
+  if (stalePlannedImageCount) warnings.push(`${stalePlannedImageCount} image generation request(s) lost their worker lease and can be retried safely.`);
   if (mockImageCount && input.workflow?.state?.testMode !== true) {
     warnings.push(openAiImagesConfigured
       ? `${mockImageCount} local fallback image(s) are cached; use Generate with OpenAI to replace them.`
@@ -158,6 +160,7 @@ function buildDiagnostics(input: {
     mockImageCount,
     failedImageCount,
     plannedImageCount,
+    stalePlannedImageCount,
     lastImageError: projectImages
       .filter(item => item.status === 'failed')
       .flatMap(item => item.notes || [])

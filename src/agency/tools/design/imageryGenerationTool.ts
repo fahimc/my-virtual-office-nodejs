@@ -142,7 +142,7 @@ export class ImageryGenerationService {
           estimatedCostUsd: estimate.estimatedCostUsd,
           notes: ['Generation claimed by the active design workflow.'],
           generationLeaseOwner: generationOwner,
-          generationLeaseUntil: new Date(Date.now() + 10 * 60_000).toISOString(),
+          generationLeaseUntil: new Date(Date.now() + 2 * 60_000).toISOString(),
           createdAt: asset?.createdAt || timestamp,
           updatedAt: timestamp
         };
@@ -159,6 +159,7 @@ export class ImageryGenerationService {
       claimed = asset?.generationLeaseOwner === generationOwner;
       if (asset && this.satisfiesGenerationRequest(asset, spec, provider.target, input.force === true, generationRequestedAt)) return asset;
       if (claimed && asset) {
+        const stopHeartbeat = this.startGenerationLeaseHeartbeat(asset.id, generationOwner);
         try {
           const generated = await this.generateAsset(input, spec, provider, asset.id);
           await this.store.update(data => {
@@ -178,11 +179,33 @@ export class ImageryGenerationService {
             item.updatedAt = nowIso();
           });
           throw error;
+        } finally {
+          await stopHeartbeat();
         }
       }
       await wait(500);
     }
     throw new Error(`Timed out waiting for imagery generation claim: ${spec.title}`);
+  }
+
+  private startGenerationLeaseHeartbeat(assetId: string, generationOwner: string): () => Promise<void> {
+    let pending = Promise.resolve();
+    const renew = () => {
+      pending = pending.then(async () => {
+        await this.store.update(data => {
+          const item = data.generatedImages.find(candidate => candidate.id === assetId);
+          if (!item || item.generationLeaseOwner !== generationOwner || item.status !== 'planned') return;
+          item.generationLeaseUntil = new Date(Date.now() + 2 * 60_000).toISOString();
+          item.updatedAt = nowIso();
+        });
+      }).catch(() => undefined);
+    };
+    const timer = setInterval(renew, 30_000);
+    timer.unref?.();
+    return async () => {
+      clearInterval(timer);
+      await pending;
+    };
   }
 
   private async resolveProvider(input: ImageryGenerationInput): Promise<{ target: 'openai' | 'local_mock'; apiKey?: string; reason?: string }> {
@@ -433,6 +456,8 @@ export class ImageryGenerationService {
     if (!input.apiKey) throw new Error('OpenAI image generation cannot run without a server-side API key.');
     let response: Response | undefined;
     for (let attempt = 1; attempt <= 2; attempt += 1) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 120_000);
       try {
         response = await fetch('https://api.openai.com/v1/images/generations', {
           method: 'POST',
@@ -447,7 +472,7 @@ export class ImageryGenerationService {
             size: input.size,
             n: 1
           }),
-          signal: AbortSignal.timeout(150_000)
+          signal: controller.signal
         });
       } catch (error) {
         if (attempt < 2) {
@@ -455,6 +480,8 @@ export class ImageryGenerationService {
           continue;
         }
         throw new Error(`OpenAI image generation request failed: ${error instanceof Error ? error.message : String(error)}`);
+      } finally {
+        clearTimeout(timeout);
       }
       if (response.ok) break;
       const message = await response.text();
