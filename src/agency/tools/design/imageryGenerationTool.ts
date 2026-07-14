@@ -339,6 +339,19 @@ export class ImageryGenerationService {
   }
 
   private async writeGeneratedFile(projectId: string, fileName: string, buffer: Buffer) {
+    const url = `/generated-images/${projectId}/${fileName}`;
+    if (process.env.NETLIFY === 'true' || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+      const { getStore } = await import('@netlify/blobs');
+      const store = getStore({ name: process.env.AGENCY_BLOB_STORE || 'agency-data', consistency: 'strong' });
+      const blobKey = `generated-images/${projectId}/${fileName}`;
+      const arrayBuffer = new ArrayBuffer(buffer.byteLength);
+      new Uint8Array(arrayBuffer).set(buffer);
+      await store.set(blobKey, arrayBuffer, { metadata: { contentType: contentTypeFor(fileName), projectId } });
+      return {
+        filePath: blobKey,
+        url
+      };
+    }
     const relativeDir = path.join('public', 'generated-images', projectId);
     const absoluteDir = path.join(this.workspaceRoot, relativeDir);
     await fs.mkdir(absoluteDir, { recursive: true });
@@ -346,7 +359,7 @@ export class ImageryGenerationService {
     await fs.writeFile(absolutePath, buffer);
     return {
       filePath: path.join(relativeDir, fileName).replaceAll('\\', '/'),
-      url: `/generated-images/${projectId}/${fileName}`
+      url
     };
   }
 }
@@ -367,4 +380,13 @@ export function createImageryGenerationTool(service: ImageryGenerationService): 
 
 function escapeXml(value: string): string {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+}
+
+function contentTypeFor(fileName: string): string {
+  const lower = fileName.toLowerCase();
+  if (lower.endsWith('.png')) return 'image/png';
+  if (lower.endsWith('.webp')) return 'image/webp';
+  if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
+  if (lower.endsWith('.svg')) return 'image/svg+xml; charset=utf-8';
+  return 'application/octet-stream';
 }

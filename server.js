@@ -157,7 +157,35 @@ app.get(['/portal', '/portal/*'], (_req, res) => {
   res.sendFile(path.join(APP_DIR, 'public', 'portal.html'));
 });
 
+app.get('/generated-images/:projectId/:fileName', async (req, res, next) => {
+  if (!SERVERLESS) return next();
+  const safeProjectId = String(req.params.projectId || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  const safeFileName = String(req.params.fileName || '').replace(/[^a-zA-Z0-9._-]/g, '');
+  if (!safeProjectId || !safeFileName) return res.status(400).send('Invalid generated image path');
+  try {
+    const { getStore } = await import('@netlify/blobs');
+    const store = getStore({ name: process.env.AGENCY_BLOB_STORE || 'agency-data', consistency: 'strong' });
+    const key = `generated-images/${safeProjectId}/${safeFileName}`;
+    const data = await store.get(key, { type: 'arrayBuffer' });
+    if (!data) return res.status(404).send('Generated image not found');
+    res.setHeader('content-type', contentTypeForFile(safeFileName));
+    res.setHeader('cache-control', 'public, max-age=31536000, immutable');
+    res.send(Buffer.from(data));
+  } catch (error) {
+    res.status(500).send(`Generated image unavailable: ${error instanceof Error ? error.message : String(error)}`);
+  }
+});
+
 app.use(express.static(path.join(APP_DIR, 'public')));
+
+function contentTypeForFile(fileName) {
+  const lower = String(fileName || '').toLowerCase();
+  if (lower.endsWith('.png')) return 'image/png';
+  if (lower.endsWith('.webp')) return 'image/webp';
+  if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
+  if (lower.endsWith('.svg')) return 'image/svg+xml; charset=utf-8';
+  return 'application/octet-stream';
+}
 
 const defaultSpawnedAgents = [
   {

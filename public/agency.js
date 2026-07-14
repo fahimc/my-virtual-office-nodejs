@@ -409,7 +409,7 @@
     els.artifacts.innerHTML = `
       <details class="resources-panel">
         <summary>
-          <span><b>Resources</b><small>${artifacts.length} saved artifacts</small></span>
+          <span><b>Resources</b><small>${artifacts.length} key resources</small></span>
           <i data-lucide="chevron-down"></i>
         </summary>
         <div class="resources-list">
@@ -656,7 +656,7 @@
         <div class="design-studio-card design-studio-card-wide">
           <details class="resources-panel compact">
             <summary>
-              <span><b>Design Resources</b><small>${design.artifactCount || 0} saved artifacts</small></span>
+              <span><b>Design Resources</b><small>${design.artifactCount || 0} key resources</small></span>
               <i data-lucide="chevron-down"></i>
             </summary>
             <div class="resources-list">

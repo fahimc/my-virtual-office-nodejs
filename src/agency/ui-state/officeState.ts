@@ -1,4 +1,5 @@
 import type { AgentRuntime } from '../runtime/agentRuntime.js';
+import type { Artifact } from '../schemas/artifact.schema.js';
 import type { MemoryStore } from '../memory/memoryStore.js';
 import { buildAgentPresence } from './agentPresence.js';
 import { buildProjectTimeline } from './projectTimeline.js';
@@ -13,7 +14,8 @@ import { buildDeveloperStudioState } from './developerStudioState.js';
 export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRuntime, projectId?: string) {
   const data = await store.read();
   const project = projectId ? data.projects.find(item => item.id === projectId) : data.projects.at(-1);
-  const artifacts = project ? data.artifacts.filter(item => item.projectId === project.id) : [];
+  const rawArtifacts = project ? data.artifacts.filter(item => item.projectId === project.id) : [];
+  const artifacts = summarizeArtifacts(rawArtifacts);
   const approvals = project ? data.approvals.filter(item => item.projectId === project.id) : [];
   const workflow = project?.currentWorkflowRunId ? data.workflows.find(item => item.id === project.currentWorkflowRunId) : data.workflows.at(-1);
   const designPanel = buildDesignPanelState(data, project?.id);
@@ -23,6 +25,10 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
     agents: buildAgentPresence(agentRuntime.getPresence()),
     timeline: buildProjectTimeline(project, artifacts),
     artifacts,
+    artifactStats: {
+      total: rawArtifacts.length,
+      displayed: artifacts.length
+    },
     approvals,
     approvalCenter: buildApprovalPanelState(approvals),
     designStudio: {
@@ -50,4 +56,27 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
     waitingForUser: workflow?.status === 'waiting_for_user',
     resumeRequired: workflow?.status === 'failed' || workflow?.status === 'paused'
   };
+}
+
+function summarizeArtifacts(artifacts: Artifact[]): Artifact[] {
+  const byKey = new Map<string, Artifact>();
+  for (const artifact of artifacts) {
+    const key = artifactResourceKey(artifact);
+    const existing = byKey.get(key);
+    if (!existing || Date.parse(artifact.createdAt || '') >= Date.parse(existing.createdAt || '')) {
+      byKey.set(key, artifact);
+    }
+  }
+  return [...byKey.values()]
+    .sort((a, b) => Date.parse(a.createdAt || '') - Date.parse(b.createdAt || ''))
+    .slice(-80);
+}
+
+function artifactResourceKey(artifact: Artifact): string {
+  if (artifact.type === 'generated_image') {
+    const intendedUse = typeof artifact.metadata?.intendedUse === 'string' ? artifact.metadata.intendedUse : '';
+    return `${artifact.type}:${intendedUse}:${artifact.title}`;
+  }
+  if (artifact.path?.startsWith('project/design/')) return `${artifact.type}:${artifact.path}`;
+  return `${artifact.type}:${artifact.title}`;
 }

@@ -75,13 +75,13 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function assertSingleDesignApprovalSurface() {
   const [indexResponse, scriptResponse] = await Promise.all([
     fetch(`${siteOrigin}/`),
-    fetch(`${siteOrigin}/agency.js?v=agency-os-3`)
+    fetch(`${siteOrigin}/agency.js?v=agency-os-4`)
   ]);
   if (!indexResponse.ok) throw new Error(`GET / failed: ${indexResponse.status}`);
   if (!scriptResponse.ok) throw new Error(`GET /agency.js failed: ${scriptResponse.status}`);
   const indexHtml = await indexResponse.text();
   const script = await scriptResponse.text();
-  if (!indexHtml.includes('/agency.js?v=agency-os-3')) {
+  if (!indexHtml.includes('/agency.js?v=agency-os-4')) {
     throw new Error('Homepage is not using the latest agency.js cache-bust version');
   }
   if (!script.includes("item.status === 'pending' && item.type !== 'design_options'")) {

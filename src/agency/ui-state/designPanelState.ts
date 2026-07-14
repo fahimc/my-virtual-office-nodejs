@@ -1,4 +1,5 @@
 import type { AgencyStoreData } from '../memory/memoryStore.js';
+import type { Artifact } from '../schemas/artifact.schema.js';
 
 export function buildDesignPanelState(data: AgencyStoreData, projectId?: string) {
   const filter = <T extends { projectId: string }>(items: T[]) => items.filter(item => !projectId || item.projectId === projectId);
@@ -9,7 +10,8 @@ export function buildDesignPanelState(data: AgencyStoreData, projectId?: string)
   const imageryPlan = data.imageryPlans.filter(item => !projectId || item.projectId === projectId).at(-1);
   const generatedImages = data.generatedImages.filter(item => !projectId || item.projectId === projectId);
   const costEntries = data.costLedger.filter(item => !projectId || item.projectId === projectId);
-  const artifacts = data.artifacts.filter(item => (!projectId || item.projectId === projectId) && item.path?.startsWith('project/design/'));
+  const rawArtifacts = data.artifacts.filter(item => (!projectId || item.projectId === projectId) && item.path?.startsWith('project/design/'));
+  const artifacts = summarizeDesignArtifacts(rawArtifacts);
   const phase = handoff ? 'handoff_ready' : selectedDirection ? 'production_design' : creativeDirections.length ? 'creative_direction_approval' : filter(data.design.briefs).length ? 'discovery' : 'not_started';
   return {
     phase,
@@ -40,6 +42,21 @@ export function buildDesignPanelState(data: AgencyStoreData, projectId?: string)
       path: item.path,
       url: item.url || `/api/agency/artifact/${item.id}`
     })),
-    artifactCount: artifacts.length
+    artifactCount: artifacts.length,
+    totalArtifactCount: rawArtifacts.length
   };
+}
+
+function summarizeDesignArtifacts(artifacts: Artifact[]): Artifact[] {
+  const byKey = new Map<string, Artifact>();
+  for (const artifact of artifacts) {
+    const key = artifact.path || `${artifact.type}:${artifact.title}`;
+    const existing = byKey.get(key);
+    if (!existing || Date.parse(artifact.createdAt || '') >= Date.parse(existing.createdAt || '')) {
+      byKey.set(key, artifact);
+    }
+  }
+  return [...byKey.values()]
+    .sort((a, b) => Date.parse(a.createdAt || '') - Date.parse(b.createdAt || ''))
+    .slice(-60);
 }
