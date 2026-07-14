@@ -1,5 +1,8 @@
 import type { AgentRuntime } from '../runtime/agentRuntime.js';
 import type { Artifact } from '../schemas/artifact.schema.js';
+import type { AgentTask } from '../schemas/task.schema.js';
+import type { GeneratedImageAsset } from '../schemas/generatedImage.schema.js';
+import type { WorkflowRun } from '../schemas/workflow.schema.js';
 import type { MemoryStore } from '../memory/memoryStore.js';
 import { buildAgentPresence } from './agentPresence.js';
 import { buildProjectTimeline } from './projectTimeline.js';
@@ -19,6 +22,7 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
   const rawArtifacts = project ? data.artifacts.filter(item => item.projectId === project.id) : [];
   const artifacts = summarizeArtifacts(rawArtifacts);
   const approvals = project ? data.approvals.filter(item => item.projectId === project.id) : [];
+  const generatedImages = project ? data.generatedImages.filter(item => item.projectId === project.id) : [];
   const projectWorkflows = project
     ? data.workflows.filter(item => item.projectId === project.id && item.workflowName === 'websiteBuildWorkflow').sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
     : [];
@@ -58,16 +62,72 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
       costLedger: project ? data.costLedger.filter(item => item.projectId === project.id) : data.costLedger,
       notifications: project ? data.notifications.filter(item => item.projectId === project.id) : data.notifications
     },
-    activity: data.tasks.slice(-20).map(task => ({
-      title: task.title,
-      status: task.status,
-      agentId: task.agentId,
-      updatedAt: task.updatedAt
-    })),
+    activity: buildProjectActivity(
+      project ? data.tasks.filter(task => task.projectId === project.id) : data.tasks,
+      workflow,
+      generatedImages
+    ),
     waitingForUser: workflow?.status === 'waiting_for_user',
     resumeRequired: workflow?.status === 'failed' || workflow?.status === 'paused' || workflow?.currentStep === 'failed',
     diagnostics
   };
+}
+
+function buildProjectActivity(tasks: AgentTask[], workflow: WorkflowRun | undefined, images: GeneratedImageAsset[]) {
+  const activity = tasks
+    .slice()
+    .sort((a, b) => Date.parse(a.updatedAt) - Date.parse(b.updatedAt))
+    .slice(-19)
+    .map(task => ({
+      title: task.title,
+      status: task.status,
+      agentId: task.agentId,
+      updatedAt: task.updatedAt
+    }));
+  const current = buildCurrentWorkflowActivity(workflow, images);
+  return current ? [...activity, current] : activity;
+}
+
+function buildCurrentWorkflowActivity(workflow: WorkflowRun | undefined, images: GeneratedImageAsset[]) {
+  if (!workflow || workflow.status === 'completed') return undefined;
+  const phase = workflowPhaseForStep(workflow.currentStep);
+  const status = workflow.status === 'waiting_for_user'
+    ? 'waiting for approval'
+    : workflow.status === 'running' ? 'in progress' : workflow.status;
+  if (workflow.currentStep === 'imagery_generation') {
+    const ready = images.filter(item => item.provider === 'openai' && item.status === 'generated').length;
+    const expected = Math.max(5, images.length);
+    const latestImageUpdate = images
+      .map(item => item.updatedAt)
+      .filter(Boolean)
+      .sort((a, b) => Date.parse(a) - Date.parse(b))
+      .at(-1);
+    return {
+      title: `Generating website imagery (${ready}/${expected} ready)`,
+      status,
+      agentId: 'design',
+      updatedAt: latestImageUpdate || workflow.updatedAt
+    };
+  }
+  const labels: Record<string, { title: string; agentId: string }> = {
+    planning: { title: 'Planning the project', agentId: 'planner' },
+    design_discovery: { title: 'Researching the design direction', agentId: 'design' },
+    design_approval: { title: 'Waiting for creative direction approval', agentId: 'design' },
+    design_production: { title: `Creating ${humanizeStep(workflow.currentStep)}`, agentId: 'design' },
+    copy: { title: 'Writing website copy', agentId: 'copy' },
+    build: { title: 'Building the website', agentId: 'builder' },
+    qa: { title: 'Reviewing website quality', agentId: 'qa' },
+    preview: { title: 'Preparing the website preview', agentId: 'delivery' },
+    preview_approval: { title: 'Waiting for preview approval', agentId: 'delivery' },
+    deployment: { title: 'Preparing the approved deployment', agentId: 'delivery' },
+    failed: { title: 'Workflow needs attention', agentId: 'ops' }
+  };
+  const label = labels[phase] || { title: humanizeStep(workflow.currentStep), agentId: 'ops' };
+  return { ...label, status, updatedAt: workflow.updatedAt };
+}
+
+function humanizeStep(step: string): string {
+  return String(step || 'workflow step').replaceAll('_', ' ');
 }
 
 function buildDiagnostics(input: {

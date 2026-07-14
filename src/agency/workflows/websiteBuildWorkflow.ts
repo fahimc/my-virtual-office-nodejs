@@ -47,6 +47,7 @@ export class WebsiteBuildWorkflow {
       await this.workflowRuntime.releaseLease(workflowRunId, leaseOwner).catch(() => undefined);
       throw new Error(`Project missing structured brief: ${run.projectId}`);
     }
+    const stopLeaseHeartbeat = this.workflowRuntime.startLeaseHeartbeat(workflowRunId, leaseOwner);
     try {
       if (await this.stopIfPreviewExists(run.id, project.id)) return;
       let latestRun = await this.workflowRuntime.get(workflowRunId);
@@ -284,6 +285,7 @@ export class WebsiteBuildWorkflow {
         this.workflowRuntime.emit(run, 'workflow.failed', { error: message })
       ]);
     } finally {
+      await stopLeaseHeartbeat().catch(() => undefined);
       await this.workflowRuntime.releaseLease(workflowRunId, leaseOwner).catch(() => undefined);
     }
   }

@@ -12,7 +12,15 @@ export function buildDesignPanelState(data: AgencyStoreData, projectId?: string)
   const costEntries = data.costLedger.filter(item => !projectId || item.projectId === projectId);
   const rawArtifacts = data.artifacts.filter(item => (!projectId || item.projectId === projectId) && item.path?.startsWith('project/design/'));
   const artifacts = summarizeDesignArtifacts(rawArtifacts);
-  const phase = handoff ? 'handoff_ready' : selectedDirection ? 'production_design' : creativeDirections.length ? 'creative_direction_approval' : filter(data.design.briefs).length ? 'discovery' : 'not_started';
+  const imageryRunning = generatedImages.some(item => item.status === 'planned');
+  const imageryFailed = generatedImages.some(item => item.status === 'failed');
+  const phase = handoff
+    ? 'handoff_ready'
+    : imageryRunning ? 'generating_imagery'
+      : imageryFailed ? 'imagery_attention'
+        : selectedDirection ? 'production_design'
+          : creativeDirections.length ? 'creative_direction_approval'
+            : filter(data.design.briefs).length ? 'discovery' : 'not_started';
   return {
     phase,
     selectedDirection,

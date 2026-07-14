@@ -5,7 +5,8 @@ import { createId, nowIso } from '../memory/memoryStore.js';
 import type { WorkflowRun } from '../schemas/workflow.schema.js';
 import { appendWorkflowTrace } from './workflowStage.js';
 
-const DEFAULT_EXECUTION_LEASE_TTL_MS = 180_000;
+const DEFAULT_EXECUTION_LEASE_TTL_MS = 60_000;
+const DEFAULT_EXECUTION_HEARTBEAT_MS = 20_000;
 
 export class WorkflowRuntime {
   constructor(
@@ -98,6 +99,26 @@ export class WorkflowRuntime {
       run.state = state;
       run.updatedAt = nowIso();
     });
+  }
+
+  startLeaseHeartbeat(
+    workflowRunId: string,
+    owner: string,
+    intervalMs = DEFAULT_EXECUTION_HEARTBEAT_MS,
+    ttlMs = DEFAULT_EXECUTION_LEASE_TTL_MS
+  ): () => Promise<void> {
+    let pending = Promise.resolve();
+    const renew = () => {
+      pending = pending
+        .then(async () => { await this.renewLease(workflowRunId, owner, ttlMs); })
+        .catch(() => undefined);
+    };
+    const timer = setInterval(renew, intervalMs);
+    timer.unref?.();
+    return async () => {
+      clearInterval(timer);
+      await pending;
+    };
   }
 
   async emit(run: WorkflowRun, type: AgencyEventType, payload: Record<string, unknown>): Promise<void> {

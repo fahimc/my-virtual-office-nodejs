@@ -23,6 +23,8 @@ export interface ImageryGenerationInput {
 }
 
 type ImageSpec = { title: string; intendedUse: ImageGenerationUse; tier: ImageGenerationTier; prompt: string; size: string };
+const GENERATION_LEASE_TTL_MS = 60_000;
+const GENERATION_HEARTBEAT_MS = 20_000;
 
 const TEXT_FREE_IMAGE_RULES = [
   'The final image must contain zero written language.',
@@ -142,7 +144,7 @@ export class ImageryGenerationService {
           estimatedCostUsd: estimate.estimatedCostUsd,
           notes: ['Generation claimed by the active design workflow.'],
           generationLeaseOwner: generationOwner,
-          generationLeaseUntil: new Date(Date.now() + 2 * 60_000).toISOString(),
+          generationLeaseUntil: new Date(Date.now() + GENERATION_LEASE_TTL_MS).toISOString(),
           createdAt: asset?.createdAt || timestamp,
           updatedAt: timestamp
         };
@@ -195,12 +197,12 @@ export class ImageryGenerationService {
         await this.store.update(data => {
           const item = data.generatedImages.find(candidate => candidate.id === assetId);
           if (!item || item.generationLeaseOwner !== generationOwner || item.status !== 'planned') return;
-          item.generationLeaseUntil = new Date(Date.now() + 2 * 60_000).toISOString();
+          item.generationLeaseUntil = new Date(Date.now() + GENERATION_LEASE_TTL_MS).toISOString();
           item.updatedAt = nowIso();
         });
       }).catch(() => undefined);
     };
-    const timer = setInterval(renew, 30_000);
+    const timer = setInterval(renew, GENERATION_HEARTBEAT_MS);
     timer.unref?.();
     return async () => {
       clearInterval(timer);
