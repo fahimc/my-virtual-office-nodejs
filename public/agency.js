@@ -45,6 +45,7 @@
     customer: null,
     customerId: '',
     originalBrief: '',
+    project: null,
     projectId: '',
     workflowRunId: '',
     renderedApprovalKey: '',
@@ -359,6 +360,7 @@
     if (!officeState) return;
     const project = officeState.project;
     if (project) {
+      state.project = project;
       state.projectId = project.id;
       state.workflowRunId = project.currentWorkflowRunId || state.workflowRunId;
       els.projectStatus.textContent = `${project.status.replaceAll('_', ' ')} - ${project.title}`;
@@ -789,7 +791,16 @@
     const options = approval.payload && Array.isArray(approval.payload.designOptions) ? approval.payload.designOptions : [];
     const selectedDesignOption = explicitSelection || options[Number(checked ? checked.value : 0)] || options[0];
     setReception('Design Approved', 'Design Agent', 'Design direction approved. The agency is now moving into copy, build, QA, and preview.');
-    const result = await api(`/approval/${approval.id}/approve`, { method: 'POST', body: { selectedDesignOption } });
+    const result = await api(`/approval/${approval.id}/approve`, {
+      method: 'POST',
+      body: {
+        selectedDesignOption,
+        approval,
+        projectId: state.projectId,
+        project: state.project,
+        workflowRunId: state.workflowRunId
+      }
+    });
     state.workflowRunId = result.workflowRunId || state.workflowRunId;
     renderOfficeState(result.officeState);
     if (state.workflowRunId) startPolling();

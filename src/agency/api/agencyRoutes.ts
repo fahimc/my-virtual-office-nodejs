@@ -1,6 +1,10 @@
 import express, { type Request, type Response, type Router } from 'express';
 import type { CreateAgencySystemOptions } from '../createAgencySystem.js';
+import type { ApprovalRequest } from '../schemas/approval.schema.js';
+import type { CreativeDirection } from '../schemas/creativeDirection.schema.js';
 import type { StructuredBrief } from '../schemas/brief.schema.js';
+import type { Project } from '../schemas/project.schema.js';
+import { nowIso } from '../memory/memoryStore.js';
 import { getAgencySystem } from './agencySystemSingleton.js';
 
 type AsyncHandler = (req: Request, res: Response) => Promise<void>;
@@ -23,6 +27,113 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     await system.jobQueue.enqueue('websiteBuildWorkflow.runUntilPreview', { workflowRunId }, payload =>
       system.websiteBuildWorkflow.runUntilPreview(payload.workflowRunId)
     );
+  };
+
+  const upsertProjectSnapshot = async (snapshot: unknown): Promise<Project | undefined> => {
+    if (!snapshot || typeof snapshot !== 'object') return undefined;
+    const project = snapshot as Partial<Project>;
+    if (!project.id || !project.customerId || !project.title || !project.originalBrief) return undefined;
+    const timestamp = nowIso();
+    const recovered: Project = {
+      id: project.id,
+      customerId: project.customerId,
+      status: project.status || 'awaiting_approval',
+      title: project.title,
+      originalBrief: project.originalBrief,
+      structuredBrief: project.structuredBrief,
+      currentWorkflowRunId: project.currentWorkflowRunId,
+      previewUrl: project.previewUrl,
+      liveUrl: project.liveUrl,
+      createdAt: project.createdAt || timestamp,
+      updatedAt: timestamp
+    };
+    await system.store.update(data => {
+      const existing = data.projects.find(item => item.id === recovered.id);
+      if (existing) Object.assign(existing, recovered);
+      else data.projects.push(recovered);
+    });
+    return recovered;
+  };
+
+  const recoverApprovedDesignApproval = async (req: Request): Promise<ApprovalRequest> => {
+    const selectedDesignOption = normalizeDesignOption(req.body.selectedDesignOption);
+    const project = await upsertProjectSnapshot(req.body.project);
+    const approvalSnapshot = req.body.approval && typeof req.body.approval === 'object'
+      ? req.body.approval as Partial<ApprovalRequest>
+      : undefined;
+    const projectId = String(req.body.projectId || approvalSnapshot?.projectId || project?.id || selectedDesignOption?.projectId || '');
+    if (!projectId || !selectedDesignOption) throw new Error(`Approval not found: ${req.params.id}`);
+    const timestamp = nowIso();
+    const approval: ApprovalRequest = {
+      id: req.params.id,
+      projectId,
+      type: 'design_options',
+      title: approvalSnapshot?.title || 'Choose a creative direction',
+      description: approvalSnapshot?.description || 'Recovered design direction approval.',
+      status: 'approved',
+      requestedByAgentId: approvalSnapshot?.requestedByAgentId || 'design',
+      riskLevel: approvalSnapshot?.riskLevel || 'low',
+      payload: {
+        ...(approvalSnapshot?.payload || {}),
+        workflowRunId: req.body.workflowRunId || approvalSnapshot?.payload?.workflowRunId,
+        designOptions: Array.isArray(approvalSnapshot?.payload?.designOptions)
+          ? approvalSnapshot.payload.designOptions.map(option => normalizeDesignOption(option, projectId))
+          : [normalizeDesignOption(selectedDesignOption, projectId)],
+        resolution: { recovered: true, resolvedBy: 'user' }
+      },
+      createdAt: approvalSnapshot?.createdAt || timestamp,
+      resolvedAt: timestamp,
+      resolvedBy: 'user',
+      decisionReason: 'Recovered approval from client state after a stateless serverless request.'
+    };
+    await system.store.update(data => {
+      const existing = data.approvals.find(item => item.id === approval.id);
+      if (existing) Object.assign(existing, approval);
+      else data.approvals.push(approval);
+    });
+    return approval;
+  };
+
+  const normalizeDesignOption = (input: unknown, projectId = 'project-design-recovery'): CreativeDirection | undefined => {
+    if (!input || typeof input !== 'object') return undefined;
+    const option = input as Partial<CreativeDirection>;
+    const id = String(option.id || 'trust-first');
+    const name = String(option.name || id.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase()));
+    const summary = String(option.summary || 'A polished, client-ready website direction with clear hierarchy and conversion-focused sections.');
+    const paletteSource = Array.isArray(option.palette) && option.palette.length
+      ? option.palette
+      : [
+        { name: 'Ink', hex: '#172033', usage: 'Headings' },
+        { name: 'Canvas', hex: '#FFFFFF', usage: 'Background' },
+        { name: 'Action Blue', hex: '#2563EB', usage: 'CTA' },
+        { name: 'Accent', hex: '#C8A24A', usage: 'Highlights' }
+      ];
+    return {
+      id,
+      projectId: option.projectId || projectId,
+      name,
+      summary,
+      targetEmotion: option.targetEmotion || 'Confidence',
+      brandPersonality: option.brandPersonality || ['professional', 'clear', 'polished'],
+      bestFor: option.bestFor || 'Client-facing website projects',
+      risks: option.risks || [],
+      palette: paletteSource.map((color, index) => ({
+        name: color.name || `Colour ${index + 1}`,
+        hex: color.hex || '#172033',
+        usage: color.usage || (index === 0 ? 'Headings' : index === 1 ? 'Background' : index === 2 ? 'CTA' : 'Accent')
+      })),
+      typography: option.typography || { heading: 'Inter Tight or refined display', body: 'Inter/system-ui', scale: '1.25 modular scale', notes: 'Clear hierarchy and readable body copy' },
+      layoutStyle: option.layoutStyle || 'Responsive agency landing page with strong hero and proof sections',
+      sectionStyle: option.sectionStyle || 'Reusable content bands with polished spacing',
+      buttonStyle: option.buttonStyle || 'High-contrast rounded CTA buttons',
+      cardStyle: option.cardStyle || 'Bordered cards with restrained shadow',
+      iconStyle: option.iconStyle || 'Simple line icons where useful',
+      imageryStyle: option.imageryStyle || 'High-quality client-relevant photography or generated imagery',
+      animationStyle: option.animationStyle || 'Subtle reveal and hover transitions',
+      homepageStructure: option.homepageStructure || ['Hero', 'Services', 'Proof', 'Process', 'FAQ', 'Contact'],
+      mobileApproach: option.mobileApproach || 'Single-column sections, clear CTA, no horizontal scrolling',
+      rationale: option.rationale || 'This direction balances brand clarity, trust, and conversion readiness.'
+    };
   };
 
   router.post('/intake/start', route(async (_req, res) => {
@@ -130,11 +241,16 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   }));
 
   router.post('/approval/:id/approve', route(async (req, res) => {
-    const approval = await system.approvalWorkflow.approve(req.params.id);
+    let approval: ApprovalRequest;
+    try {
+      approval = await system.approvalWorkflow.approve(req.params.id);
+    } catch (error) {
+      approval = await recoverApprovedDesignApproval(req);
+    }
     let workflowRunIdForClient = '';
     if (approval.type === 'design_options') {
       const workflowRunId = String(approval.payload.workflowRunId || '');
-      const selectedDesignOption = req.body.selectedDesignOption || (approval.payload.designOptions as unknown[] | undefined)?.[0];
+      const selectedDesignOption = normalizeDesignOption(req.body.selectedDesignOption || (approval.payload.designOptions as unknown[] | undefined)?.[0], approval.projectId);
       let run = workflowRunId ? await system.workflowRuntime.get(workflowRunId) : undefined;
       if (!run) {
         const existing = (await system.store.read()).workflows.find(item => item.projectId === approval.projectId && item.workflowName === 'websiteBuildWorkflow');
