@@ -151,6 +151,33 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     };
   };
 
+  const reconcileApprovedDesignGates = async (projectId?: string) => {
+    if (!projectId) return;
+    const timestamp = nowIso();
+    await system.store.update(data => {
+      const designWasApproved =
+        data.approvals.some(item => item.projectId === projectId && item.type === 'design_options' && item.status === 'approved') ||
+        data.workflows.some(item => item.projectId === projectId && Boolean(item.state?.designOptionsApproved)) ||
+        data.design.selectedDirections.some(item => item.projectId === projectId);
+      if (!designWasApproved) return;
+      data.approvals
+        .filter(item => item.projectId === projectId && item.type === 'design_options' && item.status === 'pending')
+        .forEach(item => {
+          item.status = 'approved';
+          item.resolvedAt = item.resolvedAt || timestamp;
+          item.resolvedBy = item.resolvedBy || 'system';
+          item.decisionReason = item.decisionReason || 'Closed duplicate design approval after direction was already approved.';
+          item.payload = {
+            ...item.payload,
+            resolution: {
+              ...(item.payload?.resolution || {}),
+              duplicateClosed: true
+            }
+          };
+        });
+    });
+  };
+
   router.post('/intake/start', route(async (_req, res) => {
     res.json(await system.intakeWorkflow.start());
   }));
@@ -228,12 +255,14 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
       }
     }
     if (!workflow) return void res.status(404).json({ error: 'workflow not found' });
+    await reconcileApprovedDesignGates(workflow.projectId);
     res.json({ workflow, officeState: await system.officeState(workflow.projectId) });
   }));
 
   router.get('/project/:id', route(async (req, res) => {
     const project = await system.projectMemory.get(req.params.id);
     if (!project) return void res.status(404).json({ error: 'project not found' });
+    await reconcileApprovedDesignGates(project.id);
     res.json({ project, officeState: await system.officeState(project.id) });
   }));
 
@@ -313,6 +342,7 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
           if (payload.workflowRunId) await queueWebsiteBuild(payload.workflowRunId);
         });
       }
+      await reconcileApprovedDesignGates(approval.projectId);
     } else if (approval.type === 'preview') {
       await system.websiteBuildWorkflow.prepareDeployment(approval.projectId);
       const run = (await system.store.read()).workflows.find(item => item.projectId === approval.projectId)?.id;
