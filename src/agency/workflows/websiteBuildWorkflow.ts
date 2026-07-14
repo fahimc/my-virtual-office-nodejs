@@ -8,6 +8,7 @@ import type { CompanyOS } from '../company/companyOS.js';
 import type { DesignWorkflow } from './designWorkflow.js';
 import type { DesignHandoff } from '../schemas/designHandoff.schema.js';
 import type { ImplementationPlan } from '../schemas/implementationPlan.schema.js';
+import type { Project } from '../schemas/project.schema.js';
 
 export class WebsiteBuildWorkflow {
   private readonly approvalService: ApprovalService;
@@ -37,6 +38,7 @@ export class WebsiteBuildWorkflow {
     const project = await this.projectMemory.get(run.projectId);
     if (!project?.structuredBrief) throw new Error(`Project missing structured brief: ${run.projectId}`);
     try {
+      if (await this.stopIfPreviewExists(run.id, project.id)) return;
       await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'planning' });
       const latestRun = await this.workflowRuntime.get(workflowRunId);
       const state = latestRun?.state || run.state;
@@ -47,7 +49,7 @@ export class WebsiteBuildWorkflow {
         await this.workflowRuntime.emit(run, 'plan.created', plan);
       }
 
-      await this.projectMemory.update(project.id, { status: 'design' });
+      if (!await this.moveProjectToStage(run.id, project.id, 'design')) return;
       await this.workflowRuntime.emit(run, 'design.started', {});
       const design = state.design as { direction: string; sections: string[] } | undefined || await this.agentRuntime.execute('design', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { direction: string; sections: string[] };
       if (!state.design) {
@@ -95,7 +97,7 @@ export class WebsiteBuildWorkflow {
         ? await this.companyOS.developerPlanning.createImplementationPlan(project, designHandoff, run.id)
         : undefined;
 
-      await this.projectMemory.update(project.id, { status: 'copy' });
+      if (!await this.moveProjectToStage(run.id, project.id, 'copy')) return;
       await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'copy' });
       await this.workflowRuntime.emit(run, 'copy.started', {});
       const copy = await this.agentRuntime.execute('copy', { structuredBrief: project.structuredBrief, designDirection: design.direction }, { projectId: project.id, workflowRunId: run.id }) as { copy: string };
@@ -106,7 +108,7 @@ export class WebsiteBuildWorkflow {
       let qaPassed = false;
       let qaResult: { passed: boolean; issues: string[]; summary: string } | undefined;
       for (let attempt = 1; attempt <= 2 && !qaPassed; attempt += 1) {
-        await this.projectMemory.update(project.id, { status: 'build' });
+        if (!await this.moveProjectToStage(run.id, project.id, 'build')) return;
         await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: `build_attempt_${attempt}` });
         await this.workflowRuntime.emit(run, 'build.started', { attempt });
         const codingTask = await this.claimCompanyTask(project.id, 'coding', 'builder');
@@ -143,7 +145,7 @@ export class WebsiteBuildWorkflow {
         await this.saveArtifact(project.id, 'code', `Build attempt ${attempt}`, build, 'builder');
         await this.workflowRuntime.emit(run, 'build.completed', build);
 
-        await this.projectMemory.update(project.id, { status: 'qa' });
+        if (!await this.moveProjectToStage(run.id, project.id, 'qa')) return;
         await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: `qa_attempt_${attempt}` });
         await this.workflowRuntime.emit(run, 'qa.started', { attempt });
         qaResult = await this.agentRuntime.execute('qa', { previewSummary: build.summary, attempt }, { projectId: project.id, workflowRunId: run.id }) as { passed: boolean; issues: string[]; summary: string };
@@ -167,7 +169,7 @@ export class WebsiteBuildWorkflow {
       }
       if (!qaPassed) throw new Error('QA failed after maximum retry count');
 
-      await this.projectMemory.update(project.id, { status: 'preview' });
+      if (!await this.moveProjectToStage(run.id, project.id, 'preview')) return;
       await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'preview' });
       const delivery = await this.agentRuntime.execute('delivery', { projectId: project.id, qaSummary: qaResult?.summary || '' }, { projectId: project.id, workflowRunId: run.id }) as { previewUrl: string; summary: string };
       await this.saveArtifact(project.id, 'preview', 'Preview build', delivery, 'delivery', delivery.previewUrl);
@@ -237,6 +239,27 @@ export class WebsiteBuildWorkflow {
         approvalRequired: Boolean(template.approvalRequired)
       });
     }
+  }
+
+  private async moveProjectToStage(workflowRunId: string, projectId: string, status: Project['status']) {
+    if (await this.stopIfPreviewExists(workflowRunId, projectId)) return false;
+    await this.projectMemory.update(projectId, { status });
+    return true;
+  }
+
+  private async stopIfPreviewExists(workflowRunId: string, projectId: string) {
+    const current = await this.projectMemory.get(projectId);
+    if (!current?.previewUrl) return false;
+    await this.projectMemory.update(projectId, { status: 'awaiting_approval' });
+    await this.workflowRuntime.patch(workflowRunId, {
+      status: 'waiting_for_user',
+      currentStep: 'preview_approval',
+      state: {
+        ...(await this.workflowRuntime.get(workflowRunId))?.state,
+        previewUrl: current.previewUrl
+      }
+    });
+    return true;
   }
 
   private async getDesignHandoff(projectId: string): Promise<DesignHandoff | undefined> {
