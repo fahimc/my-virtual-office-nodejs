@@ -91,6 +91,8 @@ async function readJsonFileWithRetry(filePath, attempts = 5) {
 }
 
 async function readJsonFileOrEmpty(filePath) {
+  const blobData = await readJsonFromBlob(path.basename(filePath));
+  if (blobData) return blobData;
   try {
     return await readJsonFileWithRetry(filePath);
   } catch (error) {
@@ -98,6 +100,18 @@ async function readJsonFileOrEmpty(filePath) {
       return {};
     }
     throw error;
+  }
+}
+
+async function readJsonFromBlob(key) {
+  if (!(process.env.NETLIFY === 'true' || process.env.AWS_LAMBDA_FUNCTION_NAME)) return undefined;
+  try {
+    const { getStore } = await import('@netlify/blobs');
+    const store = getStore(process.env.AGENCY_BLOB_STORE || 'agency-data');
+    return await store.get(key, { type: 'json' });
+  } catch (error) {
+    console.warn(`Netlify Blob read unavailable for ${key}: ${error instanceof Error ? error.message : String(error)}`);
+    return undefined;
   }
 }
 

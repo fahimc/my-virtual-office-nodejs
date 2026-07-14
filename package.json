@@ -19,6 +19,7 @@
     "brand:guidelines:agency": "npm run build && node scripts/generate-brand-guidelines.mjs --agency"
   },
   "dependencies": {
+    "@netlify/blobs": "^10.7.9",
     "express": "^4.19.2",
     "nodemailer": "^9.0.3",
     "serverless-http": "^3.2.0",

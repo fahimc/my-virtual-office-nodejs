@@ -126,8 +126,14 @@ const emptyStore = (): AgencyStoreData => ({
 
 export class MemoryStore {
   private updateChain: Promise<unknown> = Promise.resolve();
+  private warnedAboutBlobFallback = false;
+  private readonly useNetlifyBlobs = process.env.NETLIFY === 'true' || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
+  private readonly blobStoreName = process.env.AGENCY_BLOB_STORE || 'agency-data';
+  private readonly blobKey: string;
 
-  constructor(private readonly filePath: string) {}
+  constructor(private readonly filePath: string) {
+    this.blobKey = path.basename(filePath);
+  }
 
   async read(): Promise<AgencyStoreData> {
     await this.updateChain.catch(() => undefined);
@@ -135,6 +141,10 @@ export class MemoryStore {
   }
 
   private async readFromDisk(): Promise<AgencyStoreData> {
+    if (this.useNetlifyBlobs) {
+      const blobData = await this.tryReadFromBlob();
+      if (blobData) return blobData;
+    }
     await fs.mkdir(path.dirname(this.filePath), { recursive: true });
     for (let attempt = 0; attempt < 5; attempt += 1) {
       try {
@@ -153,6 +163,7 @@ export class MemoryStore {
   }
 
   async write(data: AgencyStoreData): Promise<void> {
+    if (this.useNetlifyBlobs && await this.tryWriteToBlob(data)) return;
     await fs.mkdir(path.dirname(this.filePath), { recursive: true });
     await fs.writeFile(this.filePath, JSON.stringify(normalizeStore(data), null, 2));
   }
@@ -167,6 +178,42 @@ export class MemoryStore {
     const next = this.updateChain.then(run, run);
     this.updateChain = next.catch(() => undefined);
     return next;
+  }
+
+  private async tryReadFromBlob(): Promise<AgencyStoreData | undefined> {
+    try {
+      const { getStore } = await import('@netlify/blobs');
+      const store = getStore(this.blobStoreName);
+      const data = await store.get(this.blobKey, { type: 'json' });
+      if (!data) {
+        const initial = emptyStore();
+        await store.setJSON(this.blobKey, normalizeStore(initial));
+        return initial;
+      }
+      return normalizeStore(data as Partial<AgencyStoreData>);
+    } catch (error) {
+      this.warnBlobFallback(error);
+      return undefined;
+    }
+  }
+
+  private async tryWriteToBlob(data: AgencyStoreData): Promise<boolean> {
+    try {
+      const { getStore } = await import('@netlify/blobs');
+      const store = getStore(this.blobStoreName);
+      await store.setJSON(this.blobKey, normalizeStore(data));
+      return true;
+    } catch (error) {
+      this.warnBlobFallback(error);
+      return false;
+    }
+  }
+
+  private warnBlobFallback(error: unknown): void {
+    if (this.warnedAboutBlobFallback) return;
+    this.warnedAboutBlobFallback = true;
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`Netlify Blob store unavailable; falling back to local JSON store: ${message}`);
   }
 }
 
