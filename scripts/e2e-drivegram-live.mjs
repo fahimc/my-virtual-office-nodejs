@@ -1,4 +1,5 @@
 const base = process.env.AGENCY_E2E_BASE || 'https://my-virtual-office-nodejs.netlify.app/api/agency';
+const siteOrigin = new URL(base).origin;
 
 const driveGramBrief = `Website Brief: Instagram Clone Using Google Drive as Storage
 
@@ -71,6 +72,26 @@ async function request(path, options = {}) {
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+async function assertSingleDesignApprovalSurface() {
+  const [indexResponse, scriptResponse] = await Promise.all([
+    fetch(`${siteOrigin}/`),
+    fetch(`${siteOrigin}/agency.js?v=agency-os-3`)
+  ]);
+  if (!indexResponse.ok) throw new Error(`GET / failed: ${indexResponse.status}`);
+  if (!scriptResponse.ok) throw new Error(`GET /agency.js failed: ${scriptResponse.status}`);
+  const indexHtml = await indexResponse.text();
+  const script = await scriptResponse.text();
+  if (!indexHtml.includes('/agency.js?v=agency-os-3')) {
+    throw new Error('Homepage is not using the latest agency.js cache-bust version');
+  }
+  if (!script.includes("item.status === 'pending' && item.type !== 'design_options'")) {
+    throw new Error('Generic approval panel is not filtering out design_options approvals');
+  }
+  if (/else\s+if\s*\(\s*pending\.type\s*===\s*['"]design_options['"]\s*\)/.test(script)) {
+    throw new Error('Duplicate design_options approval UI branch still exists in generic approval panel');
+  }
+}
+
 async function pollProjectForDesignApproval(projectId, workflowRunId) {
   let misses = 0;
   for (let attempt = 0; attempt < 120; attempt += 1) {
@@ -126,6 +147,7 @@ async function pollWorkflowForPreview(workflowRunId) {
 }
 
 async function main() {
+  await assertSingleDesignApprovalSurface();
   const run = Date.now();
   const intake = await request('/intake/start', { method: 'POST', body: {} });
   const { customer } = await request('/customer/create', {

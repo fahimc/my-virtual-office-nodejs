@@ -427,7 +427,7 @@
 
   function renderApproval(approvals, project) {
     approvals = Array.isArray(approvals) ? approvals : [];
-    const pending = approvals.find(item => item.status === 'pending');
+    const pending = approvals.find(item => item.status === 'pending' && item.type !== 'design_options');
     const previewUrl = project && project.previewUrl ? project.previewUrl : '';
     els.approval.classList.toggle('hidden', !pending && !previewUrl);
     if (!pending) {
@@ -453,29 +453,6 @@
         <button id="approveDeployment" type="button"><i data-lucide="rocket"></i><span>Approve live deployment</span></button>
       `;
       document.getElementById('approveDeployment').addEventListener('click', approveDeployment);
-    } else if (pending.type === 'design_options') {
-      const options = pending.payload && Array.isArray(pending.payload.designOptions) ? pending.payload.designOptions : [];
-      els.approval.innerHTML = `
-        <h4>${pending.title}</h4>
-        <p>${pending.description}</p>
-        <div class="design-option-list">
-          ${options.map((option, index) => `
-            <label class="design-option-card">
-              <input type="radio" name="designOption" value="${index}" ${index === 0 ? 'checked' : ''}>
-              <b>${option.name}</b>
-              <span>${option.summary}</span>
-              <small>${option.bestFor || ''}</small>
-            </label>
-          `).join('')}
-        </div>
-        <textarea id="changeFeedback" placeholder="What should change about these directions?"></textarea>
-        <div class="agency-actions">
-          <button id="approveDesignOptions" type="button"><i data-lucide="check"></i><span>Approve direction</span></button>
-          <button id="requestChanges" type="button"><i data-lucide="message-square"></i><span>Request changes</span></button>
-        </div>
-      `;
-      document.getElementById('approveDesignOptions').addEventListener('click', () => approveDesignOptions(pending));
-      document.getElementById('requestChanges').addEventListener('click', () => requestChanges(pending.id));
     } else {
       const previewUrl = pending.payload && pending.payload.previewUrl ? pending.payload.previewUrl : '#';
       els.approval.innerHTML = `
