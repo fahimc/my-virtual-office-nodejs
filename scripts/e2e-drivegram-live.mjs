@@ -75,13 +75,13 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function assertSingleDesignApprovalSurface() {
   const [indexResponse, scriptResponse] = await Promise.all([
     fetch(`${siteOrigin}/`),
-    fetch(`${siteOrigin}/agency.js?v=agency-os-6`)
+    fetch(`${siteOrigin}/agency.js?v=agency-os-7`)
   ]);
   if (!indexResponse.ok) throw new Error(`GET / failed: ${indexResponse.status}`);
   if (!scriptResponse.ok) throw new Error(`GET /agency.js failed: ${scriptResponse.status}`);
   const indexHtml = await indexResponse.text();
   const script = await scriptResponse.text();
-  if (!indexHtml.includes('/agency.js?v=agency-os-6')) {
+  if (!indexHtml.includes('/agency.js?v=agency-os-7')) {
     throw new Error('Homepage is not using the latest agency.js cache-bust version');
   }
   if (!script.includes("item.status === 'pending' && item.type !== 'design_options'")) {
@@ -215,8 +215,8 @@ async function main() {
   if (designOptionsStage?.status !== 'completed') {
     throw new Error(`Design Options should be completed immediately after approval, got ${designOptionsStage?.status || 'missing'}`);
   }
-  if (approvedDesign.officeState?.diagnostics?.app?.version !== '1.1.1') {
-    throw new Error(`Expected app version 1.1.1, got ${approvedDesign.officeState?.diagnostics?.app?.version || 'missing'}`);
+  if (approvedDesign.officeState?.diagnostics?.app?.version !== '1.1.2') {
+    throw new Error(`Expected app version 1.1.2, got ${approvedDesign.officeState?.diagnostics?.app?.version || 'missing'}`);
   }
   const approvalTrace = approvedDesign.officeState?.diagnostics?.debugTrace || [];
   if (!approvalTrace.some(item => item.step === 'design_options_approved')) {
@@ -233,7 +233,10 @@ async function main() {
     throw new Error(`Duplicate pending design approvals remained: ${pendingDesignApprovals.map(item => item.id).join(', ')}`);
   }
   if (!final.officeState?.project?.previewUrl) {
-    throw new Error(`Preview was not created. Last step: ${final.workflow?.currentStep || 'unknown'}`);
+    throw new Error(`Preview was not created. Last step: ${final.workflow?.currentStep || 'unknown'}. Error: ${final.workflow?.error || 'none'}. Trace: ${(final.officeState?.diagnostics?.debugTrace || []).map(item => item.step).join(' -> ')}`);
+  }
+  if (siteOrigin.includes('netlify.app') && final.officeState?.diagnostics?.lastDispatchMode !== 'netlify-background') {
+    throw new Error(`Expected Netlify background worker dispatch, got ${final.officeState?.diagnostics?.lastDispatchMode || 'missing'}`);
   }
   if (final.officeState?.diagnostics?.integrity !== 'ok') {
     throw new Error(`Workflow diagnostics reported: ${(final.officeState?.diagnostics?.warnings || []).join('; ')}`);

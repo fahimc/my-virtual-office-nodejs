@@ -1,4 +1,4 @@
-export const AGENCY_APP_VERSION = '1.1.1';
+export const AGENCY_APP_VERSION = '1.1.2';
 
 export function getAgencyBuildInfo() {
   return {

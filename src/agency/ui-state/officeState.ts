@@ -92,6 +92,23 @@ function buildDiagnostics(input: {
   if (input.hasDesignHandoff && !input.selectedDirection) warnings.push('A design handoff exists without a selected creative direction.');
   if (input.project && !input.workflow) warnings.push('No website build workflow is attached to this project.');
   if (input.rawArtifactCount > input.artifactCount) warnings.push(`${input.rawArtifactCount - input.artifactCount} duplicate resource record(s) were compacted from this view.`);
+  const dispatchError = typeof input.workflow?.state?.lastDispatchError === 'string' ? input.workflow.state.lastDispatchError : '';
+  if (dispatchError) warnings.push(`Workflow worker dispatch failed: ${dispatchError}`);
+  const leaseUntilMs = typeof input.workflow?.state?.executionLeaseUntil === 'string'
+    ? Date.parse(input.workflow.state.executionLeaseUntil)
+    : 0;
+  const dispatchAcceptedMs = typeof input.workflow?.state?.lastDispatchAcceptedAt === 'string'
+    ? Date.parse(input.workflow.state.lastDispatchAcceptedAt)
+    : 0;
+  if (
+    input.workflow?.status === 'running' &&
+    Number.isFinite(dispatchAcceptedMs) &&
+    dispatchAcceptedMs > 0 &&
+    Date.now() - dispatchAcceptedMs > 90_000 &&
+    (!Number.isFinite(leaseUntilMs) || leaseUntilMs <= Date.now())
+  ) {
+    warnings.push('The workflow is running without an active worker lease; status polling will request recovery.');
+  }
   const build = getAgencyBuildInfo();
   return {
     app: build,
@@ -109,6 +126,18 @@ function buildDiagnostics(input: {
     workflowUpdatedAt: input.workflow?.updatedAt,
     executionLeaseOwner: typeof input.workflow?.state?.executionLeaseOwner === 'string' ? input.workflow.state.executionLeaseOwner : '',
     executionLeaseUntil: typeof input.workflow?.state?.executionLeaseUntil === 'string' ? input.workflow.state.executionLeaseUntil : '',
+    lastDispatchMode: typeof input.workflow?.state?.lastDispatchMode === 'string' ? input.workflow.state.lastDispatchMode : '',
+    lastDispatchEndpoint: typeof input.workflow?.state?.lastDispatchEndpoint === 'string' ? input.workflow.state.lastDispatchEndpoint : '',
+    lastDispatchJobId: typeof input.workflow?.state?.lastDispatchJobId === 'string' ? input.workflow.state.lastDispatchJobId : '',
+    lastDispatchStatus: typeof input.workflow?.state?.lastDispatchStatus === 'number' ? input.workflow.state.lastDispatchStatus : undefined,
+    lastDispatchRequestedAt: typeof input.workflow?.state?.lastDispatchRequestedAt === 'string' ? input.workflow.state.lastDispatchRequestedAt : '',
+    lastDispatchAcceptedAt: typeof input.workflow?.state?.lastDispatchAcceptedAt === 'string' ? input.workflow.state.lastDispatchAcceptedAt : '',
+    lastDispatchError: dispatchError,
+    resumeCount: Number(input.workflow?.state?.resumeCount || 0),
+    lastResumeFromStep: typeof input.workflow?.state?.lastResumeFromStep === 'string' ? input.workflow.state.lastResumeFromStep : '',
+    lastResumeCheckpoint: typeof input.workflow?.state?.lastResumeCheckpoint === 'string' ? input.workflow.state.lastResumeCheckpoint : '',
+    resumeRequestedAt: typeof input.workflow?.state?.resumeRequestedAt === 'string' ? input.workflow.state.resumeRequestedAt : '',
+    lastResumeError: typeof input.workflow?.state?.lastResumeError === 'string' ? input.workflow.state.lastResumeError : '',
     debugTrace: Array.isArray(input.workflow?.state?.debugTrace) ? input.workflow.state.debugTrace.slice(-24) : [],
     testMode: input.workflow?.state?.testMode === true,
     designApproved: approvedDesign,

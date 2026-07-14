@@ -6,6 +6,7 @@ import type { StructuredBrief } from '../schemas/brief.schema.js';
 import type { Project } from '../schemas/project.schema.js';
 import type { WorkflowRun } from '../schemas/workflow.schema.js';
 import { nowIso } from '../memory/memoryStore.js';
+import { dispatchWebsiteBuildInBackground } from '../runtime/workflowDispatcher.js';
 import { getAgencySystem } from './agencySystemSingleton.js';
 
 type AsyncHandler = (req: Request, res: Response) => Promise<void>;
@@ -25,9 +26,44 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   };
 
   const queueWebsiteBuild = async (workflowRunId: string) => {
-    await system.jobQueue.enqueue('websiteBuildWorkflow.runUntilPreview', { workflowRunId }, payload =>
-      system.websiteBuildWorkflow.runUntilPreview(payload.workflowRunId)
-    );
+    const requestedAt = nowIso();
+    try {
+      const background = await dispatchWebsiteBuildInBackground(workflowRunId);
+      if (background) {
+        await system.workflowRuntime.patch(workflowRunId, {
+          state: {
+            lastDispatchMode: background.mode,
+            lastDispatchEndpoint: background.endpoint,
+            lastDispatchStatus: background.responseStatus,
+            lastDispatchRequestedAt: requestedAt,
+            lastDispatchAcceptedAt: background.acceptedAt,
+            lastDispatchError: ''
+          }
+        });
+        return;
+      }
+      const job = await system.jobQueue.enqueue('websiteBuildWorkflow.runUntilPreview', { workflowRunId }, payload =>
+        system.websiteBuildWorkflow.runUntilPreview(payload.workflowRunId)
+      );
+      await system.workflowRuntime.patch(workflowRunId, {
+        state: {
+          lastDispatchMode: 'local-job-queue',
+          lastDispatchJobId: job.id,
+          lastDispatchRequestedAt: requestedAt,
+          lastDispatchAcceptedAt: nowIso(),
+          lastDispatchError: ''
+        }
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await system.workflowRuntime.patch(workflowRunId, {
+        state: {
+          lastDispatchRequestedAt: requestedAt,
+          lastDispatchError: message
+        }
+      }).catch(() => undefined);
+      throw error;
+    }
   };
 
   const ensureCanonicalWorkflow = async (projectId: string, requestedWorkflowId?: string) => {
@@ -248,6 +284,8 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     const data = await system.store.read();
     const project = data.projects.find(item => item.id === workflow?.projectId);
     if (!project || project.previewUrl || project.status === 'awaiting_approval' || project.status === 'failed') return workflow;
+    const leaseUntil = typeof workflow.state?.executionLeaseUntil === 'string' ? Date.parse(workflow.state.executionLeaseUntil) : 0;
+    if (Number.isFinite(leaseUntil) && leaseUntil > Date.now()) return workflow;
     const lastResumeAt = typeof workflow.state?.lastBuildResumeAt === 'string' ? Date.parse(workflow.state.lastBuildResumeAt) : 0;
     if (Number.isFinite(lastResumeAt) && Date.now() - lastResumeAt < 20_000) return workflow;
     await system.workflowRuntime.patch(workflow.id, {
@@ -262,6 +300,7 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   };
 
   const shouldResumeBuildStep = (step?: string) => Boolean(step && (
+    step === 'failed' ||
     step === 'created' ||
     step === 'planning' ||
     step === 'design_options_approved' ||

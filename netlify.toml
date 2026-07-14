@@ -5,7 +5,21 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "nft"
-  included_files = ["dist/**", "data/default-office-config.json", "public/**"]
+  included_files = [
+    "dist/**",
+    "data/default-office-config.json",
+    "package.json",
+    "package-lock.json",
+    "src/design-system/**",
+    "src/components/**",
+    "src/templates/**",
+    "!public/**",
+    "public/placeholders/manifest.json"
+  ]
+
+[functions.agency-workflow]
+  node_bundler = "esbuild"
+  included_files = ["!public/**"]
 
 [[redirects]]
   from = "/api/*"
