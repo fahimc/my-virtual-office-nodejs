@@ -90,8 +90,22 @@ export class DesignWorkflow {
 
   async completeAfterApproval(projectId: string, selectedDirection: CreativeDirection, approvalId?: string) {
     const data = await this.store.read();
-    const designBrief = data.design.briefs.find(item => item.projectId === projectId);
-    if (!designBrief) throw new Error('Design brief missing');
+    let designBrief = data.design.briefs.find(item => item.projectId === projectId);
+    if (!designBrief) {
+      const project = data.projects.find(item => item.id === projectId);
+      if (!project?.structuredBrief) throw new Error('Design brief missing');
+      const customer = data.customers.find(item => item.id === project.customerId) || {
+        id: project.customerId,
+        name: project.title,
+        email: 'client@example.com',
+        businessName: project.title,
+        businessType: 'Business',
+        createdAt: nowIso(),
+        updatedAt: nowIso()
+      };
+      designBrief = createDesignBrief({ projectId: project.id, customer, structuredBrief: project.structuredBrief, originalBrief: project.originalBrief });
+      await this.saveDesign(project.id, 'briefs', designBrief, 'design_brief', 'design-brief.json', 'Design brief');
+    }
     const directions = data.design.creativeDirections.filter(item => item.projectId === projectId);
     const orderedDirections = [selectedDirection, ...directions.filter(item => item.id !== selectedDirection.id)];
     const selected: SelectedDirection = {

@@ -790,6 +790,7 @@
     const selectedDesignOption = explicitSelection || options[Number(checked ? checked.value : 0)] || options[0];
     setReception('Design Approved', 'Design Agent', 'Design direction approved. The agency is now moving into copy, build, QA, and preview.');
     const result = await api(`/approval/${approval.id}/approve`, { method: 'POST', body: { selectedDesignOption } });
+    state.workflowRunId = result.workflowRunId || state.workflowRunId;
     renderOfficeState(result.officeState);
     if (state.workflowRunId) startPolling();
   }

@@ -112,8 +112,15 @@ app.get(['/design-concepts/:projectId/:directionId', '/design-concepts/:projectI
   try {
     const storePath = path.join(DATA_DIR, 'agency-store.json');
     const data = await readJsonFileWithRetry(storePath);
-    const project = data.projects?.find(item => item.id === req.params.projectId);
-    if (!project) return res.status(404).send('Design concept project not found');
+    const project = data.projects?.find(item => item.id === req.params.projectId) || fallbackDesignProject(req.params.projectId, req.params.directionId);
+    const fallbackDirection = fallbackDesignDirection(req.params.directionId, project.id);
+    data.design = {
+      ...(data.design || {}),
+      creativeDirections: [
+        ...((data.design?.creativeDirections || []).filter(item => item.projectId !== project.id || item.id !== fallbackDirection.id)),
+        fallbackDirection
+      ]
+    };
     const artifacts = (data.artifacts || []).filter(item => item.projectId === project.id);
     res.type('html').send(renderProjectPreview(project, artifacts, data, { directionId: req.params.directionId, concept: true }));
   } catch (error) {
@@ -1210,10 +1217,75 @@ function renderProductCard(item, image, index = 0) {
 }
 
 function defaultDirection(project) {
+  return fallbackDesignDirection('template-preview', project.id);
+}
+
+function fallbackDesignProject(projectId, directionId) {
+  const direction = fallbackDesignDirection(directionId, projectId);
   return {
-    id: 'template-preview',
+    id: projectId,
+    customerId: 'customer-design-preview',
+    status: 'awaiting_approval',
+    title: 'Design concept preview',
+    originalBrief: 'Design concept preview',
+    structuredBrief: {
+      businessSummary: `${direction.name} website concept`,
+      targetAudience: 'Prospective customers',
+      pagesNeeded: ['Home', 'Services', 'About', 'Contact'],
+      featuresNeeded: ['Lead capture form', 'Contact form routing'],
+      stylePreferences: [direction.summary],
+      contentRequirements: ['Clear positioning', 'Service proof', 'Primary CTA'],
+      assetsRequired: ['Brand imagery'],
+      technicalRequirements: ['Responsive website'],
+      assumptions: ['Client assets can be added later'],
+      missingInformation: [],
+      estimatedComplexity: 'medium'
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function fallbackDesignDirection(directionId, projectId = 'project-design-preview') {
+  const directions = {
+    'trust-first': {
+      name: 'Trust First',
+      summary: 'Calm, credible, and conversion-aware with proof close to each major CTA.',
+      targetEmotion: 'Confidence',
+      palette: [
+        { name: 'Ink', hex: '#172033' },
+        { name: 'Canvas', hex: '#FFFFFF' },
+        { name: 'Action Blue', hex: '#2563EB' },
+        { name: 'Success', hex: '#16A34A' }
+      ]
+    },
+    'premium-editorial': {
+      name: 'Premium Editorial',
+      summary: 'More spacious and polished, using editorial hierarchy and selective visual moments.',
+      targetEmotion: 'Prestige',
+      palette: [
+        { name: 'Charcoal', hex: '#111827' },
+        { name: 'Warm White', hex: '#FAF7F0' },
+        { name: 'Gold', hex: '#C8A24A' },
+        { name: 'Slate', hex: '#475569' }
+      ]
+    },
+    'conversion-studio': {
+      name: 'Conversion Studio',
+      summary: 'Sharp, benefit-led, and built around fast comprehension and repeated action.',
+      targetEmotion: 'Momentum',
+      palette: [
+        { name: 'Graphite', hex: '#1F2937' },
+        { name: 'White', hex: '#FFFFFF' },
+        { name: 'Electric Blue', hex: '#0EA5E9' },
+        { name: 'Coral', hex: '#F97316' }
+      ]
+    }
+  };
+  const base = directions[directionId] || {
     name: 'Template Preview',
     summary: 'A polished template preview using agency design-system components.',
+    targetEmotion: 'Direction',
     palette: [
       { name: 'Mango', hex: '#FFB703' },
       { name: 'Berry', hex: '#C026D3' },
@@ -1221,6 +1293,25 @@ function defaultDirection(project) {
       { name: 'Citrus', hex: '#F97316' },
       { name: 'Charcoal', hex: '#172033' }
     ]
+  };
+  return {
+    id: directionId || 'template-preview',
+    projectId,
+    brandPersonality: ['professional', 'clear', 'polished'],
+    bestFor: 'Client-facing design review.',
+    risks: ['Preview recovered from a stateless serverless request.'],
+    typography: { heading: 'Inter Tight or refined display', body: 'Inter/system-ui', scale: '1.25 modular scale', notes: 'Clear hierarchy and readable body copy' },
+    layoutStyle: 'Responsive agency landing page with strong hero and proof sections',
+    sectionStyle: 'Reusable DaisyUI sections with polished spacing',
+    buttonStyle: 'High-contrast rounded CTA buttons',
+    cardStyle: 'Bordered cards with restrained shadow',
+    iconStyle: 'Simple line icons where useful',
+    imageryStyle: 'High-quality client-relevant photography or generated imagery',
+    animationStyle: 'Subtle reveal and hover transitions',
+    homepageStructure: ['Hero', 'Services', 'Proof', 'Process', 'FAQ', 'Contact'],
+    mobileApproach: 'Single-column sections, clear CTA, no horizontal scrolling',
+    rationale: 'Recovered fallback keeps the design review surface available even if serverless local state has moved.',
+    ...base
   };
 }
 

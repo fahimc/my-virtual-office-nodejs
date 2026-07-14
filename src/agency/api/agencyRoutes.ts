@@ -131,35 +131,41 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
 
   router.post('/approval/:id/approve', route(async (req, res) => {
     const approval = await system.approvalWorkflow.approve(req.params.id);
+    let workflowRunIdForClient = '';
     if (approval.type === 'design_options') {
       const workflowRunId = String(approval.payload.workflowRunId || '');
-      if (workflowRunId) {
-        const run = await system.workflowRuntime.get(workflowRunId);
-        if (run) {
-          await system.workflowRuntime.patch(workflowRunId, {
-            status: 'running',
-            currentStep: 'design_options_approved',
-            state: {
-              ...run.state,
-              designOptionsApproved: true,
-              selectedDesignOption: req.body.selectedDesignOption || (approval.payload.designOptions as unknown[] | undefined)?.[0]
-            }
-          });
-          const selectedDesignOption = req.body.selectedDesignOption || (approval.payload.designOptions as unknown[] | undefined)?.[0];
-          if (selectedDesignOption) {
-            await system.jobQueue.enqueue('designWorkflow.completeAfterApproval', { projectId: approval.projectId, selectedDesignOption, approvalId: approval.id, workflowRunId }, async payload => {
-              await system.designWorkflow.completeAfterApproval(payload.projectId, payload.selectedDesignOption, payload.approvalId);
-              if (payload.workflowRunId) await queueWebsiteBuild(payload.workflowRunId);
-            });
+      const selectedDesignOption = req.body.selectedDesignOption || (approval.payload.designOptions as unknown[] | undefined)?.[0];
+      let run = workflowRunId ? await system.workflowRuntime.get(workflowRunId) : undefined;
+      if (!run) {
+        const existing = (await system.store.read()).workflows.find(item => item.projectId === approval.projectId && item.workflowName === 'websiteBuildWorkflow');
+        workflowRunIdForClient = existing?.id || (await system.websiteBuildWorkflow.start(approval.projectId)).workflowRunId;
+        run = await system.workflowRuntime.get(workflowRunIdForClient);
+      } else {
+        workflowRunIdForClient = run.id;
+      }
+      if (run) {
+        await system.workflowRuntime.patch(run.id, {
+          status: 'running',
+          currentStep: 'design_options_approved',
+          state: {
+            ...run.state,
+            designOptionsApproved: true,
+            selectedDesignOption
           }
-        }
+        });
+      }
+      if (selectedDesignOption && workflowRunIdForClient) {
+        await system.jobQueue.enqueue('designWorkflow.completeAfterApproval', { projectId: approval.projectId, selectedDesignOption, approvalId: approval.id, workflowRunId: workflowRunIdForClient }, async payload => {
+          await system.designWorkflow.completeAfterApproval(payload.projectId, payload.selectedDesignOption, payload.approvalId);
+          if (payload.workflowRunId) await queueWebsiteBuild(payload.workflowRunId);
+        });
       }
     } else if (approval.type === 'preview') {
       await system.websiteBuildWorkflow.prepareDeployment(approval.projectId);
       const run = (await system.store.read()).workflows.find(item => item.projectId === approval.projectId)?.id;
       if (run) await system.workflowRuntime.emit({ id: run, projectId: approval.projectId, workflowName: 'websiteBuildWorkflow', status: 'running', currentStep: 'approval_approved', state: {}, createdAt: '', updatedAt: '' }, 'approval.approved', { approvalId: approval.id });
     }
-    res.json({ approval, officeState: await system.officeState(approval.projectId) });
+    res.json({ approval, workflowRunId: workflowRunIdForClient, officeState: await system.officeState(approval.projectId) });
   }));
 
   router.post('/approval/:id/request-changes', route(async (req, res) => {
