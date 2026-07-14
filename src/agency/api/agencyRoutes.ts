@@ -174,8 +174,41 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
               duplicateClosed: true
             }
           };
-        });
+      });
     });
+  };
+
+  const continueApprovedDesignWorkflow = async (workflowId: string) => {
+    let workflow = await system.workflowRuntime.get(workflowId);
+    if (!workflow?.projectId || workflow.workflowName !== 'websiteBuildWorkflow' || workflow.currentStep !== 'design_options_approved') {
+      return workflow;
+    }
+    const data = await system.store.read();
+    const project = data.projects.find(item => item.id === workflow?.projectId);
+    if (!project || project.previewUrl || project.status === 'build' || project.status === 'qa' || project.status === 'preview' || project.status === 'awaiting_approval') {
+      return workflow;
+    }
+    const selectedDesignOption = normalizeDesignOption(workflow.state.selectedDesignOption, workflow.projectId);
+    const hasHandoff = data.design.handoffs.some(item => item.projectId === workflow?.projectId);
+    if (selectedDesignOption && !hasHandoff) {
+      await system.designWorkflow.completeAfterApproval(
+        workflow.projectId,
+        selectedDesignOption,
+        typeof workflow.state.approvalId === 'string' ? workflow.state.approvalId : undefined
+      );
+      await system.workflowRuntime.patch(workflow.id, {
+        status: 'running',
+        currentStep: 'design_handoff_ready',
+        state: {
+          ...workflow.state,
+          designOptionsApproved: true,
+          selectedDesignOption
+        }
+      });
+    }
+    await queueWebsiteBuild(workflow.id);
+    workflow = await system.workflowRuntime.get(workflow.id);
+    return workflow;
   };
 
   router.post('/intake/start', route(async (_req, res) => {
@@ -256,6 +289,7 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     }
     if (!workflow) return void res.status(404).json({ error: 'workflow not found' });
     await reconcileApprovedDesignGates(workflow.projectId);
+    workflow = await continueApprovedDesignWorkflow(workflow.id) || workflow;
     res.json({ workflow, officeState: await system.officeState(workflow.projectId) });
   }));
 
