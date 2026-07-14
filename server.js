@@ -90,10 +90,21 @@ async function readJsonFileWithRetry(filePath, attempts = 5) {
   throw lastError;
 }
 
+async function readJsonFileOrEmpty(filePath) {
+  try {
+    return await readJsonFileWithRetry(filePath);
+  } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
+      return {};
+    }
+    throw error;
+  }
+}
+
 app.get(['/previews/:projectId', '/previews/:projectId/'], async (req, res) => {
   try {
     const storePath = path.join(DATA_DIR, 'agency-store.json');
-    const data = await readJsonFileWithRetry(storePath);
+    const data = await readJsonFileOrEmpty(storePath);
     const project = data.projects?.find(item => item.id === req.params.projectId);
     if (!project) return res.status(404).send('Preview project not found');
     if (process.env.PREVIEW_REQUIRE_TOKEN === 'true') {
@@ -111,7 +122,7 @@ app.get(['/previews/:projectId', '/previews/:projectId/'], async (req, res) => {
 app.get(['/design-concepts/:projectId/:directionId', '/design-concepts/:projectId/:directionId/'], async (req, res) => {
   try {
     const storePath = path.join(DATA_DIR, 'agency-store.json');
-    const data = await readJsonFileWithRetry(storePath);
+    const data = await readJsonFileOrEmpty(storePath);
     const project = data.projects?.find(item => item.id === req.params.projectId) || fallbackDesignProject(req.params.projectId, req.params.directionId);
     const fallbackDirection = fallbackDesignDirection(req.params.directionId, project.id);
     data.design = {
