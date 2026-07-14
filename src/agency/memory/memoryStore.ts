@@ -128,6 +128,7 @@ export class MemoryStore {
   private updateChain: Promise<unknown> = Promise.resolve();
   private warnedAboutBlobFallback = false;
   private readonly useNetlifyBlobs = process.env.NETLIFY === 'true' || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
+  private readonly allowBlobFallback = !process.env.AWS_LAMBDA_FUNCTION_NAME;
   private readonly blobStoreName = process.env.AGENCY_BLOB_STORE || 'agency-data';
   private readonly blobKey: string;
 
@@ -144,6 +145,9 @@ export class MemoryStore {
     if (this.useNetlifyBlobs) {
       const blobData = await this.tryReadFromBlob();
       if (blobData) return blobData;
+      if (!this.allowBlobFallback) {
+        throw new Error('The persistent Netlify Blob store is unavailable. Refusing to use ephemeral function storage.');
+      }
     }
     await fs.mkdir(path.dirname(this.filePath), { recursive: true });
     for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -170,6 +174,13 @@ export class MemoryStore {
 
   async update(mutator: (data: AgencyStoreData) => void | Promise<void>): Promise<AgencyStoreData> {
     const run = async () => {
+      if (this.useNetlifyBlobs) {
+        const blobResult = await this.tryAtomicBlobUpdate(mutator);
+        if (blobResult) return blobResult;
+        if (!this.allowBlobFallback) {
+          throw new Error('The persistent Netlify Blob store is unavailable. The update was not written.');
+        }
+      }
       const data = await this.readFromDisk();
       await mutator(data);
       await this.write(data);
@@ -178,6 +189,48 @@ export class MemoryStore {
     const next = this.updateChain.then(run, run);
     this.updateChain = next.catch(() => undefined);
     return next;
+  }
+
+  private async tryAtomicBlobUpdate(
+    mutator: (data: AgencyStoreData) => void | Promise<void>
+  ): Promise<AgencyStoreData | undefined> {
+    let store: ReturnType<typeof import('@netlify/blobs')['getStore']>;
+    try {
+      const { getStore } = await import('@netlify/blobs');
+      store = getStore({ name: this.blobStoreName, consistency: 'strong' });
+    } catch (error) {
+      this.warnBlobFallback(error);
+      return undefined;
+    }
+
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      let snapshot: Awaited<ReturnType<typeof store.getWithMetadata>>;
+      try {
+        snapshot = await store.getWithMetadata(this.blobKey, { type: 'json', consistency: 'strong' });
+      } catch (error) {
+        this.warnBlobFallback(error);
+        return undefined;
+      }
+
+      const data = normalizeStore(snapshot?.data as Partial<AgencyStoreData> | undefined);
+      await mutator(data);
+
+      try {
+        const result = await store.setJSON(
+          this.blobKey,
+          normalizeStore(data),
+          snapshot?.etag ? { onlyIfMatch: snapshot.etag } : { onlyIfNew: true }
+        );
+        if (result.modified) return data;
+      } catch (error) {
+        this.warnBlobFallback(error);
+        return undefined;
+      }
+
+      await delay(20 * (attempt + 1) + Math.floor(Math.random() * 25));
+    }
+
+    throw new Error(`Concurrent updates prevented writing ${this.blobKey} after 10 retries`);
   }
 
   private async tryReadFromBlob(): Promise<AgencyStoreData | undefined> {
@@ -221,7 +274,7 @@ export function nowIso(): string {
   return new Date().toISOString();
 }
 
-function normalizeStore(data: Partial<AgencyStoreData>): AgencyStoreData {
+function normalizeStore(data: Partial<AgencyStoreData> = {}): AgencyStoreData {
   const base = emptyStore();
   return {
     ...base,

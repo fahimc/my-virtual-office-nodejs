@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="/agency.css?v=agency-os-1">
   <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script defer src="/app.js?v=agent-email-1"></script>
-  <script defer src="/agency.js?v=agency-os-4"></script>
+  <script defer src="/agency.js?v=agency-os-5"></script>
 </head>
 <body>
   <main class="shell">
@@ -21,7 +21,10 @@
               <span class="agency-kicker">AI Web Agency</span>
               <h2>Project Intake</h2>
             </div>
-            <strong id="agencyStep">Reception</strong>
+            <div class="agency-header-meta">
+              <small id="agencyVersion">v1.1.0</small>
+              <strong id="agencyStep">Reception</strong>
+            </div>
           </header>
           <div class="agency-reception">
             <div class="agent-badge"><i data-lucide="concierge-bell"></i></div>
@@ -67,6 +70,13 @@
             <span id="projectStatus">Waiting for intake</span>
           </div>
           <ol class="agency-timeline" id="agencyTimeline"></ol>
+          <details class="workflow-diagnostics" id="workflowDiagnostics">
+            <summary>
+              <span><i data-lucide="activity"></i> Workflow diagnostics</span>
+              <small id="workflowHealth">waiting</small>
+            </summary>
+            <div id="workflowDiagnosticsBody"></div>
+          </details>
           <div class="agency-grid">
             <section>
               <h4>Agents</h4>

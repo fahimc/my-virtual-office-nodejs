@@ -8,8 +8,8 @@ export class ApprovalWorkflow {
     this.approvals = new ApprovalService(store);
   }
 
-  approve(approvalId: string) {
-    return this.approvals.resolve(approvalId, 'approved');
+  approve(approvalId: string, payload: Record<string, unknown> = {}) {
+    return this.approvals.resolve(approvalId, 'approved', payload);
   }
 
   requestChanges(approvalId: string, feedback: string) {

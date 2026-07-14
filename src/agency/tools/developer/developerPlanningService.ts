@@ -147,15 +147,20 @@ export class DeveloperPlanningService {
     await this.store.update(data => {
       data.implementationPlans = data.implementationPlans.filter(item => item.projectId !== plan.projectId);
       data.implementationPlans.push(plan);
+      const artifactPath = 'project/developer/implementation-plan.json';
+      const existing = data.artifacts
+        .filter(item => item.projectId === plan.projectId && item.type === 'implementation_plan' && item.path === artifactPath)
+        .at(-1);
+      data.artifacts = data.artifacts.filter(item => !(item.projectId === plan.projectId && item.type === 'implementation_plan' && item.path === artifactPath));
       data.artifacts.push({
-        id: createId('artifact'),
+        id: existing?.id || createId('artifact'),
         projectId: plan.projectId,
         type: 'implementation_plan',
         title: 'Developer implementation plan',
-        path: 'project/developer/implementation-plan.json',
+        path: artifactPath,
         metadata: plan as unknown as Record<string, unknown>,
         createdByAgentId: 'builder',
-        createdAt: nowIso()
+        createdAt: existing?.createdAt || nowIso()
       });
     });
   }

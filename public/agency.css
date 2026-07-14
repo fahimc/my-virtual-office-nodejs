@@ -54,6 +54,19 @@
   font-size: 18px;
 }
 
+.agency-header-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.agency-header-meta small {
+  color: #6ee7b7;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
 .agency-kicker,
 .agency-header strong,
 .agency-panel-heading span {
@@ -232,6 +245,127 @@
 .agency-timeline li.done {
   color: #dffde9;
   border-color: rgba(74, 222, 128, 0.55);
+}
+
+.workflow-diagnostics {
+  margin: 0 0 12px;
+  border: 1px solid #2f3b54;
+  border-radius: 7px;
+  background: #0b1220;
+}
+
+.workflow-diagnostics > summary {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 10px;
+  color: #dce7f7;
+  cursor: pointer;
+  list-style: none;
+}
+
+.workflow-diagnostics > summary::-webkit-details-marker {
+  display: none;
+}
+
+.workflow-diagnostics > summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.workflow-diagnostics > summary svg {
+  width: 15px;
+  height: 15px;
+  color: #67e8f9;
+}
+
+#workflowHealth {
+  color: #6ee7b7;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+#workflowHealth.warning {
+  color: #fbbf24;
+}
+
+#workflowDiagnosticsBody {
+  border-top: 1px solid #26334c;
+  padding: 10px;
+}
+
+#workflowDiagnosticsBody dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #25324a;
+  background: #25324a;
+}
+
+#workflowDiagnosticsBody dl div {
+  min-width: 0;
+  background: #10192b;
+  padding: 7px;
+}
+
+#workflowDiagnosticsBody dt {
+  color: #8fa3c2;
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+#workflowDiagnosticsBody dd {
+  margin: 3px 0 0;
+  color: #edf4ff;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+
+.workflow-warning-list,
+.workflow-diagnostics-ok {
+  margin: 8px 0 0;
+}
+
+.workflow-debug-trace {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #263653;
+}
+
+.workflow-debug-trace b {
+  display: block;
+  margin-bottom: 5px;
+  color: #eef4ff;
+}
+
+.workflow-debug-trace p {
+  margin: 3px 0;
+  overflow-wrap: anywhere;
+  color: #aebbd1;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.workflow-warning-list p {
+  margin: 5px 0 0;
+  border-left: 2px solid #fbbf24;
+  background: rgba(251, 191, 36, 0.08);
+  color: #fde68a;
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+.workflow-diagnostics-ok {
+  color: #86efac;
+  font-size: 11px;
 }
 
 .agency-grid {

@@ -75,13 +75,13 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function assertSingleDesignApprovalSurface() {
   const [indexResponse, scriptResponse] = await Promise.all([
     fetch(`${siteOrigin}/`),
-    fetch(`${siteOrigin}/agency.js?v=agency-os-4`)
+    fetch(`${siteOrigin}/agency.js?v=agency-os-5`)
   ]);
   if (!indexResponse.ok) throw new Error(`GET / failed: ${indexResponse.status}`);
   if (!scriptResponse.ok) throw new Error(`GET /agency.js failed: ${scriptResponse.status}`);
   const indexHtml = await indexResponse.text();
   const script = await scriptResponse.text();
-  if (!indexHtml.includes('/agency.js?v=agency-os-4')) {
+  if (!indexHtml.includes('/agency.js?v=agency-os-5')) {
     throw new Error('Homepage is not using the latest agency.js cache-bust version');
   }
   if (!script.includes("item.status === 'pending' && item.type !== 'design_options'")) {
@@ -127,22 +127,37 @@ async function pollProjectForDesignApproval(projectId, workflowRunId) {
   throw new Error(`No design approval appeared for ${projectId}`);
 }
 
-async function pollWorkflowForPreview(workflowRunId) {
+async function pollWorkflowForPreview(workflowRunId, projectId) {
   let last;
   let misses = 0;
+  const observed = [];
   for (let attempt = 0; attempt < 180; attempt += 1) {
     try {
-      last = await request(`/workflow/${workflowRunId}/status`);
+      last = await request(`/workflow/${workflowRunId}/status?projectId=${projectId}`);
     } catch (error) {
       if (!String(error.message || error).includes('404')) throw error;
       misses += 1;
       await sleep(2000);
       continue;
     }
-    if (last.officeState?.project?.previewUrl || last.workflow?.status === 'failed') return last;
+    workflowRunId = last.canonicalWorkflowRunId || last.workflow?.id || workflowRunId;
+    const phase = last.officeState?.diagnostics?.phase || 'unknown';
+    const step = last.workflow?.currentStep || 'unknown';
+    observed.push(`${phase}:${step}`);
+    if (['planning', 'design_discovery', 'design_approval'].includes(phase) || step === 'design_options_approval') {
+      throw new Error(`Workflow regressed after design approval: ${phase}/${step}. Observed: ${observed.join(' -> ')}`);
+    }
+    if (last.officeState?.project?.previewUrl || last.workflow?.status === 'failed') {
+      last.pollMisses = misses;
+      last.observed = observed;
+      return last;
+    }
     await sleep(2000);
   }
-  if (last) last.pollMisses = misses;
+  if (last) {
+    last.pollMisses = misses;
+    last.observed = observed;
+  }
   return last;
 }
 
@@ -173,7 +188,8 @@ async function main() {
       customerId: customer.id,
       customer,
       originalBrief: driveGramBrief,
-      structuredBrief: brief.structuredBrief
+      structuredBrief: brief.structuredBrief,
+      testMode: true
     }
   });
   const projectId = approvedBrief.project.id;
@@ -195,14 +211,41 @@ async function main() {
   if (approvedDesign.officeState?.project?.status === 'planning') {
     throw new Error('Project regressed to planning immediately after design approval');
   }
+  const designOptionsStage = approvedDesign.officeState?.timeline?.find(item => item.step === 'Design Options');
+  if (designOptionsStage?.status !== 'completed') {
+    throw new Error(`Design Options should be completed immediately after approval, got ${designOptionsStage?.status || 'missing'}`);
+  }
+  if (approvedDesign.officeState?.diagnostics?.app?.version !== '1.1.0') {
+    throw new Error(`Expected app version 1.1.0, got ${approvedDesign.officeState?.diagnostics?.app?.version || 'missing'}`);
+  }
+  const approvalTrace = approvedDesign.officeState?.diagnostics?.debugTrace || [];
+  if (!approvalTrace.some(item => item.step === 'design_options_approved')) {
+    throw new Error(`Design approval was not recorded in workflow trace: ${approvalTrace.map(item => item.step).join(' -> ')}`);
+  }
   const workflowRunId = approvedDesign.workflowRunId || approvedBrief.workflowRunId;
-  const final = await pollWorkflowForPreview(workflowRunId);
+  const recovered = await request(`/workflow/workflow-intentionally-missing-${run}/status?projectId=${projectId}`);
+  if (!recovered.canonicalWorkflowRunId || recovered.canonicalWorkflowRunId !== workflowRunId) {
+    throw new Error(`Missing workflow recovery returned ${recovered.canonicalWorkflowRunId || 'none'} instead of ${workflowRunId}`);
+  }
+  const final = await pollWorkflowForPreview(workflowRunId, projectId);
   const pendingDesignApprovals = (final.officeState?.approvals || []).filter(item => item.type === 'design_options' && item.status === 'pending');
   if (pendingDesignApprovals.length) {
     throw new Error(`Duplicate pending design approvals remained: ${pendingDesignApprovals.map(item => item.id).join(', ')}`);
   }
   if (!final.officeState?.project?.previewUrl) {
     throw new Error(`Preview was not created. Last step: ${final.workflow?.currentStep || 'unknown'}`);
+  }
+  if (final.officeState?.diagnostics?.integrity !== 'ok') {
+    throw new Error(`Workflow diagnostics reported: ${(final.officeState?.diagnostics?.warnings || []).join('; ')}`);
+  }
+  const artifactStats = final.officeState?.artifactStats || {};
+  if (artifactStats.total > 40 || artifactStats.rawTotal !== artifactStats.total) {
+    throw new Error(`Unexpected resource growth: ${JSON.stringify(artifactStats)}`);
+  }
+  const trace = final.officeState?.diagnostics?.debugTrace || [];
+  const traceSteps = trace.map(item => item.step);
+  for (const expected of ['copy', 'preview_approval']) {
+    if (!traceSteps.includes(expected)) throw new Error(`Workflow trace is missing ${expected}: ${traceSteps.join(' -> ')}`);
   }
   console.log(JSON.stringify({
     ok: true,
@@ -213,7 +256,12 @@ async function main() {
     step: final.workflow.currentStep,
     previewUrl: final.officeState.project.previewUrl,
     projectPollMisses,
-    workflowPollMisses: final.pollMisses || 0
+    workflowPollMisses: final.pollMisses || 0,
+    appVersion: final.officeState.diagnostics.app.version,
+    diagnostics: final.officeState.diagnostics.integrity,
+    resources: artifactStats.total,
+    trace: traceSteps,
+    observedStages: final.observed || []
   }, null, 2));
 }
 

@@ -9,6 +9,8 @@ import type { DesignWorkflow } from './designWorkflow.js';
 import type { DesignHandoff } from '../schemas/designHandoff.schema.js';
 import type { ImplementationPlan } from '../schemas/implementationPlan.schema.js';
 import type { Project } from '../schemas/project.schema.js';
+import type { CreativeDirection } from '../schemas/creativeDirection.schema.js';
+import { projectStatusRank, workflowPhaseForStep, workflowPhaseRank } from '../runtime/workflowStage.js';
 
 export class WebsiteBuildWorkflow {
   private readonly approvalService: ApprovalService;
@@ -24,59 +26,87 @@ export class WebsiteBuildWorkflow {
     this.approvalService = new ApprovalService(store);
   }
 
-  async start(projectId: string): Promise<{ workflowRunId: string }> {
+  async start(projectId: string, options: { testMode?: boolean } = {}): Promise<{ workflowRunId: string }> {
     const project = await this.projectMemory.get(projectId);
     if (!project?.structuredBrief) throw new Error(`Project missing structured brief: ${projectId}`);
-    const run = await this.workflowRuntime.create('websiteBuildWorkflow', { projectId, qaAttempt: 0 }, projectId);
+    const run = await this.workflowRuntime.create('websiteBuildWorkflow', { projectId, qaAttempt: 0, testMode: options.testMode === true }, projectId);
     await this.projectMemory.update(projectId, { currentWorkflowRunId: run.id, status: 'planning' });
     return { workflowRunId: run.id };
   }
 
   async runUntilPreview(workflowRunId: string): Promise<void> {
+    const leaseOwner = createId('worker');
+    if (!await this.workflowRuntime.acquireLease(workflowRunId, leaseOwner)) return;
     const run = await this.workflowRuntime.get(workflowRunId);
-    if (!run?.projectId) throw new Error(`Workflow run missing project: ${workflowRunId}`);
+    if (!run?.projectId) {
+      await this.workflowRuntime.releaseLease(workflowRunId, leaseOwner).catch(() => undefined);
+      throw new Error(`Workflow run missing project: ${workflowRunId}`);
+    }
     const project = await this.projectMemory.get(run.projectId);
-    if (!project?.structuredBrief) throw new Error(`Project missing structured brief: ${run.projectId}`);
+    if (!project?.structuredBrief) {
+      await this.workflowRuntime.releaseLease(workflowRunId, leaseOwner).catch(() => undefined);
+      throw new Error(`Project missing structured brief: ${run.projectId}`);
+    }
     try {
       if (await this.stopIfPreviewExists(run.id, project.id)) return;
-      await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'planning' });
-      const latestRun = await this.workflowRuntime.get(workflowRunId);
-      const state = latestRun?.state || run.state;
-      const plan = state.plan as { tasks: string[]; summary: string } | undefined || await this.agentRuntime.execute('planner', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { tasks: string[]; summary: string };
-      if (!state.plan) {
+      let latestRun = await this.workflowRuntime.get(workflowRunId);
+      let state: Record<string, unknown> = await this.recoverWorkflowState(project.id, latestRun?.state || run.state);
+
+      let plan = state.plan as { tasks: string[]; summary: string } | undefined;
+      if (!plan) {
+        await this.checkpoint(run.id, 'planning', {}, 'running', leaseOwner);
+        await this.moveProjectToStage(run.id, project.id, 'planning');
+        plan = await this.agentRuntime.execute('planner', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { tasks: string[]; summary: string };
         await this.saveArtifact(project.id, 'plan', 'Project plan', plan, 'planner');
         await this.createTaskPlan(project.id, run.id, plan.tasks);
         await this.workflowRuntime.emit(run, 'plan.created', plan);
+        latestRun = await this.checkpoint(run.id, 'planning', { plan, planCompleted: true }, 'running', leaseOwner);
+        state = latestRun.state;
       }
 
-      if (!await this.moveProjectToStage(run.id, project.id, 'design')) return;
-      await this.workflowRuntime.emit(run, 'design.started', {});
-      const design = state.design as { direction: string; sections: string[] } | undefined || await this.agentRuntime.execute('design', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { direction: string; sections: string[] };
-      if (!state.design) {
+      let design = state.design as { direction: string; sections: string[] } | undefined;
+      if (!design) {
+        if (!await this.moveProjectToStage(run.id, project.id, 'design')) return;
+        await this.checkpoint(run.id, 'design_discovery', {}, 'running', leaseOwner);
+        await this.workflowRuntime.emit(run, 'design.started', {});
+        design = await this.agentRuntime.execute('design', { structuredBrief: project.structuredBrief }, { projectId: project.id, workflowRunId: run.id }) as { direction: string; sections: string[] };
         await this.saveArtifact(project.id, 'design', 'Design direction', design, 'design');
         await this.completeCompanyTask(project.id, 'design', { design });
         await this.workflowRuntime.emit(run, 'design.completed', design);
+        latestRun = await this.checkpoint(run.id, 'design_discovery', { design, designDiscoveryCompleted: true }, 'running', leaseOwner);
+        state = latestRun.state;
       }
-      const existingDesignHandoff = await this.getDesignHandoff(project.id);
-      const existingSelectedDirection = await this.getSelectedDirection(project.id);
-      if (!state.designOptionsApproved && existingDesignHandoff && existingSelectedDirection) {
-        await this.workflowRuntime.patch(run.id, {
-          status: 'running',
-          currentStep: 'design_handoff_ready',
-          state: {
-            ...state,
+
+      let designEvidence = await this.getDesignEvidence(project.id, state);
+      if (!state.designOptionsApproved && !designEvidence.approved) {
+        if (designEvidence.pendingApproval && designEvidence.directions.length) {
+          await this.projectMemory.update(project.id, { status: 'awaiting_approval' });
+          await this.checkpoint(run.id, 'design_options_approval', {
             plan,
             design,
-            designOptionsApproved: true,
-            selectedDesignOption: existingSelectedDirection
-          }
-        });
-      } else if (!state.designOptionsApproved) {
-        const customer = (await this.store.read()).customers.find(item => item.id === project.customerId);
+            designOptions: designEvidence.directions,
+            approvalId: designEvidence.pendingApproval.id
+          }, 'waiting_for_user', leaseOwner);
+          return;
+        }
+        const data = await this.store.read();
+        const customer = data.customers.find(item => item.id === project.customerId);
         if (!customer) throw new Error(`Customer not found for project ${project.id}`);
-        const designGate = this.designWorkflow
-          ? await this.designWorkflow.start(project, customer, run.id)
-          : { directions: this.createDesignOptions(project.structuredBrief.businessSummary, design), approval: await this.approvalService.request({
+        const designGate = designEvidence.directions.length
+          ? {
+              directions: designEvidence.directions,
+              approval: await this.approvalService.request({
+                projectId: project.id,
+                type: 'design_options',
+                title: 'Choose a creative direction',
+                description: 'Review the agency-grade creative directions before production design and build handoff.',
+                requestedByAgentId: 'design',
+                payload: { workflowRunId: run.id, designOptions: designEvidence.directions }
+              })
+            }
+          : this.designWorkflow
+            ? await this.designWorkflow.start(project, customer, run.id)
+            : { directions: this.createDesignOptions(project.structuredBrief.businessSummary, design), approval: await this.approvalService.request({
             projectId: project.id,
             type: 'design_options',
             title: 'Choose a design direction',
@@ -85,31 +115,70 @@ export class WebsiteBuildWorkflow {
             payload: { workflowRunId: run.id, designOptions: this.createDesignOptions(project.structuredBrief.businessSummary, design) }
           }) };
         await this.projectMemory.update(project.id, { status: 'awaiting_approval' });
-        await this.workflowRuntime.patch(run.id, {
-          status: 'waiting_for_user',
-          currentStep: 'design_options_approval',
-          state: { ...state, plan, design, designOptions: designGate.directions, approvalId: designGate.approval.id }
-        });
+        await this.checkpoint(run.id, 'design_options_approval', {
+          plan,
+          design,
+          designOptions: designGate.directions,
+          approvalId: designGate.approval.id
+        }, 'waiting_for_user', leaseOwner);
         return;
       }
-      const designHandoff = await this.getDesignHandoff(project.id);
+
+      let selectedDesignOption = designEvidence.selectedDirection;
+      if (!selectedDesignOption) throw new Error('The approved creative direction could not be recovered');
+      await this.checkpoint(run.id, 'design_options_approved', {
+        plan,
+        design,
+        designOptionsApproved: true,
+        selectedDesignOption
+      }, 'running', leaseOwner);
+
+      let designHandoff = designEvidence.handoff;
+      if (!designHandoff) {
+        if (!this.designWorkflow) throw new Error('Design workflow is unavailable for builder handoff');
+        if (!await this.moveProjectToStage(run.id, project.id, 'design')) return;
+        await this.checkpoint(run.id, 'design_production', { selectedDesignOption }, 'running', leaseOwner);
+        await this.designWorkflow.completeAfterApproval(
+          project.id,
+          selectedDesignOption,
+          typeof state.approvalId === 'string' ? state.approvalId : designEvidence.approvedApproval?.id,
+          run.id,
+          leaseOwner,
+          state.testMode === true
+        );
+        designHandoff = await this.getDesignHandoff(project.id);
+        if (!designHandoff) throw new Error('Design production finished without creating a builder handoff');
+      }
+      latestRun = await this.checkpoint(run.id, 'design_handoff_ready', {
+        designOptionsApproved: true,
+        designHandoffCompleted: true,
+        selectedDesignOption
+      }, 'running', leaseOwner);
+      state = latestRun.state;
+
       const implementationPlan = this.companyOS
         ? await this.companyOS.developerPlanning.createImplementationPlan(project, designHandoff, run.id)
         : undefined;
 
-      if (!await this.moveProjectToStage(run.id, project.id, 'copy')) return;
-      await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'copy' });
-      await this.workflowRuntime.emit(run, 'copy.started', {});
-      const copy = await this.agentRuntime.execute('copy', { structuredBrief: project.structuredBrief, designDirection: design.direction }, { projectId: project.id, workflowRunId: run.id }) as { copy: string };
-      await this.saveArtifact(project.id, 'copy', 'Website copy', copy, 'copy');
-      await this.completeCompanyTask(project.id, 'copy', { copy });
-      await this.workflowRuntime.emit(run, 'copy.completed', copy);
+      let copy = state.copy as { copy: string } | undefined;
+      if (!copy) {
+        if (!await this.moveProjectToStage(run.id, project.id, 'copy')) return;
+        await this.checkpoint(run.id, 'copy', {}, 'running', leaseOwner);
+        await this.workflowRuntime.emit(run, 'copy.started', {});
+        copy = await this.agentRuntime.execute('copy', { structuredBrief: project.structuredBrief, designDirection: design.direction }, { projectId: project.id, workflowRunId: run.id }) as { copy: string };
+        await this.saveArtifact(project.id, 'copy', 'Website copy', copy, 'copy');
+        await this.completeCompanyTask(project.id, 'copy', { copy });
+        await this.workflowRuntime.emit(run, 'copy.completed', copy);
+        latestRun = await this.checkpoint(run.id, 'copy', { copy, copyCompleted: true }, 'running', leaseOwner);
+        state = latestRun.state;
+      }
 
-      let qaPassed = false;
-      let qaResult: { passed: boolean; issues: string[]; summary: string } | undefined;
-      for (let attempt = 1; attempt <= 2 && !qaPassed; attempt += 1) {
+      let qaPassed = state.qaPassed === true;
+      let qaResult = state.qaResult as { passed: boolean; issues: string[]; summary: string } | undefined;
+      const completedQaAttempts = Number(state.qaAttempt || 0);
+      for (let attempt = Math.max(1, completedQaAttempts + 1); attempt <= 2 && !qaPassed; attempt += 1) {
         if (!await this.moveProjectToStage(run.id, project.id, 'build')) return;
-        await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: `build_attempt_${attempt}` });
+        await this.checkpoint(run.id, `build_attempt_${attempt}`, { buildAttempt: attempt }, 'running', leaseOwner);
         await this.workflowRuntime.emit(run, 'build.started', { attempt });
         const codingTask = await this.claimCompanyTask(project.id, 'coding', 'builder');
         const codexRun = this.companyOS
@@ -144,9 +213,10 @@ export class WebsiteBuildWorkflow {
         const build = await this.agentRuntime.execute('builder', { plan: plan.summary, design: design.direction, copy: copy.copy }, { projectId: project.id, workflowRunId: run.id }) as { files: unknown[]; summary: string };
         await this.saveArtifact(project.id, 'code', `Build attempt ${attempt}`, build, 'builder');
         await this.workflowRuntime.emit(run, 'build.completed', build);
+        await this.checkpoint(run.id, `build_attempt_${attempt}`, { lastBuild: build, buildAttempt: attempt }, 'running', leaseOwner);
 
         if (!await this.moveProjectToStage(run.id, project.id, 'qa')) return;
-        await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: `qa_attempt_${attempt}` });
+        await this.checkpoint(run.id, `qa_attempt_${attempt}`, { qaAttempt: attempt }, 'running', leaseOwner);
         await this.workflowRuntime.emit(run, 'qa.started', { attempt });
         qaResult = await this.agentRuntime.execute('qa', { previewSummary: build.summary, attempt }, { projectId: project.id, workflowRunId: run.id }) as { passed: boolean; issues: string[]; summary: string };
         await this.saveArtifact(project.id, 'qa_report', `QA attempt ${attempt}`, qaResult, 'qa');
@@ -166,11 +236,13 @@ export class WebsiteBuildWorkflow {
           });
         }
         await this.workflowRuntime.emit(run, qaPassed ? 'qa.passed' : 'qa.failed', qaResult);
+        latestRun = await this.checkpoint(run.id, `qa_attempt_${attempt}`, { qaAttempt: attempt, qaResult, qaPassed }, 'running', leaseOwner);
+        state = latestRun.state;
       }
       if (!qaPassed) throw new Error('QA failed after maximum retry count');
 
       if (!await this.moveProjectToStage(run.id, project.id, 'preview')) return;
-      await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'preview' });
+      await this.checkpoint(run.id, 'preview', {}, 'running', leaseOwner);
       const delivery = await this.agentRuntime.execute('delivery', { projectId: project.id, qaSummary: qaResult?.summary || '' }, { projectId: project.id, workflowRunId: run.id }) as { previewUrl: string; summary: string };
       await this.saveArtifact(project.id, 'preview', 'Preview build', delivery, 'delivery', delivery.previewUrl);
       await this.projectMemory.update(project.id, { previewUrl: delivery.previewUrl, status: 'awaiting_approval' });
@@ -191,11 +263,7 @@ export class WebsiteBuildWorkflow {
         requestedByAgentId: 'delivery',
         payload: { previewUrl: delivery.previewUrl }
       });
-      await this.workflowRuntime.patch(run.id, {
-        status: 'waiting_for_user',
-        currentStep: 'preview_approval',
-        state: { ...run.state, approvalId: approval.id, previewUrl: delivery.previewUrl }
-      });
+      await this.checkpoint(run.id, 'preview_approval', { approvalId: approval.id, previewUrl: delivery.previewUrl }, 'waiting_for_user', leaseOwner);
       await this.workflowRuntime.emit(run, 'preview.created', delivery);
       await this.workflowRuntime.emit(run, 'approval.requested', { approval });
       if (this.designWorkflow) {
@@ -204,6 +272,7 @@ export class WebsiteBuildWorkflow {
         });
       }
     } catch (error) {
+      if (await this.stopIfPreviewExists(run.id, run.projectId).catch(() => false)) return;
       const message = error instanceof Error ? error.message : String(error);
       await Promise.allSettled([
         this.projectMemory.update(run.projectId, { status: 'failed' }),
@@ -214,7 +283,90 @@ export class WebsiteBuildWorkflow {
         }),
         this.workflowRuntime.emit(run, 'workflow.failed', { error: message })
       ]);
+    } finally {
+      await this.workflowRuntime.releaseLease(workflowRunId, leaseOwner).catch(() => undefined);
     }
+  }
+
+  private async checkpoint(
+    workflowRunId: string,
+    targetStep: string,
+    statePatch: Record<string, unknown>,
+    status: 'running' | 'waiting_for_user',
+    leaseOwner: string
+  ) {
+    if (!await this.workflowRuntime.renewLease(workflowRunId, leaseOwner)) {
+      throw new Error(`Workflow execution lease lost: ${workflowRunId}`);
+    }
+    const current = await this.workflowRuntime.get(workflowRunId);
+    if (!current) throw new Error(`Workflow run not found: ${workflowRunId}`);
+    const currentRank = workflowPhaseRank(workflowPhaseForStep(current.currentStep));
+    const targetRank = workflowPhaseRank(workflowPhaseForStep(targetStep));
+    const advances = targetRank >= currentRank || current.status === 'failed' || current.status === 'paused';
+    const result = await this.workflowRuntime.patch(workflowRunId, {
+      status: advances ? status : current.status,
+      currentStep: advances ? targetStep : current.currentStep,
+      error: advances ? undefined : current.error,
+      state: {
+        ...current.state,
+        ...statePatch,
+        lastCheckpoint: advances ? targetStep : current.currentStep,
+        lastCheckpointAt: nowIso()
+      }
+    });
+    if (!await this.workflowRuntime.renewLease(workflowRunId, leaseOwner)) {
+      throw new Error(`Workflow execution lease lost: ${workflowRunId}`);
+    }
+    return result;
+  }
+
+  private async recoverWorkflowState(projectId: string, state: Record<string, unknown>): Promise<Record<string, unknown>> {
+    const data = await this.store.read();
+    const latestArtifact = (type: string) => data.artifacts
+      .filter(item => item.projectId === projectId && item.type === type)
+      .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt))
+      .at(-1);
+    const qaArtifact = latestArtifact('qa_report');
+    const selectedRecord = data.design.selectedDirections.filter(item => item.projectId === projectId).at(-1);
+    const selectedDirection = selectedRecord
+      ? data.design.creativeDirections.find(item => item.projectId === projectId && item.id === selectedRecord.selectedDirectionId)
+      : undefined;
+    const approvedDesign = data.approvals.some(item => item.projectId === projectId && item.type === 'design_options' && item.status === 'approved');
+    return {
+      ...state,
+      plan: state.plan || latestArtifact('plan')?.metadata,
+      design: state.design || latestArtifact('design')?.metadata,
+      copy: state.copy || latestArtifact('copy')?.metadata,
+      qaResult: state.qaResult || qaArtifact?.metadata,
+      qaPassed: state.qaPassed === true || qaArtifact?.metadata?.passed === true,
+      designOptionsApproved: state.designOptionsApproved === true || approvedDesign || Boolean(selectedDirection),
+      selectedDesignOption: state.selectedDesignOption || selectedDirection
+    };
+  }
+
+  private async getDesignEvidence(projectId: string, state: Record<string, unknown>) {
+    const data = await this.store.read();
+    const directions = data.design.creativeDirections.filter(item => item.projectId === projectId);
+    const selectedRecord = data.design.selectedDirections.filter(item => item.projectId === projectId).at(-1);
+    const pendingApproval = data.approvals
+      .filter(item => item.projectId === projectId && item.type === 'design_options' && item.status === 'pending')
+      .at(-1);
+    const approvedApproval = data.approvals
+      .filter(item => item.projectId === projectId && item.type === 'design_options' && item.status === 'approved')
+      .at(-1);
+    const resolution = approvedApproval?.payload?.resolution as Record<string, unknown> | undefined;
+    const selectedDirection = state.selectedDesignOption as CreativeDirection | undefined
+      || (selectedRecord ? directions.find(item => item.id === selectedRecord.selectedDirectionId) : undefined)
+      || resolution?.selectedDesignOption as CreativeDirection | undefined;
+    const handoff = data.design.handoffs.filter(item => item.projectId === projectId).at(-1);
+    return {
+      directions,
+      pendingApproval,
+      approvedApproval,
+      selectedDirection,
+      handoff,
+      approved: state.designOptionsApproved === true || Boolean(approvedApproval || selectedRecord || handoff)
+    };
   }
 
   private async createTaskPlan(projectId: string, workflowRunId: string, plannedTasks: string[]) {
@@ -247,6 +399,8 @@ export class WebsiteBuildWorkflow {
 
   private async moveProjectToStage(workflowRunId: string, projectId: string, status: Project['status']) {
     if (await this.stopIfPreviewExists(workflowRunId, projectId)) return false;
+    const current = await this.projectMemory.get(projectId);
+    if (current && projectStatusRank(current.status) > projectStatusRank(status)) return true;
     await this.projectMemory.update(projectId, { status });
     return true;
   }
@@ -382,18 +536,26 @@ export class WebsiteBuildWorkflow {
 
   private async saveArtifact(projectId: string, type: 'plan' | 'design' | 'design_options' | 'copy' | 'code' | 'qa_report' | 'preview', title: string, metadata: Record<string, unknown>, createdByAgentId: string, url?: string) {
     await this.store.update(data => {
+      const existingArtifact = data.artifacts
+        .filter(item => item.projectId === projectId && item.type === type && item.title === title)
+        .at(-1);
+      data.artifacts = data.artifacts.filter(item => !(item.projectId === projectId && item.type === type && item.title === title));
       data.artifacts.push({
-        id: createId('artifact'),
+        id: existingArtifact?.id || createId('artifact'),
         projectId,
         type,
         title,
         url,
         metadata,
         createdByAgentId,
-        createdAt: nowIso()
+        createdAt: existingArtifact?.createdAt || nowIso()
       });
+      const existingTask = data.tasks
+        .filter(item => item.projectId === projectId && item.agentId === createdByAgentId && item.title === title)
+        .at(-1);
+      data.tasks = data.tasks.filter(item => !(item.projectId === projectId && item.agentId === createdByAgentId && item.title === title));
       data.tasks.push({
-        id: createId('task'),
+        id: existingTask?.id || createId('task'),
         projectId,
         agentId: createdByAgentId,
         title,
@@ -401,7 +563,7 @@ export class WebsiteBuildWorkflow {
         status: 'completed',
         input: {},
         output: metadata,
-        createdAt: nowIso(),
+        createdAt: existingTask?.createdAt || nowIso(),
         updatedAt: nowIso()
       });
     });

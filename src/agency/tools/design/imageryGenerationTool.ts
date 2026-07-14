@@ -17,6 +17,7 @@ export interface ImageryGenerationInput {
   direction: CreativeDirection;
   mode?: 'draft' | 'standard' | 'premium';
   count?: number;
+  provider?: 'auto' | 'mock';
 }
 
 const TEXT_FREE_IMAGE_RULES = [
@@ -38,10 +39,13 @@ export class ImageryGenerationService {
   ) {}
 
   async generateWebsiteImagery(input: ImageryGenerationInput): Promise<WebsiteImageryPlan> {
+    const existing = (await this.store.read()).imageryPlans.filter(item => item.projectId === input.projectId).at(-1);
+    if (existing) return existing;
     const specs = this.createImageSpecs(input);
     const assets: GeneratedImageAsset[] = [];
+    const generationOwner = createId('imagery-worker');
     for (const spec of specs) {
-      assets.push(await this.generateAsset(input, spec));
+      assets.push(await this.getOrGenerateAsset(input, spec, generationOwner));
     }
     const plan: WebsiteImageryPlan = {
       projectId: input.projectId,
@@ -58,6 +62,80 @@ export class ImageryGenerationService {
       data.imageryPlans.push(plan);
     });
     return plan;
+  }
+
+  private async getOrGenerateAsset(
+    input: ImageryGenerationInput,
+    spec: { title: string; intendedUse: ImageGenerationUse; tier: ImageGenerationTier; prompt: string; size: string },
+    generationOwner: string
+  ): Promise<GeneratedImageAsset> {
+    const profile = imageGenerationProfiles[spec.tier];
+    const estimate = estimateImageGenerationCost({ model: profile.model, quality: profile.quality, prompt: spec.prompt });
+    for (let attempt = 0; attempt < 180; attempt += 1) {
+      let asset: GeneratedImageAsset | undefined;
+      let claimed = false;
+      await this.store.update(data => {
+        asset = data.generatedImages.find(item =>
+          item.projectId === input.projectId &&
+          item.title === spec.title &&
+          item.intendedUse === spec.intendedUse
+        );
+        if (asset && (asset.status === 'generated' || asset.status === 'mocked')) return;
+        const leaseUntil = asset?.generationLeaseUntil ? Date.parse(asset.generationLeaseUntil) : 0;
+        if (asset?.generationLeaseOwner && asset.generationLeaseOwner !== generationOwner && Number.isFinite(leaseUntil) && leaseUntil > Date.now()) return;
+        const timestamp = nowIso();
+        const planned: GeneratedImageAsset = {
+          id: asset?.id || createId('image'),
+          projectId: input.projectId,
+          customerId: input.customerId,
+          title: spec.title,
+          intendedUse: spec.intendedUse,
+          tier: spec.tier,
+          model: profile.model,
+          quality: profile.quality,
+          prompt: spec.prompt,
+          size: spec.size,
+          status: 'planned',
+          provider: 'local_mock',
+          estimatedCostUsd: estimate.estimatedCostUsd,
+          notes: ['Generation claimed by the active design workflow.'],
+          generationLeaseOwner: generationOwner,
+          generationLeaseUntil: new Date(Date.now() + 120_000).toISOString(),
+          createdAt: asset?.createdAt || timestamp,
+          updatedAt: timestamp
+        };
+        const index = asset ? data.generatedImages.findIndex(item => item.id === asset?.id) : -1;
+        if (index >= 0) data.generatedImages[index] = planned;
+        else data.generatedImages.push(planned);
+        asset = planned;
+        claimed = true;
+      });
+      if (asset && (asset.status === 'generated' || asset.status === 'mocked')) return asset;
+      if (claimed && asset) {
+        try {
+          const generated = await this.generateAsset(input, spec, asset.id);
+          await this.store.update(data => {
+            const index = data.generatedImages.findIndex(item => item.id === generated.id);
+            if (index >= 0) data.generatedImages[index] = generated;
+            else data.generatedImages.push(generated);
+          });
+          return generated;
+        } catch (error) {
+          await this.store.update(data => {
+            const item = data.generatedImages.find(candidate => candidate.id === asset?.id);
+            if (!item) return;
+            item.status = 'failed';
+            item.notes = [...item.notes, error instanceof Error ? error.message : String(error)];
+            item.generationLeaseOwner = undefined;
+            item.generationLeaseUntil = undefined;
+            item.updatedAt = nowIso();
+          });
+          throw error;
+        }
+      }
+      await wait(500);
+    }
+    throw new Error(`Timed out waiting for imagery generation claim: ${spec.title}`);
   }
 
   private createImageSpecs(input: ImageryGenerationInput): Array<{ title: string; intendedUse: ImageGenerationUse; tier: ImageGenerationTier; prompt: string; size: string }> {
@@ -183,7 +261,8 @@ export class ImageryGenerationService {
 
   private async generateAsset(
     input: ImageryGenerationInput,
-    spec: { title: string; intendedUse: ImageGenerationUse; tier: ImageGenerationTier; prompt: string; size: string }
+    spec: { title: string; intendedUse: ImageGenerationUse; tier: ImageGenerationTier; prompt: string; size: string },
+    id = createId('image')
   ): Promise<GeneratedImageAsset> {
     const profile = imageGenerationProfiles[spec.tier];
     const estimate = estimateImageGenerationCost({ model: profile.model, quality: profile.quality, prompt: spec.prompt });
@@ -210,8 +289,7 @@ export class ImageryGenerationService {
         pricingNote: 'Estimated from OpenAI per-token image generation pricing; replace with API usage when returned by provider.'
       }
     });
-    const id = createId('image');
-    const generated = process.env.OPENAI_API_KEY
+    const generated = input.provider !== 'mock' && process.env.OPENAI_API_KEY
       ? await this.callOpenAiImageGeneration({ prompt: spec.prompt, model: profile.model, quality: profile.quality, size: spec.size, id, projectId: input.projectId })
           .catch(async error => {
             const fallback = await this.writeMockImage({ id, projectId: input.projectId, title: spec.title, direction: input.direction.name, prompt: spec.prompt });
@@ -243,6 +321,8 @@ export class ImageryGenerationService {
       estimatedCostUsd: estimate.estimatedCostUsd,
       costEntryId: costEntry.id,
       notes: generated.notes,
+      generationLeaseOwner: undefined,
+      generationLeaseUntil: undefined,
       createdAt: nowIso(),
       updatedAt: nowIso()
     };
@@ -389,4 +469,8 @@ function contentTypeFor(fileName: string): string {
   if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
   if (lower.endsWith('.svg')) return 'image/svg+xml; charset=utf-8';
   return 'application/octet-stream';
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

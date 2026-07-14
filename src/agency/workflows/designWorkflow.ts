@@ -88,7 +88,8 @@ export class DesignWorkflow {
     return { designBrief, brandAudit, competitorResearch, directions, approval };
   }
 
-  async completeAfterApproval(projectId: string, selectedDirection: CreativeDirection, approvalId?: string) {
+  async completeAfterApproval(projectId: string, selectedDirection: CreativeDirection, approvalId?: string, workflowRunId?: string, leaseOwner?: string, useMockImagery = false) {
+    const productionStep = (step: string) => this.patchProductionStep(workflowRunId, step, leaseOwner);
     const data = await this.store.read();
     let designBrief = data.design.briefs.find(item => item.projectId === projectId);
     if (!designBrief) {
@@ -106,82 +107,147 @@ export class DesignWorkflow {
       designBrief = createDesignBrief({ projectId: project.id, customer, structuredBrief: project.structuredBrief, originalBrief: project.originalBrief });
       await this.saveDesign(project.id, 'briefs', designBrief, 'design_brief', 'design-brief.json', 'Design brief');
     }
+    const existingSelected = data.design.selectedDirections.filter(item => item.projectId === projectId).at(-1);
+    const directionChanged = Boolean(existingSelected && existingSelected.selectedDirectionId !== selectedDirection.id);
+    const reuseExisting = !directionChanged;
     const directions = data.design.creativeDirections.filter(item => item.projectId === projectId);
     const orderedDirections = [selectedDirection, ...directions.filter(item => item.id !== selectedDirection.id)];
-    const selected: SelectedDirection = {
-      ...selectDirection(orderedDirections.length ? orderedDirections : [selectedDirection], 'approval', approvalId),
-      selectedDirectionId: selectedDirection.id,
-      approvedByUser: true
-    };
-    await this.store.update(next => {
-      next.design.selectedDirections = next.design.selectedDirections.filter(item => item.projectId !== projectId);
-      next.design.selectedDirections.push(selected);
-    });
-    await this.saveArtifact(projectId, 'creative_direction', 'selected-direction.json', 'Selected direction', { selectedDirection: selected, direction: selectedDirection });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'direction_selected', state: {}, createdAt: '', updatedAt: '' }, 'design.direction.selected', { selected });
-
-    const sitemap = createSitemap(designBrief, selectedDirection);
-    await this.saveDesign(projectId, 'sitemaps', sitemap, 'sitemap', 'sitemap.json', 'Sitemap');
-    await this.completeTask(projectId, 'sitemap', { sitemap });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'sitemap', state: {}, createdAt: '', updatedAt: '' }, 'design.sitemap.created', { sitemap });
-
-    const wireframes = createWireframe(sitemap);
-    await this.saveDesign(projectId, 'wireframes', wireframes, 'wireframe', 'wireframes.json', 'Wireframes');
-    await this.completeTask(projectId, 'wireframe', { wireframes });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'wireframes', state: {}, createdAt: '', updatedAt: '' }, 'design.wireframes.created', { wireframes });
-
-    const tokens = createDesignTokens(selectedDirection);
-    await this.saveDesign(projectId, 'tokens', tokens, 'design_tokens', 'design-tokens.json', 'Design tokens');
-    await this.saveArtifact(projectId, 'design_tokens', 'tailwind-theme.ts', 'Tailwind theme', { tailwindTheme: tokens.exportedTailwindTheme });
-    await this.completeTask(projectId, 'design_tokens', { tokens });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'tokens', state: {}, createdAt: '', updatedAt: '' }, 'design.tokens.created', { tokens });
-
-    const componentSpec = createComponentSpec(designBrief, sitemap);
-    await this.saveDesign(projectId, 'componentSpecs', componentSpec, 'component_spec', 'component-spec.json', 'Component spec');
-    await this.completeTask(projectId, 'component_system', { componentSpec });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'component_spec', state: {}, createdAt: '', updatedAt: '' }, 'design.component_spec.created', { componentSpec });
-
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'prototype', state: {}, createdAt: '', updatedAt: '' }, 'design.prototype.started', {});
-    const prototype = createPrototype(projectId);
-    await this.saveDesign(projectId, 'prototypes', prototype, 'prototype', 'prototype-summary.md', 'Prototype summary');
-    await this.completeTask(projectId, 'prototype', { prototype });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'prototype', state: {}, createdAt: '', updatedAt: '' }, 'design.prototype.created', { prototype });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'mobile_rules', state: {}, createdAt: '', updatedAt: '' }, 'design.mobile_rules.created', { mobileRules: wireframes.mobileLayout });
-
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'imagery_generation', state: {}, createdAt: '', updatedAt: '' }, 'design.imagery.started', {});
-    const imageryPlan = await this.companyOS.imagery.generateWebsiteImagery({
-      projectId,
-      customerId: designBrief.customerId,
-      designBrief,
-      direction: selectedDirection,
-      mode: 'standard',
-      count: 5
-    });
-    await this.saveArtifact(projectId, 'imagery_plan', 'imagery-plan.json', 'Website imagery plan', { imageryPlan });
-    for (const image of [imageryPlan.hero, ...imageryPlan.pageImages, ...imageryPlan.sectionImages]) {
-      await this.saveArtifact(projectId, 'generated_image', `imagery/${image.id}.json`, image.title, image as unknown as Record<string, unknown>);
+    let selected: SelectedDirection;
+    if (reuseExisting && existingSelected) {
+      selected = existingSelected;
+    } else {
+      await productionStep('direction_selected');
+      selected = {
+        ...selectDirection(orderedDirections.length ? orderedDirections : [selectedDirection], 'approval', approvalId),
+        selectedDirectionId: selectedDirection.id,
+        approvedByUser: true
+      };
+      await this.store.update(next => {
+        next.design.selectedDirections = next.design.selectedDirections.filter(item => item.projectId !== projectId);
+        next.design.selectedDirections.push(selected);
+      });
+      await this.saveArtifact(projectId, 'creative_direction', 'selected-direction.json', 'Selected direction', { selectedDirection: selected, direction: selectedDirection });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'direction_selected', state: {}, createdAt: '', updatedAt: '' }, 'design.direction.selected', { selected });
     }
-    await this.completeTask(projectId, 'imagery_generation', { imageryPlan });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'imagery_generation', state: {}, createdAt: '', updatedAt: '' }, 'design.imagery.completed', { imageryPlan });
 
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'design_qa', state: {}, createdAt: '', updatedAt: '' }, 'design.qa.started', {});
-    const qaReport = createDesignQa(projectId);
-    await this.saveDesign(projectId, 'qaReports', qaReport, 'design_qa', 'design-qa-report.md', 'Design QA report');
-    await this.completeTask(projectId, 'design_qa', { qaReport });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'design_qa', state: {}, createdAt: '', updatedAt: '' }, qaReport.passed ? 'design.qa.passed' : 'design.qa.failed', { qaReport });
+    let sitemap = reuseExisting ? data.design.sitemaps.filter(item => item.projectId === projectId).at(-1) : undefined;
+    if (!sitemap) {
+      await productionStep('sitemap');
+      sitemap = createSitemap(designBrief, selectedDirection);
+      await this.saveDesign(projectId, 'sitemaps', sitemap, 'sitemap', 'sitemap.json', 'Sitemap');
+      await this.completeTask(projectId, 'sitemap', { sitemap });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'sitemap', state: {}, createdAt: '', updatedAt: '' }, 'design.sitemap.created', { sitemap });
+    }
 
-    const handoff = createHandoff({ selectedDirection: selected, direction: selectedDirection, sitemap, wireframes, tokens, componentSpec, imageryPlan });
-    const brandGuidelines = await createBrandGuidelinesFiles({ designBrief, direction: selectedDirection, tokens, componentSpec, handoff });
-    await this.saveArtifact(projectId, 'brand_guidelines', 'brand-guidelines.html', 'Brand guidelines HTML', { guidelines: brandGuidelines.guidelines }, brandGuidelines.htmlUrl);
-    await this.saveArtifact(projectId, 'brand_guidelines_pdf', 'brand-guidelines.pdf', 'Brand guidelines PDF', { guidelines: brandGuidelines.guidelines }, brandGuidelines.pdfUrl);
-    await this.completeTask(projectId, 'brand_guidelines', { guidelines: brandGuidelines.guidelines, htmlUrl: brandGuidelines.htmlUrl, pdfUrl: brandGuidelines.pdfUrl });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'brand_guidelines', state: {}, createdAt: '', updatedAt: '' }, 'design.brand_guidelines.created', { brandGuidelines: brandGuidelines.guidelines });
+    let wireframes = reuseExisting ? data.design.wireframes.filter(item => item.projectId === projectId).at(-1) : undefined;
+    if (!wireframes) {
+      await productionStep('wireframes');
+      wireframes = createWireframe(sitemap);
+      await this.saveDesign(projectId, 'wireframes', wireframes, 'wireframe', 'wireframes.json', 'Wireframes');
+      await this.completeTask(projectId, 'wireframe', { wireframes });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'wireframes', state: {}, createdAt: '', updatedAt: '' }, 'design.wireframes.created', { wireframes });
+    }
 
-    await this.saveDesign(projectId, 'handoffs', handoff, 'design_handoff', 'design-handoff.md', 'Builder handoff');
-    await this.completeTask(projectId, 'builder_handoff', { handoff });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'handoff', state: {}, createdAt: '', updatedAt: '' }, 'design.handoff.created', { handoff });
-    await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'handoff', state: {}, createdAt: '', updatedAt: '' }, 'design.handoff.sent_to_builder', { handoff });
+    let tokens = reuseExisting ? data.design.tokens.filter(item => item.projectId === projectId).at(-1) : undefined;
+    if (!tokens) {
+      await productionStep('tokens');
+      tokens = createDesignTokens(selectedDirection);
+      await this.saveDesign(projectId, 'tokens', tokens, 'design_tokens', 'design-tokens.json', 'Design tokens');
+      await this.saveArtifact(projectId, 'design_tokens', 'tailwind-theme.ts', 'Tailwind theme', { tailwindTheme: tokens.exportedTailwindTheme });
+      await this.completeTask(projectId, 'design_tokens', { tokens });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'tokens', state: {}, createdAt: '', updatedAt: '' }, 'design.tokens.created', { tokens });
+    }
+
+    let componentSpec = reuseExisting ? data.design.componentSpecs.filter(item => item.projectId === projectId).at(-1) : undefined;
+    if (!componentSpec) {
+      await productionStep('component_spec');
+      componentSpec = createComponentSpec(designBrief, sitemap);
+      await this.saveDesign(projectId, 'componentSpecs', componentSpec, 'component_spec', 'component-spec.json', 'Component spec');
+      await this.completeTask(projectId, 'component_system', { componentSpec });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'component_spec', state: {}, createdAt: '', updatedAt: '' }, 'design.component_spec.created', { componentSpec });
+    }
+
+    let prototype = reuseExisting ? data.design.prototypes.filter(item => item.projectId === projectId).at(-1) : undefined;
+    if (!prototype) {
+      await productionStep('prototype');
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'prototype', state: {}, createdAt: '', updatedAt: '' }, 'design.prototype.started', {});
+      prototype = createPrototype(projectId);
+      await this.saveDesign(projectId, 'prototypes', prototype, 'prototype', 'prototype-summary.md', 'Prototype summary');
+      await this.completeTask(projectId, 'prototype', { prototype });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'prototype', state: {}, createdAt: '', updatedAt: '' }, 'design.prototype.created', { prototype });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'mobile_rules', state: {}, createdAt: '', updatedAt: '' }, 'design.mobile_rules.created', { mobileRules: wireframes.mobileLayout });
+    }
+
+    let imageryPlan = reuseExisting ? data.imageryPlans.filter(item => item.projectId === projectId).at(-1) : undefined;
+    if (!imageryPlan) {
+      await productionStep('imagery_generation');
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'imagery_generation', state: {}, createdAt: '', updatedAt: '' }, 'design.imagery.started', {});
+      imageryPlan = await this.companyOS.imagery.generateWebsiteImagery({
+        projectId,
+        customerId: designBrief.customerId,
+        designBrief,
+        direction: selectedDirection,
+        mode: 'standard',
+        count: 5,
+        provider: useMockImagery ? 'mock' : 'auto'
+      });
+      await this.saveArtifact(projectId, 'imagery_plan', 'imagery-plan.json', 'Website imagery plan', { imageryPlan });
+      for (const image of [imageryPlan.hero, ...imageryPlan.pageImages, ...imageryPlan.sectionImages]) {
+        await this.saveArtifact(projectId, 'generated_image', `imagery/${image.id}.json`, image.title, image as unknown as Record<string, unknown>);
+      }
+      await this.completeTask(projectId, 'imagery_generation', { imageryPlan });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'imagery_generation', state: {}, createdAt: '', updatedAt: '' }, 'design.imagery.completed', { imageryPlan });
+    }
+
+    let qaReport = reuseExisting ? data.design.qaReports.filter(item => item.projectId === projectId).at(-1) : undefined;
+    if (!qaReport) {
+      await productionStep('design_qa');
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'design_qa', state: {}, createdAt: '', updatedAt: '' }, 'design.qa.started', {});
+      qaReport = createDesignQa(projectId);
+      await this.saveDesign(projectId, 'qaReports', qaReport, 'design_qa', 'design-qa-report.md', 'Design QA report');
+      await this.completeTask(projectId, 'design_qa', { qaReport });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'design_qa', state: {}, createdAt: '', updatedAt: '' }, qaReport.passed ? 'design.qa.passed' : 'design.qa.failed', { qaReport });
+    }
+
+    let handoff = reuseExisting ? data.design.handoffs.filter(item => item.projectId === projectId).at(-1) : undefined;
+    if (!handoff) {
+      await productionStep('brand_guidelines');
+      handoff = createHandoff({ selectedDirection: selected, direction: selectedDirection, sitemap, wireframes, tokens, componentSpec, imageryPlan });
+      const hasBrandGuidelines = reuseExisting && data.artifacts.some(item => item.projectId === projectId && item.type === 'brand_guidelines_pdf');
+      if (!hasBrandGuidelines) {
+        const brandGuidelines = await createBrandGuidelinesFiles({ designBrief, direction: selectedDirection, tokens, componentSpec, handoff });
+        await this.saveArtifact(projectId, 'brand_guidelines', 'brand-guidelines.html', 'Brand guidelines HTML', { guidelines: brandGuidelines.guidelines }, brandGuidelines.htmlUrl);
+        await this.saveArtifact(projectId, 'brand_guidelines_pdf', 'brand-guidelines.pdf', 'Brand guidelines PDF', { guidelines: brandGuidelines.guidelines }, brandGuidelines.pdfUrl);
+        await this.completeTask(projectId, 'brand_guidelines', { guidelines: brandGuidelines.guidelines, htmlUrl: brandGuidelines.htmlUrl, pdfUrl: brandGuidelines.pdfUrl });
+        await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'brand_guidelines', state: {}, createdAt: '', updatedAt: '' }, 'design.brand_guidelines.created', { brandGuidelines: brandGuidelines.guidelines });
+      }
+
+      await productionStep('handoff');
+      await this.saveDesign(projectId, 'handoffs', handoff, 'design_handoff', 'design-handoff.md', 'Builder handoff');
+      await this.completeTask(projectId, 'builder_handoff', { handoff });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'handoff', state: {}, createdAt: '', updatedAt: '' }, 'design.handoff.created', { handoff });
+      await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'handoff', state: {}, createdAt: '', updatedAt: '' }, 'design.handoff.sent_to_builder', { handoff });
+    }
     return { selected, sitemap, wireframes, tokens, componentSpec, prototype, qaReport, handoff };
+  }
+
+  private async patchProductionStep(workflowRunId: string | undefined, currentStep: string, leaseOwner?: string): Promise<void> {
+    if (!workflowRunId) return;
+    if (leaseOwner && !await this.workflowRuntime.renewLease(workflowRunId, leaseOwner)) {
+      throw new Error(`Workflow execution lease lost: ${workflowRunId}`);
+    }
+    const workflow = await this.workflowRuntime.get(workflowRunId);
+    if (!workflow) return;
+    await this.workflowRuntime.patch(workflowRunId, {
+      status: 'running',
+      currentStep,
+      state: {
+        ...workflow.state,
+        designOptionsApproved: true,
+        lastCheckpoint: currentStep,
+        lastCheckpointAt: nowIso()
+      }
+    });
   }
 
   async postBuildReview(projectId: string, previewUrl?: string) {
@@ -269,16 +335,21 @@ export class DesignWorkflow {
 
   private async saveArtifact(projectId: string, type: ArtifactType, path: string, title: string, metadata: Record<string, unknown>, url?: string) {
     await this.store.update(data => {
+      const artifactPath = `project/design/${path}`;
+      const existing = data.artifacts
+        .filter(item => item.projectId === projectId && item.type === type && item.path === artifactPath)
+        .at(-1);
+      data.artifacts = data.artifacts.filter(item => !(item.projectId === projectId && item.type === type && item.path === artifactPath));
       data.artifacts.push({
-        id: createId('artifact'),
+        id: existing?.id || createId('artifact'),
         projectId,
         type,
         title,
-        path: `project/design/${path}`,
+        path: artifactPath,
         url,
         metadata,
         createdByAgentId: 'design',
-        createdAt: nowIso()
+        createdAt: existing?.createdAt || nowIso()
       });
     });
   }

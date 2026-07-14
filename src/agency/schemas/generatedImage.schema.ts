@@ -47,6 +47,8 @@ export interface GeneratedImageAsset {
   actualCostUsd?: number;
   costEntryId?: string;
   notes: string[];
+  generationLeaseOwner?: string;
+  generationLeaseUntil?: string;
   createdAt: string;
   updatedAt: string;
 }

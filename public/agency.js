@@ -36,7 +36,11 @@
     auditPanel: document.getElementById('auditPanel'),
     resumeOverlay: document.getElementById('resumeOverlay'),
     resumeIssue: document.getElementById('resumeIssue'),
-    resumeWorkflow: document.getElementById('resumeWorkflow')
+    resumeWorkflow: document.getElementById('resumeWorkflow'),
+    version: document.getElementById('agencyVersion'),
+    diagnostics: document.getElementById('workflowDiagnostics'),
+    diagnosticsBody: document.getElementById('workflowDiagnosticsBody'),
+    workflowHealth: document.getElementById('workflowHealth')
   };
 
   const state = {
@@ -50,7 +54,9 @@
     workflowRunId: '',
     renderedApprovalKey: '',
     structuredBrief: null,
-    pollTimer: null
+    pollTimer: null,
+    lastApiError: '',
+    lastDiagnostics: null
   };
 
   async function api(path, options = {}) {
@@ -60,7 +66,10 @@
       body: options.body ? JSON.stringify(options.body) : undefined
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || `Request failed: ${response.status}`);
+    if (!response.ok) {
+      state.lastApiError = `${data.error || `Request failed: ${response.status}`} (${response.status} ${path})`;
+      throw new Error(data.error || `Request failed: ${response.status}`);
+    }
     return data;
   }
 
@@ -339,13 +348,15 @@
   async function pollWorkflow() {
     if (!state.workflowRunId) return;
     try {
-      const result = await api(`/workflow/${state.workflowRunId}/status`);
+      const result = await api(`/workflow/${state.workflowRunId}/status?projectId=${encodeURIComponent(state.projectId || '')}`);
+      state.workflowRunId = result.canonicalWorkflowRunId || result.workflow?.id || state.workflowRunId;
       renderOfficeState(result.officeState);
       if (result.workflow.status === 'completed') clearInterval(state.pollTimer);
     } catch (error) {
       if (state.projectId) {
         try {
           const result = await api(`/project/${state.projectId}`);
+          state.workflowRunId = result.canonicalWorkflowRunId || result.workflow?.id || state.workflowRunId;
           renderOfficeState(result.officeState);
           return;
         } catch {
@@ -359,11 +370,14 @@
   function renderOfficeState(officeState) {
     if (!officeState) return;
     const project = officeState.project;
+    const diagnostics = officeState.diagnostics || {};
+    if (officeState.workflow?.id) state.workflowRunId = officeState.workflow.id;
     if (project) {
       state.project = project;
       state.projectId = project.id;
       state.workflowRunId = project.currentWorkflowRunId || state.workflowRunId;
-      els.projectStatus.textContent = `${project.status.replaceAll('_', ' ')} - ${project.title}`;
+      const phase = String(diagnostics.phase || project.status).replaceAll('_', ' ');
+      els.projectStatus.textContent = `${phase} - ${project.title}`;
     }
     renderTimeline(officeState.timeline || []);
     renderAgents(officeState.agents || []);
@@ -372,6 +386,49 @@
     renderApproval(officeState.approvals || [], project);
     renderCompany(officeState);
     renderResume(officeState);
+    renderDiagnostics(diagnostics);
+  }
+
+  function renderDiagnostics(diagnostics) {
+    if (!els.diagnosticsBody) return;
+    state.lastDiagnostics = diagnostics;
+    const app = diagnostics.app || {};
+    const warnings = Array.isArray(diagnostics.warnings) ? diagnostics.warnings : [];
+    if (els.version) els.version.textContent = `v${app.version || 'unknown'} - ${app.commit || 'local'}`;
+    if (els.workflowHealth) {
+      els.workflowHealth.textContent = diagnostics.integrity === 'warning' ? `${warnings.length} warning${warnings.length === 1 ? '' : 's'}` : 'healthy';
+      els.workflowHealth.className = diagnostics.integrity === 'warning' ? 'warning' : 'healthy';
+    }
+    const values = [
+      ['Version', `${app.version || 'unknown'} / ${app.commit || 'local'}`],
+      ['Deploy', `${app.context || 'unknown'} / ${app.deployId || 'local'}`],
+      ['Storage', app.storage || 'unknown'],
+      ['Test mode', diagnostics.testMode ? 'yes' : 'no'],
+      ['Project', diagnostics.projectId || 'none'],
+      ['Project status', diagnostics.projectStatus || 'none'],
+      ['Workflow', diagnostics.workflowRunId || 'missing'],
+      ['Workflow status', diagnostics.workflowStatus || 'missing'],
+      ['Phase', diagnostics.phase || 'missing'],
+      ['Current step', diagnostics.currentStep || 'missing'],
+      ['Checkpoint', diagnostics.lastCheckpoint || 'missing'],
+      ['Lease owner', diagnostics.executionLeaseOwner || 'none'],
+      ['Lease until', diagnostics.executionLeaseUntil || 'none'],
+      ['Updated', diagnostics.workflowUpdatedAt || diagnostics.projectUpdatedAt || 'unknown'],
+      ['Design approved', diagnostics.designApproved ? 'yes' : 'no'],
+      ['Handoff ready', diagnostics.designHandoffReady ? 'yes' : 'no'],
+      ['Pending approvals', (diagnostics.pendingApprovals || []).join(', ') || 'none'],
+      ['Artifacts', diagnostics.artifactCount ?? 0],
+      ['Raw artifact records', diagnostics.rawArtifactCount ?? diagnostics.artifactCount ?? 0],
+      ['Last browser/API error', state.lastApiError || 'none']
+    ];
+    const trace = Array.isArray(diagnostics.debugTrace) ? diagnostics.debugTrace : [];
+    const approvalRecords = Array.isArray(diagnostics.approvalRecords) ? diagnostics.approvalRecords : [];
+    els.diagnosticsBody.innerHTML = `
+      <dl>${values.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join('')}</dl>
+      <div class="workflow-debug-trace"><b>Recent stage transitions</b>${trace.length ? trace.map(item => `<p>${escapeHtml(item.at || '')} - ${escapeHtml(item.step || 'unknown')} (${escapeHtml(item.status || 'unknown')})</p>`).join('') : '<p>No transitions recorded.</p>'}</div>
+      <div class="workflow-debug-trace"><b>Approval records</b>${approvalRecords.length ? approvalRecords.map(item => `<p>${escapeHtml(item.type || 'unknown')} - ${escapeHtml(item.status || 'unknown')} - ${escapeHtml(item.id || '')}</p>`).join('') : '<p>No approval records.</p>'}</div>
+      ${warnings.length ? `<div class="workflow-warning-list">${warnings.map(item => `<p>${escapeHtml(item)}</p>`).join('')}</div>` : '<p class="workflow-diagnostics-ok">No workflow integrity issues detected.</p>'}
+    `;
   }
 
   function renderTimeline(timeline) {
@@ -675,20 +732,40 @@
     if (restoredDesignFeedback && existingDesignFeedback) restoredDesignFeedback.value = existingDesignFeedback;
     if (pendingDesignApproval) {
       els.designStudioBody.querySelectorAll('.approve-direction-option').forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', async () => {
           const option = (design.creativeDirections || [])[Number(button.dataset.index || 0)];
           markDirectionButtonWorking(button, 'Starting');
-          approveDesignOptions(pendingDesignApproval, option);
+          try {
+            await approveDesignOptions(pendingDesignApproval, option);
+          } catch (error) {
+            state.lastApiError = error.message;
+            setReception('Design Approval Issue', 'Design Agent', `${error.message}. The selected option remains available; retry or inspect Workflow diagnostics.`);
+            button.disabled = false;
+            button.classList.remove('is-working');
+            button.innerHTML = '<i data-lucide="check"></i><span>Approve</span>';
+            renderDiagnostics(state.lastDiagnostics || {});
+            refreshIcons();
+          }
         });
       });
       const requestButton = document.getElementById('requestDesignStudioChanges');
       if (requestButton) requestButton.addEventListener('click', () => requestChanges(pendingDesignApproval.id, document.getElementById('designStudioFeedback')?.value || ''));
     }
     els.designStudioBody.querySelectorAll('.select-direction-option').forEach(button => {
-      button.addEventListener('click', () => {
+      button.addEventListener('click', async () => {
         const option = (design.creativeDirections || [])[Number(button.dataset.index || 0)];
         markDirectionButtonWorking(button, 'Starting');
-        selectDesignDirection(option);
+        try {
+          await selectDesignDirection(option);
+        } catch (error) {
+          state.lastApiError = error.message;
+          setReception('Design Recovery Issue', 'Design Agent', `${error.message}. The direction remains selected and can be retried.`);
+          button.disabled = false;
+          button.classList.remove('is-working');
+          button.innerHTML = '<i data-lucide="play"></i><span>Continue</span>';
+          renderDiagnostics(state.lastDiagnostics || {});
+          refreshIcons();
+        }
       });
     });
     refreshIcons();
