@@ -1,10 +1,9 @@
 import serverless from 'serverless-http';
-import { connectLambda } from '@netlify/blobs';
+import { withLambda } from '@netlify/aws-lambda-compat';
 
 let cachedHandler;
 
-export async function handler(event, context) {
-  connectLambda(event);
+const lambdaHandler = async (event, context) => {
   if (!cachedHandler) {
     const mod = await import('../../server.js');
     await mod.initializeRuntime();
@@ -17,4 +16,6 @@ export async function handler(event, context) {
   };
 
   return cachedHandler(rewritten, context);
-}
+};
+
+export default withLambda(lambdaHandler);

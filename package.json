@@ -20,6 +20,7 @@
     "brand:guidelines:agency": "npm run build && node scripts/generate-brand-guidelines.mjs --agency"
   },
   "dependencies": {
+    "@netlify/aws-lambda-compat": "^1.0.2",
     "@netlify/blobs": "^10.7.9",
     "express": "^4.19.2",
     "nodemailer": "^9.0.3",
