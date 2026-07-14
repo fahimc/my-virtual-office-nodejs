@@ -75,13 +75,13 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function assertSingleDesignApprovalSurface() {
   const [indexResponse, scriptResponse] = await Promise.all([
     fetch(`${siteOrigin}/`),
-    fetch(`${siteOrigin}/agency.js?v=agency-os-8`)
+    fetch(`${siteOrigin}/agency.js?v=agency-os-9`)
   ]);
   if (!indexResponse.ok) throw new Error(`GET / failed: ${indexResponse.status}`);
   if (!scriptResponse.ok) throw new Error(`GET /agency.js failed: ${scriptResponse.status}`);
   const indexHtml = await indexResponse.text();
   const script = await scriptResponse.text();
-  if (!indexHtml.includes('/agency.js?v=agency-os-8')) {
+  if (!indexHtml.includes('/agency.js?v=agency-os-9')) {
     throw new Error('Homepage is not using the latest agency.js cache-bust version');
   }
   if (!script.includes("item.status === 'pending' && item.type !== 'design_options'")) {
@@ -107,21 +107,6 @@ async function pollProjectForDesignApproval(projectId, workflowRunId) {
     const approvals = project.approvals || project.officeState?.approvals || [];
     const approval = approvals.find(item => item.type === 'design_options' && item.status === 'pending');
     if (approval) return { project, approval, misses };
-    const directions = project.officeState?.designStudio?.creativeDirections || [];
-    if (project.officeState?.designStudio?.phase === 'creative_direction_approval' && directions.length) {
-      return {
-        project,
-        misses,
-        approval: {
-          id: `design-options-${projectId}`,
-          projectId,
-          type: 'design_options',
-          title: 'Choose a creative direction',
-          description: 'Synthetic E2E approval from workflow state.',
-          payload: { workflowRunId, designOptions: directions }
-        }
-      };
-    }
     await sleep(2000);
   }
   throw new Error(`No design approval appeared for ${projectId}`);
@@ -147,7 +132,10 @@ async function pollWorkflowForPreview(workflowRunId, projectId) {
     if (['planning', 'design_discovery', 'design_approval'].includes(phase) || step === 'design_options_approval') {
       throw new Error(`Workflow regressed after design approval: ${phase}/${step}. Observed: ${observed.join(' -> ')}`);
     }
-    if (last.officeState?.project?.previewUrl || last.workflow?.status === 'failed') {
+    const previewReady = Boolean(last.officeState?.project?.previewUrl)
+      && last.workflow?.currentStep === 'preview_approval'
+      && last.workflow?.status === 'waiting_for_user';
+    if (previewReady || last.workflow?.status === 'failed') {
       last.pollMisses = misses;
       last.observed = observed;
       return last;
@@ -215,8 +203,8 @@ async function main() {
   if (designOptionsStage?.status !== 'completed') {
     throw new Error(`Design Options should be completed immediately after approval, got ${designOptionsStage?.status || 'missing'}`);
   }
-  if (approvedDesign.officeState?.diagnostics?.app?.version !== '1.1.3') {
-    throw new Error(`Expected app version 1.1.3, got ${approvedDesign.officeState?.diagnostics?.app?.version || 'missing'}`);
+  if (approvedDesign.officeState?.diagnostics?.app?.version !== '1.1.4') {
+    throw new Error(`Expected app version 1.1.4, got ${approvedDesign.officeState?.diagnostics?.app?.version || 'missing'}`);
   }
   const approvalTrace = approvedDesign.officeState?.diagnostics?.debugTrace || [];
   if (!approvalTrace.some(item => item.step === 'design_options_approved')) {

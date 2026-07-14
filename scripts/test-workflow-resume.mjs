@@ -53,6 +53,31 @@ try {
   assert.equal(recoveredLegacy?.currentStep, 'brand_guidelines');
   assert.equal(recoveredLegacy?.state.lastResumeFromStep, 'failed');
   assert.equal(recoveredLegacy?.state.lastResumeCheckpoint, 'brand_guidelines');
+  const competingRun = {
+    ...run,
+    id: 'workflow-competing-lease',
+    state: {},
+    updatedAt: new Date().toISOString()
+  };
+  const competingStore = {
+    async update(mutator) {
+      const optimistic = { workflows: [{ ...competingRun, state: {} }] };
+      await mutator(optimistic);
+      const committed = {
+        workflows: [{
+          ...competingRun,
+          state: {
+            executionLeaseOwner: 'other-worker',
+            executionLeaseUntil: new Date(Date.now() + 60_000).toISOString()
+          }
+        }]
+      };
+      await mutator(committed);
+      return committed;
+    }
+  };
+  const competingRuntime = new WorkflowRuntime(competingStore, new EventBus());
+  assert.equal(await competingRuntime.acquireLease(competingRun.id, 'test-worker'), false);
   console.log('Workflow resume checkpoint regression: passed');
 } finally {
   await rm(tempDir, { recursive: true, force: true });

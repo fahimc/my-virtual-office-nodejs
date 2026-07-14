@@ -59,8 +59,7 @@ export class WorkflowRuntime {
   }
 
   async acquireLease(workflowRunId: string, owner: string, ttlMs = DEFAULT_EXECUTION_LEASE_TTL_MS): Promise<boolean> {
-    let acquired = false;
-    await this.store.update(data => {
+    const committed = await this.store.update(data => {
       const run = data.workflows.find(item => item.id === workflowRunId);
       if (!run) throw new Error(`Workflow run not found: ${workflowRunId}`);
       const leaseOwner = typeof run.state.executionLeaseOwner === 'string' ? run.state.executionLeaseOwner : '';
@@ -72,14 +71,13 @@ export class WorkflowRuntime {
         executionLeaseUntil: new Date(Date.now() + ttlMs).toISOString()
       };
       run.updatedAt = nowIso();
-      acquired = true;
     });
-    return acquired;
+    const run = committed.workflows.find(item => item.id === workflowRunId);
+    return run?.state.executionLeaseOwner === owner;
   }
 
   async renewLease(workflowRunId: string, owner: string, ttlMs = DEFAULT_EXECUTION_LEASE_TTL_MS): Promise<boolean> {
-    let renewed = false;
-    await this.store.update(data => {
+    const committed = await this.store.update(data => {
       const run = data.workflows.find(item => item.id === workflowRunId);
       if (!run || run.state.executionLeaseOwner !== owner) return;
       run.state = {
@@ -87,9 +85,9 @@ export class WorkflowRuntime {
         executionLeaseUntil: new Date(Date.now() + ttlMs).toISOString()
       };
       run.updatedAt = nowIso();
-      renewed = true;
     });
-    return renewed;
+    const run = committed.workflows.find(item => item.id === workflowRunId);
+    return run?.state.executionLeaseOwner === owner;
   }
 
   async releaseLease(workflowRunId: string, owner: string): Promise<void> {

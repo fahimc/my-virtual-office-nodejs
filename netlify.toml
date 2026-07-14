@@ -37,6 +37,16 @@
   status = 200
 
 [[redirects]]
+  from = "/generated-images/*"
+  to = "/.netlify/functions/api/generated-images/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/generated/brand-guidelines/*"
+  to = "/.netlify/functions/api/generated/brand-guidelines/:splat"
+  status = 200
+
+[[redirects]]
   from = "/portal/*"
   to = "/portal.html"
   status = 200

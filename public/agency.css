@@ -520,6 +520,23 @@
   font-size: 14px;
 }
 
+.design-review-preparing {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  border: 1px solid #40506f;
+  border-left: 4px solid #38bdf8;
+  border-radius: 8px;
+  background: #0e1728;
+  padding: 12px;
+}
+
+.design-review-preparing span {
+  color: #b8c5da;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .creative-direction-review-list {
   display: grid;
   gap: 10px;
