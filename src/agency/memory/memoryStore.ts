@@ -183,13 +183,9 @@ export class MemoryStore {
   private async tryReadFromBlob(): Promise<AgencyStoreData | undefined> {
     try {
       const { getStore } = await import('@netlify/blobs');
-      const store = getStore(this.blobStoreName);
+      const store = getStore({ name: this.blobStoreName, consistency: 'strong' });
       const data = await store.get(this.blobKey, { type: 'json' });
-      if (!data) {
-        const initial = emptyStore();
-        await store.setJSON(this.blobKey, normalizeStore(initial));
-        return initial;
-      }
+      if (!data) return emptyStore();
       return normalizeStore(data as Partial<AgencyStoreData>);
     } catch (error) {
       this.warnBlobFallback(error);
@@ -200,7 +196,7 @@ export class MemoryStore {
   private async tryWriteToBlob(data: AgencyStoreData): Promise<boolean> {
     try {
       const { getStore } = await import('@netlify/blobs');
-      const store = getStore(this.blobStoreName);
+      const store = getStore({ name: this.blobStoreName, consistency: 'strong' });
       await store.setJSON(this.blobKey, normalizeStore(data));
       return true;
     } catch (error) {
