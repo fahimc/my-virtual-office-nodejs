@@ -173,7 +173,6 @@ export class WebsiteBuildWorkflow {
       await this.workflowRuntime.patch(run.id, { status: 'running', currentStep: 'preview' });
       const delivery = await this.agentRuntime.execute('delivery', { projectId: project.id, qaSummary: qaResult?.summary || '' }, { projectId: project.id, workflowRunId: run.id }) as { previewUrl: string; summary: string };
       await this.saveArtifact(project.id, 'preview', 'Preview build', delivery, 'delivery', delivery.previewUrl);
-      if (this.designWorkflow) await this.designWorkflow.postBuildReview(project.id, delivery.previewUrl);
       await this.projectMemory.update(project.id, { previewUrl: delivery.previewUrl, status: 'awaiting_approval' });
       await this.completeCompanyTask(project.id, 'preview', delivery as unknown as Record<string, unknown>);
       if (this.companyOS) {
@@ -199,6 +198,11 @@ export class WebsiteBuildWorkflow {
       });
       await this.workflowRuntime.emit(run, 'preview.created', delivery);
       await this.workflowRuntime.emit(run, 'approval.requested', { approval });
+      if (this.designWorkflow) {
+        await this.designWorkflow.postBuildReview(project.id, delivery.previewUrl).catch(error => {
+          console.error(`[websiteBuildWorkflow] post-build design review failed: ${error instanceof Error ? error.message : String(error)}`);
+        });
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       await Promise.allSettled([
