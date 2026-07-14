@@ -7,7 +7,9 @@ const lambdaHandler = async (event, context) => {
   if (!cachedHandler) {
     const mod = await import('../../server.js');
     await mod.initializeRuntime();
-    cachedHandler = serverless(mod.app);
+    cachedHandler = serverless(mod.app, {
+      binary: ['image/*', 'application/pdf', 'application/octet-stream']
+    });
   }
 
   const rewritten = {
