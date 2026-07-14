@@ -15,6 +15,7 @@
     "templates:review": "node scripts/review-template-legibility.mjs",
     "templates:imagery": "npm run templates:gallery && node scripts/generate-template-imagery.mjs && npm run templates:gallery && npm run build:css",
     "assets:placeholders": "node scripts/download-placeholder-images.mjs",
+    "e2e:drivegram": "node scripts/e2e-drivegram-live.mjs",
     "brand:guidelines": "npm run build && node scripts/generate-brand-guidelines.mjs",
     "brand:guidelines:agency": "npm run build && node scripts/generate-brand-guidelines.mjs --agency"
   },

@@ -84,10 +84,23 @@ export function structureBriefHeuristically(originalBrief: string): StructuredBr
 }
 
 function extractProjectName(text: string): string {
-  const explicit = text.match(/project name\s*\n+\s*\*\*?([^*\n]+)\*\*?/i) || text.match(/project name\s*[:\-]\s*([^\n]+)/i);
-  if (explicit?.[1]) return cleanMarkdown(explicit[1]);
+  const explicit = extractProjectNameLabel(text);
+  if (explicit) return explicit;
   const brand = text.match(/\bfor\s+([A-Z][A-Za-z0-9&' ]{2,40})\b/) || text.match(/\b([A-Z][A-Za-z0-9&' ]{2,40})\s+is\s+a\b/);
   return cleanMarkdown(brand?.[1] || 'New website project');
+}
+
+function extractProjectNameLabel(text: string): string | undefined {
+  const patterns = [
+    /(?:^|\n)\s*project\s+name\s*[:\-]\s*(?:\*\*)?([^\n*#][^\n]*?)(?:\*\*)?\s*(?=\n|$)/i,
+    /(?:^|\n)\s*project\s+name\s*\n+\s*(?:[-*]\s*)?(?:\*\*)?([^\n*#][^\n]*?)(?:\*\*)?\s*(?=\n|$)/i,
+    /(?:^|\n)\s*project\s+name\s+(?:\*\*)?([^\n*#][^\n]*?)(?:\*\*)?\s*(?=\n|$)/i
+  ];
+  for (const pattern of patterns) {
+    const candidate = cleanMarkdown(text.match(pattern)?.[1] || '');
+    if (candidate && !/^project\s+(summary|brief|overview|name)$/i.test(candidate)) return candidate;
+  }
+  return undefined;
 }
 
 function summarizeBrief(text: string, projectName: string): string {

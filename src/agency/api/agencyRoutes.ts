@@ -336,6 +336,7 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
           }
         });
       }
+      await system.projectMemory.update(approval.projectId, { status: 'design' });
       if (selectedDesignOption && workflowRunIdForClient) {
         await system.jobQueue.enqueue('designWorkflow.completeAfterApproval', { projectId: approval.projectId, selectedDesignOption, approvalId: approval.id, workflowRunId: workflowRunIdForClient }, async payload => {
           await system.designWorkflow.completeAfterApproval(payload.projectId, payload.selectedDesignOption, payload.approvalId);

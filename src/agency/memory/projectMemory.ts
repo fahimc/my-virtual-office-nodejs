@@ -43,8 +43,24 @@ export class ProjectMemory {
 }
 
 function projectTitle(originalBrief: string, structuredBrief: StructuredBrief): string {
-  const explicit = originalBrief.match(/project name\s*\n+\s*\*\*?([^*\n]+)\*\*?/i) || originalBrief.match(/project name\s*[:\-]\s*([^\n]+)/i);
-  const candidate = explicit?.[1] || structuredBrief.businessSummary.split(':')[0] || 'Website project';
-  const cleaned = candidate.replace(/[#*_`>]/g, '').replace(/\s+/g, ' ').trim();
+  const candidate = extractProjectNameLabel(originalBrief) || structuredBrief.businessSummary.split(':')[0] || 'Website project';
+  const cleaned = cleanProjectTitle(candidate);
   return cleaned.slice(0, 70) || 'Website project';
+}
+
+function extractProjectNameLabel(text: string): string | undefined {
+  const patterns = [
+    /(?:^|\n)\s*project\s+name\s*[:\-]\s*(?:\*\*)?([^\n*#][^\n]*?)(?:\*\*)?\s*(?=\n|$)/i,
+    /(?:^|\n)\s*project\s+name\s*\n+\s*(?:[-*]\s*)?(?:\*\*)?([^\n*#][^\n]*?)(?:\*\*)?\s*(?=\n|$)/i,
+    /(?:^|\n)\s*project\s+name\s+(?:\*\*)?([^\n*#][^\n]*?)(?:\*\*)?\s*(?=\n|$)/i
+  ];
+  for (const pattern of patterns) {
+    const candidate = cleanProjectTitle(text.match(pattern)?.[1] || '');
+    if (candidate && !/^project\s+(summary|brief|overview|name)$/i.test(candidate)) return candidate;
+  }
+  return undefined;
+}
+
+function cleanProjectTitle(value: string): string {
+  return value.replace(/[#*_`>]/g, '').replace(/\s+/g, ' ').trim();
 }
