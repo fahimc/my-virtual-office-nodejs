@@ -176,6 +176,27 @@ app.get('/generated-images/:projectId/:fileName', async (req, res, next) => {
   }
 });
 
+app.get('/generated/brand-guidelines/:projectId/:fileName', async (req, res, next) => {
+  if (!SERVERLESS) return next();
+  const safeProjectId = String(req.params.projectId || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  const safeFileName = String(req.params.fileName || '').replace(/[^a-zA-Z0-9._-]/g, '');
+  if (!safeProjectId || !['brand-guidelines.html', 'brand-guidelines.pdf'].includes(safeFileName)) {
+    return res.status(400).send('Invalid brand guidelines path');
+  }
+  try {
+    const { getStore } = await import('@netlify/blobs');
+    const store = getStore({ name: process.env.AGENCY_BLOB_STORE || 'agency-data', consistency: 'strong' });
+    const key = `generated/brand-guidelines/${safeProjectId}/${safeFileName}`;
+    const data = await store.get(key, { type: 'arrayBuffer' });
+    if (!data) return res.status(404).send('Brand guidelines not found');
+    res.setHeader('content-type', safeFileName.endsWith('.pdf') ? 'application/pdf' : 'text/html; charset=utf-8');
+    res.setHeader('cache-control', 'private, max-age=300');
+    res.send(Buffer.from(data));
+  } catch (error) {
+    res.status(500).send(`Brand guidelines unavailable: ${error instanceof Error ? error.message : String(error)}`);
+  }
+});
+
 app.use(express.static(path.join(APP_DIR, 'public')));
 
 function contentTypeForFile(fileName) {

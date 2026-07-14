@@ -32,22 +32,42 @@ export interface BrandGuidelinesOutput {
 
 export async function createBrandGuidelinesFiles(input: BrandGuidelinesInput): Promise<BrandGuidelinesOutput> {
   const guidelines = createBrandGuidelines(input);
-  const publicDir = path.join(process.cwd(), 'public');
   const relativeDir = path.join('generated', 'brand-guidelines', guidelines.projectId);
-  const outputDir = path.join(publicDir, relativeDir);
-  await mkdir(outputDir, { recursive: true });
-
-  const htmlPath = path.join(outputDir, 'brand-guidelines.html');
-  const pdfPath = path.join(outputDir, 'brand-guidelines.pdf');
   const htmlUrl = `/${relativeDir.replaceAll(path.sep, '/')}/brand-guidelines.html`;
   const pdfUrl = `/${relativeDir.replaceAll(path.sep, '/')}/brand-guidelines.pdf`;
   guidelines.htmlUrl = htmlUrl;
   guidelines.pdfUrl = pdfUrl;
+  const html = renderBrandGuidelinesHtml(guidelines);
 
-  await writeFile(htmlPath, renderBrandGuidelinesHtml(guidelines), 'utf8');
+  if (process.env.NETLIFY === 'true' || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    const { getStore } = await import('@netlify/blobs');
+    const store = getStore({ name: process.env.AGENCY_BLOB_STORE || 'agency-data', consistency: 'strong' });
+    const htmlPath = `${relativeDir.replaceAll(path.sep, '/')}/brand-guidelines.html`;
+    const pdfPath = `${relativeDir.replaceAll(path.sep, '/')}/brand-guidelines.pdf`;
+    const pdf = renderFallbackPdf(guidelines);
+    await Promise.all([
+      store.set(htmlPath, html, { metadata: { contentType: 'text/html; charset=utf-8', projectId: guidelines.projectId } }),
+      store.set(pdfPath, bufferToArrayBuffer(pdf), { metadata: { contentType: 'application/pdf', projectId: guidelines.projectId } })
+    ]);
+    return { guidelines, htmlPath, htmlUrl, pdfPath, pdfUrl };
+  }
+
+  const publicDir = path.join(process.cwd(), 'public');
+  const outputDir = path.join(publicDir, relativeDir);
+  await mkdir(outputDir, { recursive: true });
+  const htmlPath = path.join(outputDir, 'brand-guidelines.html');
+  const pdfPath = path.join(outputDir, 'brand-guidelines.pdf');
+
+  await writeFile(htmlPath, html, 'utf8');
   await renderPdfFromHtml(htmlPath, pdfPath, guidelines);
 
   return { guidelines, htmlPath, htmlUrl, pdfPath, pdfUrl };
+}
+
+function bufferToArrayBuffer(buffer: Buffer): ArrayBuffer {
+  const result = new ArrayBuffer(buffer.byteLength);
+  new Uint8Array(result).set(buffer);
+  return result;
 }
 
 export function createBrandGuidelines(input: BrandGuidelinesInput): BrandGuidelines {
