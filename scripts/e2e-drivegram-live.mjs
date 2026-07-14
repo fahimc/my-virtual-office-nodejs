@@ -72,14 +72,25 @@ async function request(path, options = {}) {
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function pollProjectForDesignApproval(projectId, workflowRunId) {
+  let misses = 0;
   for (let attempt = 0; attempt < 120; attempt += 1) {
-    const project = await request(`/project/${projectId}`);
-    const approval = project.approvals.find(item => item.type === 'design_options' && item.status === 'pending');
-    if (approval) return { project, approval };
+    let project;
+    try {
+      project = await request(`/project/${projectId}`);
+    } catch (error) {
+      if (!String(error.message || error).includes('404')) throw error;
+      misses += 1;
+      await sleep(2000);
+      continue;
+    }
+    const approvals = project.approvals || project.officeState?.approvals || [];
+    const approval = approvals.find(item => item.type === 'design_options' && item.status === 'pending');
+    if (approval) return { project, approval, misses };
     const directions = project.officeState?.designStudio?.creativeDirections || [];
     if (project.officeState?.designStudio?.phase === 'creative_direction_approval' && directions.length) {
       return {
         project,
+        misses,
         approval: {
           id: `design-options-${projectId}`,
           projectId,
@@ -97,11 +108,20 @@ async function pollProjectForDesignApproval(projectId, workflowRunId) {
 
 async function pollWorkflowForPreview(workflowRunId) {
   let last;
+  let misses = 0;
   for (let attempt = 0; attempt < 180; attempt += 1) {
-    last = await request(`/workflow/${workflowRunId}/status`);
+    try {
+      last = await request(`/workflow/${workflowRunId}/status`);
+    } catch (error) {
+      if (!String(error.message || error).includes('404')) throw error;
+      misses += 1;
+      await sleep(2000);
+      continue;
+    }
     if (last.officeState?.project?.previewUrl || last.workflow?.status === 'failed') return last;
     await sleep(2000);
   }
+  if (last) last.pollMisses = misses;
   return last;
 }
 
@@ -138,7 +158,7 @@ async function main() {
   if (approvedBrief.project.title !== 'DriveGram') {
     throw new Error(`Expected project title DriveGram, got ${approvedBrief.project.title}`);
   }
-  const { project, approval } = await pollProjectForDesignApproval(projectId, approvedBrief.workflowRunId);
+  const { project, approval, misses: projectPollMisses } = await pollProjectForDesignApproval(projectId, approvedBrief.workflowRunId);
   const selectedDesignOption = approval.payload.designOptions[1] || approval.payload.designOptions[0];
   const approvedDesign = await request(`/approval/${approval.id}/approve`, {
     method: 'POST',
@@ -169,7 +189,9 @@ async function main() {
     title: final.officeState.project.title,
     status: final.officeState.project.status,
     step: final.workflow.currentStep,
-    previewUrl: final.officeState.project.previewUrl
+    previewUrl: final.officeState.project.previewUrl,
+    projectPollMisses,
+    workflowPollMisses: final.pollMisses || 0
   }, null, 2));
 }
 
