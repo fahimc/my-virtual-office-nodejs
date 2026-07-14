@@ -232,6 +232,7 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   };
 
   const shouldResumeBuildStep = (step?: string) => Boolean(step && (
+    step === 'planning' ||
     step === 'design_handoff_ready' ||
     step === 'copy' ||
     step === 'preview' ||
