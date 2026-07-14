@@ -189,7 +189,29 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   }));
 
   router.get('/workflow/:id/status', route(async (req, res) => {
-    const workflow = await system.workflowRuntime.get(req.params.id);
+    let workflow = await system.workflowRuntime.get(req.params.id);
+    if (!workflow) return void res.status(404).json({ error: 'workflow not found' });
+    if (workflow.projectId && workflow.currentStep === 'design_options_approval') {
+      const data = await system.store.read();
+      const approvedDesignGate = data.approvals.find(item => item.projectId === workflow?.projectId && item.type === 'design_options' && item.status === 'approved');
+      const selectedDesignOption = normalizeDesignOption(
+        workflow.state.selectedDesignOption || (approvedDesignGate?.payload?.designOptions as unknown[] | undefined)?.[0],
+        workflow.projectId
+      );
+      if (approvedDesignGate && selectedDesignOption) {
+        await system.workflowRuntime.patch(workflow.id, {
+          status: 'running',
+          currentStep: 'design_options_approved',
+          state: {
+            ...workflow.state,
+            designOptionsApproved: true,
+            selectedDesignOption
+          }
+        });
+        await queueWebsiteBuild(workflow.id);
+        workflow = await system.workflowRuntime.get(req.params.id);
+      }
+    }
     if (!workflow) return void res.status(404).json({ error: 'workflow not found' });
     res.json({ workflow, officeState: await system.officeState(workflow.projectId) });
   }));
