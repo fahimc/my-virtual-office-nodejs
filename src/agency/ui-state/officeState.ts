@@ -65,7 +65,7 @@ export async function buildOfficeState(store: MemoryStore, agentRuntime: AgentRu
       updatedAt: task.updatedAt
     })),
     waitingForUser: workflow?.status === 'waiting_for_user',
-    resumeRequired: workflow?.status === 'failed' || workflow?.status === 'paused',
+    resumeRequired: workflow?.status === 'failed' || workflow?.status === 'paused' || workflow?.currentStep === 'failed',
     diagnostics
   };
 }

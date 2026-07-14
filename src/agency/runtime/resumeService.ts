@@ -7,7 +7,7 @@ export class ResumeService {
   async resume(workflowRunId: string): Promise<void> {
     const run = await this.workflowRuntime.get(workflowRunId);
     if (!run) throw new Error(`Workflow run not found: ${workflowRunId}`);
-    if (run.status !== 'paused' && run.status !== 'failed') return;
+    if (run.status !== 'paused' && run.status !== 'failed' && run.currentStep !== 'failed') return;
     const resumeStep = resolveResumeStep(run);
     const {
       executionLeaseOwner: _executionLeaseOwner,

@@ -36,6 +36,23 @@ try {
   assert.equal(resumed?.state.resumeCount, 1);
   assert.equal(resumed?.state.executionLeaseOwner, undefined);
   assert.equal(resumed?.error, undefined);
+  const legacyRun = await runtime.create('websiteBuildWorkflow', { projectId: 'project-legacy-resume' }, 'project-legacy-resume');
+  await runtime.patch(legacyRun.id, {
+    status: 'running',
+    currentStep: 'brand_guidelines',
+    state: { lastCheckpoint: 'brand_guidelines' }
+  });
+  await runtime.patch(legacyRun.id, {
+    status: 'running',
+    currentStep: 'failed',
+    error: 'Legacy resume left a running/failed state pair'
+  });
+  await resumeService.resume(legacyRun.id);
+  const recoveredLegacy = await runtime.get(legacyRun.id);
+  assert.equal(recoveredLegacy?.status, 'running');
+  assert.equal(recoveredLegacy?.currentStep, 'brand_guidelines');
+  assert.equal(recoveredLegacy?.state.lastResumeFromStep, 'failed');
+  assert.equal(recoveredLegacy?.state.lastResumeCheckpoint, 'brand_guidelines');
   console.log('Workflow resume checkpoint regression: passed');
 } finally {
   await rm(tempDir, { recursive: true, force: true });
