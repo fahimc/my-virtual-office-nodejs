@@ -232,6 +232,7 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   };
 
   const shouldResumeBuildStep = (step?: string) => Boolean(step && (
+    step === 'created' ||
     step === 'planning' ||
     step === 'design_handoff_ready' ||
     step === 'copy' ||
@@ -327,6 +328,11 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     const project = await system.projectMemory.get(req.params.id);
     if (!project) return void res.status(404).json({ error: 'project not found' });
     await reconcileApprovedDesignGates(project.id);
+    const data = await system.store.read();
+    const workflow = project.currentWorkflowRunId
+      ? data.workflows.find(item => item.id === project.currentWorkflowRunId)
+      : data.workflows.find(item => item.projectId === project.id && item.workflowName === 'websiteBuildWorkflow');
+    if (workflow) await resumeStaleBuildWorkflow(workflow.id);
     res.json({ project, officeState: await system.officeState(project.id) });
   }));
 
