@@ -83,6 +83,12 @@ function buildDiagnostics(input: {
   const warnings: string[] = [];
   const approvedDesign = input.approvals.some(item => item.type === 'design_options' && item.status === 'approved') || input.selectedDirection;
   const pendingDesignApprovals = input.approvals.filter(item => item.type === 'design_options' && item.status === 'pending');
+  const projectImages = input.project ? input.data.generatedImages.filter(item => item.projectId === input.project?.id) : [];
+  const openAiImageCount = projectImages.filter(item => item.provider === 'openai' && item.status === 'generated').length;
+  const mockImageCount = projectImages.filter(item => item.provider === 'local_mock' || item.status === 'mocked').length;
+  const failedImageCount = projectImages.filter(item => item.status === 'failed').length;
+  const plannedImageCount = projectImages.filter(item => item.status === 'planned').length;
+  const openAiImagesConfigured = Boolean((process.env.OPENAI_API_KEY ?? process.env['\uFEFFOPENAI_API_KEY'])?.trim());
   if (input.project?.currentWorkflowRunId && !input.data.workflows.some(item => item.id === input.project?.currentWorkflowRunId)) {
     warnings.push('Project referenced a missing workflow; the latest project workflow was selected.');
   }
@@ -91,6 +97,12 @@ function buildDiagnostics(input: {
   if (approvedDesign && pendingDesignApprovals.length) warnings.push(`${pendingDesignApprovals.length} duplicate design approval gate(s) remain open.`);
   if (input.hasDesignHandoff && !input.selectedDirection) warnings.push('A design handoff exists without a selected creative direction.');
   if (input.project && !input.workflow) warnings.push('No website build workflow is attached to this project.');
+  if (failedImageCount) warnings.push(`${failedImageCount} OpenAI image generation request(s) failed. Resume the workflow or regenerate imagery after checking provider status.`);
+  if (mockImageCount && input.workflow?.state?.testMode !== true) {
+    warnings.push(openAiImagesConfigured
+      ? `${mockImageCount} local fallback image(s) are cached; use Generate with OpenAI to replace them.`
+      : `${mockImageCount} local fallback image(s) were used because OpenAI image generation is not configured.`);
+  }
   if (input.rawArtifactCount > input.artifactCount) warnings.push(`${input.rawArtifactCount - input.artifactCount} duplicate resource record(s) were compacted from this view.`);
   const dispatchError = typeof input.workflow?.state?.lastDispatchError === 'string' ? input.workflow.state.lastDispatchError : '';
   if (dispatchError) warnings.push(`Workflow worker dispatch failed: ${dispatchError}`);
@@ -140,6 +152,16 @@ function buildDiagnostics(input: {
     lastResumeError: typeof input.workflow?.state?.lastResumeError === 'string' ? input.workflow.state.lastResumeError : '',
     debugTrace: Array.isArray(input.workflow?.state?.debugTrace) ? input.workflow.state.debugTrace.slice(-24) : [],
     testMode: input.workflow?.state?.testMode === true,
+    openAiImagesConfigured,
+    imageProvider: openAiImageCount ? 'openai' : mockImageCount ? 'local_mock' : 'not_started',
+    openAiImageCount,
+    mockImageCount,
+    failedImageCount,
+    plannedImageCount,
+    lastImageError: projectImages
+      .filter(item => item.status === 'failed')
+      .flatMap(item => item.notes || [])
+      .at(-1) || '',
     designApproved: approvedDesign,
     selectedDirection: input.selectedDirection,
     designHandoffReady: input.hasDesignHandoff,

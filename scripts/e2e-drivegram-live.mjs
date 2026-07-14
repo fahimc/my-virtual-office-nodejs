@@ -75,13 +75,13 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function assertSingleDesignApprovalSurface() {
   const [indexResponse, scriptResponse] = await Promise.all([
     fetch(`${siteOrigin}/`),
-    fetch(`${siteOrigin}/agency.js?v=agency-os-9`)
+    fetch(`${siteOrigin}/agency.js?v=agency-os-10`)
   ]);
   if (!indexResponse.ok) throw new Error(`GET / failed: ${indexResponse.status}`);
   if (!scriptResponse.ok) throw new Error(`GET /agency.js failed: ${scriptResponse.status}`);
   const indexHtml = await indexResponse.text();
   const script = await scriptResponse.text();
-  if (!indexHtml.includes('/agency.js?v=agency-os-9')) {
+  if (!indexHtml.includes('/agency.js?v=agency-os-10')) {
     throw new Error('Homepage is not using the latest agency.js cache-bust version');
   }
   if (!script.includes("item.status === 'pending' && item.type !== 'design_options'")) {
@@ -203,8 +203,8 @@ async function main() {
   if (designOptionsStage?.status !== 'completed') {
     throw new Error(`Design Options should be completed immediately after approval, got ${designOptionsStage?.status || 'missing'}`);
   }
-  if (approvedDesign.officeState?.diagnostics?.app?.version !== '1.1.4') {
-    throw new Error(`Expected app version 1.1.4, got ${approvedDesign.officeState?.diagnostics?.app?.version || 'missing'}`);
+  if (approvedDesign.officeState?.diagnostics?.app?.version !== '1.1.5') {
+    throw new Error(`Expected app version 1.1.5, got ${approvedDesign.officeState?.diagnostics?.app?.version || 'missing'}`);
   }
   const approvalTrace = approvedDesign.officeState?.diagnostics?.debugTrace || [];
   if (!approvalTrace.some(item => item.step === 'design_options_approved')) {

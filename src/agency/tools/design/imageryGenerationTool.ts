@@ -3,6 +3,7 @@ import path from 'node:path';
 import type { MemoryStore } from '../../memory/memoryStore.js';
 import { createId, nowIso } from '../../memory/memoryStore.js';
 import type { BudgetPolicy } from '../../runtime/budgetPolicy.js';
+import type { SecretsProvider } from '../../runtime/secretsProvider.js';
 import type { DesignBrief } from '../../schemas/designBrief.schema.js';
 import type { CreativeDirection } from '../../schemas/creativeDirection.schema.js';
 import type { GeneratedImageAsset, ImageGenerationTier, ImageGenerationUse, WebsiteImageryPlan } from '../../schemas/generatedImage.schema.js';
@@ -17,8 +18,11 @@ export interface ImageryGenerationInput {
   direction: CreativeDirection;
   mode?: 'draft' | 'standard' | 'premium';
   count?: number;
-  provider?: 'auto' | 'mock';
+  provider?: 'auto' | 'mock' | 'openai';
+  force?: boolean;
 }
+
+type ImageSpec = { title: string; intendedUse: ImageGenerationUse; tier: ImageGenerationTier; prompt: string; size: string };
 
 const TEXT_FREE_IMAGE_RULES = [
   'The final image must contain zero written language.',
@@ -35,25 +39,43 @@ export class ImageryGenerationService {
     private readonly store: MemoryStore,
     private readonly costs: CostLedgerService,
     private readonly budgetPolicy: BudgetPolicy,
-    private readonly workspaceRoot: string
+    private readonly workspaceRoot: string,
+    private readonly secrets: SecretsProvider
   ) {}
 
   async generateWebsiteImagery(input: ImageryGenerationInput): Promise<WebsiteImageryPlan> {
-    const existing = (await this.store.read()).imageryPlans.filter(item => item.projectId === input.projectId).at(-1);
-    if (existing) return existing;
     const specs = this.createImageSpecs(input);
+    const provider = await this.resolveProvider(input);
+    const existing = (await this.store.read()).imageryPlans.filter(item => item.projectId === input.projectId).at(-1);
+    if (existing && !input.force && this.isPlanReusable(existing, specs, provider.target)) return existing;
+    if (existing) {
+      await this.store.update(data => {
+        data.imageryPlans = data.imageryPlans.filter(item => item.projectId !== input.projectId);
+      });
+    }
     const assets: GeneratedImageAsset[] = [];
     const generationOwner = createId('imagery-worker');
+    const generationRequestedAt = Date.now();
     for (const spec of specs) {
-      assets.push(await this.getOrGenerateAsset(input, spec, generationOwner));
+      assets.push(await this.getOrGenerateAsset(input, spec, generationOwner, generationRequestedAt, provider));
     }
+    const providers = new Set(assets.map(asset => asset.provider));
+    const timestamp = nowIso();
     const plan: WebsiteImageryPlan = {
       projectId: input.projectId,
       hero: assets[0],
       pageImages: assets.filter(asset => asset.intendedUse === 'about_page_image' || asset.intendedUse === 'content_image'),
       sectionImages: assets.filter(asset => ['section_image', 'service_illustration', 'background', 'blog_thumbnail'].includes(asset.intendedUse)),
+      provider: providers.size > 1 ? 'mixed' : assets[0]?.provider || provider.target,
+      status: assets.every(asset => asset.status === 'generated')
+        ? 'generated'
+        : assets.every(asset => asset.status === 'mocked') ? 'mocked' : 'partial',
+      warnings: provider.target === 'local_mock'
+        ? [provider.reason || 'Local fallback imagery was explicitly requested.']
+        : [],
       totalEstimatedCostUsd: Number(assets.reduce((sum, asset) => sum + asset.estimatedCostUsd, 0).toFixed(6)),
-      createdAt: nowIso()
+      createdAt: existing?.createdAt || timestamp,
+      updatedAt: timestamp
     };
     await this.store.update(data => {
       data.generatedImages = data.generatedImages.filter(item => item.projectId !== input.projectId);
@@ -64,23 +86,43 @@ export class ImageryGenerationService {
     return plan;
   }
 
+  async needsGeneration(input: ImageryGenerationInput): Promise<boolean> {
+    if (input.force) return true;
+    const specs = this.createImageSpecs(input);
+    const provider = await this.resolveProvider(input);
+    const existing = (await this.store.read()).imageryPlans.filter(item => item.projectId === input.projectId).at(-1);
+    return !existing || !this.isPlanReusable(existing, specs, provider.target);
+  }
+
+  async getProviderStatus() {
+    const apiKey = await this.secrets.getSecret('OPENAI_API_KEY');
+    return {
+      provider: apiKey ? 'openai' as const : 'local_mock' as const,
+      configured: Boolean(apiKey),
+      requiredInProduction: true,
+      model: imageGenerationProfiles.standard.model
+    };
+  }
+
   private async getOrGenerateAsset(
     input: ImageryGenerationInput,
-    spec: { title: string; intendedUse: ImageGenerationUse; tier: ImageGenerationTier; prompt: string; size: string },
-    generationOwner: string
+    spec: ImageSpec,
+    generationOwner: string,
+    generationRequestedAt: number,
+    provider: { target: 'openai' | 'local_mock'; apiKey?: string; reason?: string }
   ): Promise<GeneratedImageAsset> {
     const profile = imageGenerationProfiles[spec.tier];
     const estimate = estimateImageGenerationCost({ model: profile.model, quality: profile.quality, prompt: spec.prompt });
     for (let attempt = 0; attempt < 180; attempt += 1) {
       let asset: GeneratedImageAsset | undefined;
       let claimed = false;
-      await this.store.update(data => {
+      const committed = await this.store.update(data => {
         asset = data.generatedImages.find(item =>
           item.projectId === input.projectId &&
           item.title === spec.title &&
           item.intendedUse === spec.intendedUse
         );
-        if (asset && (asset.status === 'generated' || asset.status === 'mocked')) return;
+        if (asset && this.satisfiesGenerationRequest(asset, spec, provider.target, input.force === true, generationRequestedAt)) return;
         const leaseUntil = asset?.generationLeaseUntil ? Date.parse(asset.generationLeaseUntil) : 0;
         if (asset?.generationLeaseOwner && asset.generationLeaseOwner !== generationOwner && Number.isFinite(leaseUntil) && leaseUntil > Date.now()) return;
         const timestamp = nowIso();
@@ -96,11 +138,11 @@ export class ImageryGenerationService {
           prompt: spec.prompt,
           size: spec.size,
           status: 'planned',
-          provider: 'local_mock',
+          provider: provider.target,
           estimatedCostUsd: estimate.estimatedCostUsd,
           notes: ['Generation claimed by the active design workflow.'],
           generationLeaseOwner: generationOwner,
-          generationLeaseUntil: new Date(Date.now() + 120_000).toISOString(),
+          generationLeaseUntil: new Date(Date.now() + 10 * 60_000).toISOString(),
           createdAt: asset?.createdAt || timestamp,
           updatedAt: timestamp
         };
@@ -108,12 +150,17 @@ export class ImageryGenerationService {
         if (index >= 0) data.generatedImages[index] = planned;
         else data.generatedImages.push(planned);
         asset = planned;
-        claimed = true;
       });
-      if (asset && (asset.status === 'generated' || asset.status === 'mocked')) return asset;
+      asset = committed.generatedImages.find(item =>
+        item.projectId === input.projectId &&
+        item.title === spec.title &&
+        item.intendedUse === spec.intendedUse
+      );
+      claimed = asset?.generationLeaseOwner === generationOwner;
+      if (asset && this.satisfiesGenerationRequest(asset, spec, provider.target, input.force === true, generationRequestedAt)) return asset;
       if (claimed && asset) {
         try {
-          const generated = await this.generateAsset(input, spec, asset.id);
+          const generated = await this.generateAsset(input, spec, provider, asset.id);
           await this.store.update(data => {
             const index = data.generatedImages.findIndex(item => item.id === generated.id);
             if (index >= 0) data.generatedImages[index] = generated;
@@ -136,6 +183,54 @@ export class ImageryGenerationService {
       await wait(500);
     }
     throw new Error(`Timed out waiting for imagery generation claim: ${spec.title}`);
+  }
+
+  private async resolveProvider(input: ImageryGenerationInput): Promise<{ target: 'openai' | 'local_mock'; apiKey?: string; reason?: string }> {
+    const apiKey = await this.secrets.getSecret('OPENAI_API_KEY');
+    if (input.provider === 'mock') {
+      return { target: 'local_mock', reason: 'Local mock imagery was explicitly requested for test or development mode.' };
+    }
+    const openAiRequired = input.provider === 'openai' || isProductionRuntime() || process.env.AGENCY_REQUIRE_OPENAI_IMAGES === 'true';
+    if (!apiKey && openAiRequired) {
+      throw new Error('OpenAI image generation is required, but OPENAI_API_KEY is not configured for this runtime. Add the server-side secret and resume the workflow.');
+    }
+    if (!apiKey) {
+      return { target: 'local_mock', reason: 'OPENAI_API_KEY is not configured; local development fallback imagery was used.' };
+    }
+    return { target: 'openai', apiKey };
+  }
+
+  private isPlanReusable(plan: WebsiteImageryPlan, specs: ImageSpec[], target: 'openai' | 'local_mock'): boolean {
+    const assets = [plan.hero, ...plan.pageImages, ...plan.sectionImages].filter(Boolean);
+    return specs.length === assets.length && specs.every(spec => {
+      const asset = assets.find(item => item.title === spec.title && item.intendedUse === spec.intendedUse);
+      return Boolean(asset && this.isAssetReusable(asset, spec, target));
+    });
+  }
+
+  private isAssetReusable(asset: GeneratedImageAsset, spec: ImageSpec, target: 'openai' | 'local_mock'): boolean {
+    const expectedStatus = target === 'openai' ? 'generated' : 'mocked';
+    const profile = imageGenerationProfiles[spec.tier];
+    return asset.provider === target &&
+      asset.status === expectedStatus &&
+      asset.prompt === spec.prompt &&
+      asset.model === profile.model &&
+      asset.quality === profile.quality &&
+      asset.size === spec.size &&
+      Boolean(asset.url || asset.filePath);
+  }
+
+  private satisfiesGenerationRequest(
+    asset: GeneratedImageAsset,
+    spec: ImageSpec,
+    target: 'openai' | 'local_mock',
+    force: boolean,
+    requestedAt: number
+  ): boolean {
+    if (!this.isAssetReusable(asset, spec, target)) return false;
+    if (!force) return true;
+    const updatedAt = Date.parse(asset.updatedAt || '');
+    return Number.isFinite(updatedAt) && updatedAt >= requestedAt;
   }
 
   private createImageSpecs(input: ImageryGenerationInput): Array<{ title: string; intendedUse: ImageGenerationUse; tier: ImageGenerationTier; prompt: string; size: string }> {
@@ -261,7 +356,8 @@ export class ImageryGenerationService {
 
   private async generateAsset(
     input: ImageryGenerationInput,
-    spec: { title: string; intendedUse: ImageGenerationUse; tier: ImageGenerationTier; prompt: string; size: string },
+    spec: ImageSpec,
+    provider: { target: 'openai' | 'local_mock'; apiKey?: string; reason?: string },
     id = createId('image')
   ): Promise<GeneratedImageAsset> {
     const profile = imageGenerationProfiles[spec.tier];
@@ -289,19 +385,24 @@ export class ImageryGenerationService {
         pricingNote: 'Estimated from OpenAI per-token image generation pricing; replace with API usage when returned by provider.'
       }
     });
-    const generated = input.provider !== 'mock' && process.env.OPENAI_API_KEY
-      ? await this.callOpenAiImageGeneration({ prompt: spec.prompt, model: profile.model, quality: profile.quality, size: spec.size, id, projectId: input.projectId })
-          .catch(async error => {
-            const fallback = await this.writeMockImage({ id, projectId: input.projectId, title: spec.title, direction: input.direction.name, prompt: spec.prompt });
-            return {
-              ...fallback,
-              notes: [
-                'Reused generated local reference imagery so the design workflow could continue.',
-                `OpenAI image generation failed and local reference imagery was used instead: ${error instanceof Error ? error.message.slice(0, 180) : String(error).slice(0, 180)}`
-              ]
-            };
-          })
-      : await this.writeMockImage({ id, projectId: input.projectId, title: spec.title, direction: input.direction.name, prompt: spec.prompt });
+    const generated = provider.target === 'openai'
+      ? await this.callOpenAiImageGeneration({
+          prompt: spec.prompt,
+          model: profile.model,
+          quality: profile.quality,
+          size: spec.size,
+          id,
+          projectId: input.projectId,
+          apiKey: provider.apiKey || ''
+        })
+      : await this.writeMockImage({
+          id,
+          projectId: input.projectId,
+          title: spec.title,
+          direction: input.direction.name,
+          prompt: spec.prompt,
+          note: provider.reason || 'Local fallback imagery was explicitly requested.'
+        });
     return {
       id,
       projectId: input.projectId,
@@ -328,25 +429,43 @@ export class ImageryGenerationService {
     };
   }
 
-  private async callOpenAiImageGeneration(input: { prompt: string; model: string; quality: string; size: string; id: string; projectId: string }) {
-    const response = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: input.model,
-        prompt: input.prompt,
-        quality: input.quality,
-        size: input.size,
-        n: 1
-      })
-    });
-    if (!response.ok) {
+  private async callOpenAiImageGeneration(input: { prompt: string; model: string; quality: string; size: string; id: string; projectId: string; apiKey: string }) {
+    if (!input.apiKey) throw new Error('OpenAI image generation cannot run without a server-side API key.');
+    let response: Response | undefined;
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      try {
+        response = await fetch('https://api.openai.com/v1/images/generations', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${input.apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: input.model,
+            prompt: input.prompt,
+            quality: input.quality,
+            size: input.size,
+            n: 1
+          }),
+          signal: AbortSignal.timeout(150_000)
+        });
+      } catch (error) {
+        if (attempt < 2) {
+          await wait(1_500);
+          continue;
+        }
+        throw new Error(`OpenAI image generation request failed: ${error instanceof Error ? error.message : String(error)}`);
+      }
+      if (response.ok) break;
       const message = await response.text();
-      throw new Error(`OpenAI image generation failed: ${response.status} ${message.slice(0, 500)}`);
+      const retryable = response.status === 408 || response.status === 409 || response.status === 429 || response.status >= 500;
+      if (retryable && attempt < 2) {
+        await wait(1_500);
+        continue;
+      }
+      throw new Error(`OpenAI image generation failed: ${response.status} ${safeProviderMessage(message)}`);
     }
+    if (!response?.ok) throw new Error('OpenAI image generation failed without a response.');
     const json = await response.json() as { data?: Array<{ b64_json?: string; revised_prompt?: string; url?: string }> };
     const first = json.data?.[0];
     if (!first) throw new Error('OpenAI image generation returned no image data');
@@ -361,7 +480,7 @@ export class ImageryGenerationService {
     throw new Error('OpenAI image generation returned an unsupported image payload');
   }
 
-  private async writeMockImage(input: { id: string; projectId: string; title: string; direction: string; prompt: string }) {
+  private async writeMockImage(input: { id: string; projectId: string; title: string; direction: string; prompt: string; note: string }) {
     const reference = await this.copyGeneratedReferenceImage(input);
     if (reference) return reference;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
@@ -379,11 +498,11 @@ export class ImageryGenerationService {
       filePath: file.filePath,
       url: file.url,
       revisedPrompt: undefined,
-      notes: ['OPENAI_API_KEY is not configured; saved a local non-text fallback image so the design workflow can continue without spend.']
+      notes: [input.note]
     };
   }
 
-  private async copyGeneratedReferenceImage(input: { id: string; projectId: string; title: string; prompt: string }) {
+  private async copyGeneratedReferenceImage(input: { id: string; projectId: string; title: string; prompt: string; note: string }) {
     const prompt = input.prompt.toLowerCase();
     const category = /(agency|marketing|branding|automation|professional service|web design)/.test(prompt)
       ? 'agency-premium-system'
@@ -409,7 +528,7 @@ export class ImageryGenerationService {
           filePath: file.filePath,
           url: file.url,
           revisedPrompt: undefined,
-          notes: [`OPENAI_API_KEY is not configured; reused generated ${category} reference imagery for this industry.`]
+          notes: [input.note, `Reused generated ${category} reference imagery for this industry.`]
         };
       } catch {
         // Try the next available generated reference image.
@@ -469,6 +588,18 @@ function contentTypeFor(fileName: string): string {
   if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
   if (lower.endsWith('.svg')) return 'image/svg+xml; charset=utf-8';
   return 'application/octet-stream';
+}
+
+function isProductionRuntime(): boolean {
+  return (process.env.NETLIFY === 'true' || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME)) && process.env.CONTEXT !== 'dev';
+}
+
+function safeProviderMessage(value: string): string {
+  return value
+    .replace(/sk-[A-Za-z0-9_-]+/g, '[redacted]')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 500);
 }
 
 function wait(ms: number): Promise<void> {

@@ -21,6 +21,10 @@
   node_bundler = "esbuild"
   included_files = ["!public/**"]
 
+[functions.agency-imagery]
+  node_bundler = "esbuild"
+  included_files = ["!public/**"]
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/api/:splat"

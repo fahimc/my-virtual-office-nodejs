@@ -118,7 +118,7 @@ export class CompanyOS {
     this.notifications = new NotificationService(store);
     this.developerPlanning = new DeveloperPlanningService(store, this.taskBoard, workspaceRoot);
     this.costs = new CostLedgerService(store);
-    this.imagery = new ImageryGenerationService(store, this.costs, this.budgetPolicy, workspaceRoot);
+    this.imagery = new ImageryGenerationService(store, this.costs, this.budgetPolicy, workspaceRoot, this.secrets);
     this.tools = [
       createCompanyEmailTool(this.emailDrafts, this.emailProvider),
       createCodexTool(this.codex),

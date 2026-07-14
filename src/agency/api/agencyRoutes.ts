@@ -7,6 +7,7 @@ import type { Project } from '../schemas/project.schema.js';
 import type { WorkflowRun } from '../schemas/workflow.schema.js';
 import { nowIso } from '../memory/memoryStore.js';
 import { dispatchWebsiteBuildInBackground } from '../runtime/workflowDispatcher.js';
+import { dispatchImageryGenerationInBackground } from '../runtime/imageryDispatcher.js';
 import { getAgencySystem } from './agencySystemSingleton.js';
 
 type AsyncHandler = (req: Request, res: Response) => Promise<void>;
@@ -629,22 +630,46 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
   router.post('/design/:projectId/imagery', route(async (req, res) => {
     const state = await system.officeState(req.params.projectId);
     const designBrief = state.designStudio.designBrief;
-    const direction = req.body.direction || state.designStudio.creativeDirections?.[0];
+    const selectedDirectionId = state.designStudio.selectedDirection?.selectedDirectionId;
+    const direction = req.body.direction || state.designStudio.creativeDirections?.find(item => item.id === selectedDirectionId) || state.designStudio.creativeDirections?.[0];
     if (!designBrief || !direction) return void res.status(409).json({ error: 'Design brief and creative direction are required before imagery generation' });
+    const mode = req.body.mode === 'draft' || req.body.mode === 'premium' ? req.body.mode : 'standard';
+    const count = Math.max(3, Math.min(Number(req.body.count || 5), 8));
+    const provider = req.body.provider === 'mock' ? 'mock' as const : req.body.provider === 'openai' ? 'openai' as const : 'auto' as const;
+    if (provider !== 'mock') {
+      const dispatched = await dispatchImageryGenerationInBackground({
+        projectId: req.params.projectId,
+        directionId: typeof direction.id === 'string' ? direction.id : undefined,
+        mode,
+        count,
+        force: req.body.force === true
+      });
+      if (dispatched) {
+        res.status(202).json({
+          accepted: true,
+          dispatch: dispatched,
+          providerStatus: await system.companyOS.imagery.getProviderStatus(),
+          officeState: await system.officeState(req.params.projectId)
+        });
+        return;
+      }
+    }
     const plan = await system.companyOS.imagery.generateWebsiteImagery({
       projectId: req.params.projectId,
       customerId: designBrief.customerId,
       designBrief,
       direction,
-      mode: req.body.mode || 'standard',
-      count: Number(req.body.count || 5)
+      mode,
+      count,
+      provider,
+      force: req.body.force === true
     });
-    res.json({ imageryPlan: plan, officeState: await system.officeState(req.params.projectId), companyState: await system.companyState(req.params.projectId) });
+    res.json({ imageryPlan: plan, providerStatus: await system.companyOS.imagery.getProviderStatus(), officeState: await system.officeState(req.params.projectId), companyState: await system.companyState(req.params.projectId) });
   }));
 
   router.get('/design/:projectId/imagery', route(async (req, res) => {
     const state = await system.officeState(req.params.projectId);
-    res.json({ imageryPlan: state.designStudio.imageryPlan, generatedImages: state.designStudio.generatedImages, finance: state.designStudio.finance });
+    res.json({ imageryPlan: state.designStudio.imageryPlan, generatedImages: state.designStudio.generatedImages, finance: state.designStudio.finance, providerStatus: await system.companyOS.imagery.getProviderStatus() });
   }));
 
   router.post('/design/:projectId/qa', route(async (req, res) => {

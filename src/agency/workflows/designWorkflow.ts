@@ -179,18 +179,19 @@ export class DesignWorkflow {
     }
 
     let imageryPlan = reuseExisting ? data.imageryPlans.filter(item => item.projectId === projectId).at(-1) : undefined;
-    if (!imageryPlan) {
+    const imageryInput = {
+      projectId,
+      customerId: designBrief.customerId,
+      designBrief,
+      direction: selectedDirection,
+      mode: 'standard' as const,
+      count: 5,
+      provider: useMockImagery ? 'mock' as const : 'auto' as const
+    };
+    if (await this.companyOS.imagery.needsGeneration(imageryInput)) {
       await productionStep('imagery_generation');
       await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'imagery_generation', state: {}, createdAt: '', updatedAt: '' }, 'design.imagery.started', {});
-      imageryPlan = await this.companyOS.imagery.generateWebsiteImagery({
-        projectId,
-        customerId: designBrief.customerId,
-        designBrief,
-        direction: selectedDirection,
-        mode: 'standard',
-        count: 5,
-        provider: useMockImagery ? 'mock' : 'auto'
-      });
+      imageryPlan = await this.companyOS.imagery.generateWebsiteImagery(imageryInput);
       await this.saveArtifact(projectId, 'imagery_plan', 'imagery-plan.json', 'Website imagery plan', { imageryPlan });
       for (const image of [imageryPlan.hero, ...imageryPlan.pageImages, ...imageryPlan.sectionImages]) {
         await this.saveArtifact(projectId, 'generated_image', `imagery/${image.id}.json`, image.title, image as unknown as Record<string, unknown>);
@@ -198,6 +199,7 @@ export class DesignWorkflow {
       await this.completeTask(projectId, 'imagery_generation', { imageryPlan });
       await this.workflowRuntime.emit({ id: approvalId || '', projectId, workflowName: 'designWorkflow', status: 'running', currentStep: 'imagery_generation', state: {}, createdAt: '', updatedAt: '' }, 'design.imagery.completed', { imageryPlan });
     }
+    if (!imageryPlan) throw new Error('Website imagery generation completed without an imagery plan.');
 
     let qaReport = reuseExisting ? data.design.qaReports.filter(item => item.projectId === projectId).at(-1) : undefined;
     if (!qaReport) {

@@ -56,7 +56,8 @@
     structuredBrief: null,
     pollTimer: null,
     lastApiError: '',
-    lastDiagnostics: null
+    lastDiagnostics: null,
+    imageryGenerationQueued: false
   };
 
   async function api(path, options = {}) {
@@ -404,6 +405,10 @@
       ['Deploy', `${app.context || 'unknown'} / ${app.deployId || 'local'}`],
       ['Storage', app.storage || 'unknown'],
       ['Test mode', diagnostics.testMode ? 'yes' : 'no'],
+      ['OpenAI images configured', diagnostics.openAiImagesConfigured ? 'yes' : 'no'],
+      ['Image provider', diagnostics.imageProvider || 'not started'],
+      ['Image counts', `${diagnostics.openAiImageCount || 0} OpenAI / ${diagnostics.mockImageCount || 0} fallback / ${diagnostics.plannedImageCount || 0} running / ${diagnostics.failedImageCount || 0} failed`],
+      ['Last image error', diagnostics.lastImageError || 'none'],
       ['Project', diagnostics.projectId || 'none'],
       ['Project status', diagnostics.projectStatus || 'none'],
       ['Workflow', diagnostics.workflowRunId || 'missing'],
@@ -583,6 +588,20 @@
     const generatedImages = design.generatedImages || [];
     const imageryPlan = design.imageryPlan;
     const imageCost = design.finance?.estimatedCostUsd || 0;
+    const openAiImages = generatedImages.filter(image => image.provider === 'openai' && image.status === 'generated');
+    const mockImages = generatedImages.filter(image => image.provider === 'local_mock' || image.status === 'mocked');
+    const failedImages = generatedImages.filter(image => image.status === 'failed');
+    const generatingImages = generatedImages.filter(image => image.status === 'planned');
+    if (openAiImages.length && !mockImages.length && !failedImages.length && !generatingImages.length) state.imageryGenerationQueued = false;
+    const imagerySummary = generatingImages.length || state.imageryGenerationQueued
+      ? `OpenAI generation is running. ${openAiImages.length} of ${generatedImages.length || 5} images are ready.`
+      : openAiImages.length
+        ? `${openAiImages.length} OpenAI image${openAiImages.length === 1 ? '' : 's'} generated. Estimated generation spend: $${Number(imageCost).toFixed(4)}.`
+        : mockImages.length
+          ? `${mockImages.length} local fallback image${mockImages.length === 1 ? '' : 's'} are in use. Generate the real project imagery with OpenAI.`
+          : failedImages.length
+            ? `${failedImages.length} image generation request${failedImages.length === 1 ? '' : 's'} failed. Retry with OpenAI.`
+            : 'Imagery generation has not run yet';
     const tokenColors = design.tokens && design.tokens.colours ? Object.values(design.tokens.colours).slice(0, 8) : [];
     const existingDesignFeedback = document.getElementById('designStudioFeedback')?.value || '';
     els.designStudioBody.innerHTML = `
@@ -688,7 +707,7 @@
         </div>
         <div class="design-studio-card design-studio-card-wide">
           <b>Generated Imagery</b>
-          <span>${imageryPlan ? `${generatedImages.length} website images planned/generated. Estimated generation spend: $${Number(imageCost).toFixed(4)}.` : 'Imagery generation has not run yet'}</span>
+          <span>${imagerySummary}</span>
           ${generatedImages.length ? `
             <div class="generated-image-strip">
               ${generatedImages.slice(0, 5).map(image => `
@@ -697,6 +716,14 @@
                   <small>${escapeHtml(image.title)}<br>${escapeHtml(image.tier)} - ${escapeHtml(image.provider)}</small>
                 </a>
               `).join('')}
+            </div>
+          ` : ''}
+          ${(mockImages.length || failedImages.length) ? `
+            <div class="agency-actions">
+              <button id="regenerateOpenAiImagery" type="button" ${state.imageryGenerationQueued || generatingImages.length ? 'disabled' : ''}>
+                <i data-lucide="${state.imageryGenerationQueued || generatingImages.length ? 'loader-2' : 'image-plus'}"></i>
+                <span>${state.imageryGenerationQueued || generatingImages.length ? 'Generating with OpenAI' : 'Generate with OpenAI'}</span>
+              </button>
             </div>
           ` : ''}
         </div>
@@ -770,6 +797,31 @@
         }
       });
     });
+    const regenerateImageryButton = document.getElementById('regenerateOpenAiImagery');
+    if (regenerateImageryButton) {
+      regenerateImageryButton.addEventListener('click', async () => {
+        state.imageryGenerationQueued = true;
+        markDirectionButtonWorking(regenerateImageryButton, 'Queued');
+        setReception('Generating Imagery', 'Design Agent', 'OpenAI is creating project-specific website imagery in the background.');
+        try {
+          const result = await api(`/design/${state.projectId}/imagery`, {
+            method: 'POST',
+            body: { provider: 'openai', mode: 'standard', count: 5, force: true }
+          });
+          renderOfficeState(result.officeState);
+          startPolling();
+        } catch (error) {
+          state.imageryGenerationQueued = false;
+          state.lastApiError = error.message;
+          setReception('Imagery Issue', 'Design Agent', `${error.message}. Check Workflow diagnostics and retry.`);
+          regenerateImageryButton.disabled = false;
+          regenerateImageryButton.classList.remove('is-working');
+          regenerateImageryButton.innerHTML = '<i data-lucide="image-plus"></i><span>Generate with OpenAI</span>';
+          renderDiagnostics(state.lastDiagnostics || {});
+          refreshIcons();
+        }
+      });
+    }
     refreshIcons();
   }
 

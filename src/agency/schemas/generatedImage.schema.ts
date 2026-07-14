@@ -58,6 +58,10 @@ export interface WebsiteImageryPlan {
   hero: GeneratedImageAsset;
   pageImages: GeneratedImageAsset[];
   sectionImages: GeneratedImageAsset[];
+  provider: 'openai' | 'local_mock' | 'mixed';
+  status: 'generated' | 'mocked' | 'partial';
+  warnings: string[];
   totalEstimatedCostUsd: number;
   createdAt: string;
+  updatedAt: string;
 }
