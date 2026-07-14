@@ -211,6 +211,34 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     return workflow;
   };
 
+  const resumeStaleBuildWorkflow = async (workflowId: string) => {
+    let workflow = await system.workflowRuntime.get(workflowId);
+    if (!workflow?.projectId || workflow.workflowName !== 'websiteBuildWorkflow') return workflow;
+    if (!shouldResumeBuildStep(workflow.currentStep) || workflow.status !== 'running') return workflow;
+    const data = await system.store.read();
+    const project = data.projects.find(item => item.id === workflow?.projectId);
+    if (!project || project.previewUrl || project.status === 'awaiting_approval' || project.status === 'failed') return workflow;
+    const lastResumeAt = typeof workflow.state?.lastBuildResumeAt === 'string' ? Date.parse(workflow.state.lastBuildResumeAt) : 0;
+    if (Number.isFinite(lastResumeAt) && Date.now() - lastResumeAt < 20_000) return workflow;
+    await system.workflowRuntime.patch(workflow.id, {
+      state: {
+        ...workflow.state,
+        lastBuildResumeAt: nowIso()
+      }
+    });
+    await queueWebsiteBuild(workflow.id);
+    workflow = await system.workflowRuntime.get(workflow.id);
+    return workflow;
+  };
+
+  const shouldResumeBuildStep = (step?: string) => Boolean(step && (
+    step === 'design_handoff_ready' ||
+    step === 'copy' ||
+    step === 'preview' ||
+    /^build_attempt_\d+$/.test(step) ||
+    /^qa_attempt_\d+$/.test(step)
+  ));
+
   router.post('/intake/start', route(async (_req, res) => {
     res.json(await system.intakeWorkflow.start());
   }));
@@ -290,6 +318,7 @@ export function createAgencyRouter(options: CreateAgencySystemOptions): Router {
     if (!workflow) return void res.status(404).json({ error: 'workflow not found' });
     await reconcileApprovedDesignGates(workflow.projectId);
     workflow = await continueApprovedDesignWorkflow(workflow.id) || workflow;
+    workflow = await resumeStaleBuildWorkflow(workflow.id) || workflow;
     res.json({ workflow, officeState: await system.officeState(workflow.projectId) });
   }));
 
