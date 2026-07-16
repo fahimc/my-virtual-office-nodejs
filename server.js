@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
 import { isLuxuryPropertyBrief, renderLuxuryPropertyWebsite } from './src/templates/luxuryPropertyTemplate.js';
+import { premiumTemplateConfigForBrief } from './src/templates/premiumTemplateCatalog.js';
 
 const SERVERLESS = process.env.NETLIFY === 'true' || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
 const LAMBDA_TASK_ROOT = process.env.LAMBDA_TASK_ROOT;
@@ -692,16 +693,19 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
   const isConcept = Boolean(options.concept);
   const templateContext = `${context.businessType} ${context.originalBrief} ${context.style.join(' ')}`;
   if (template === 'luxuryPropertyTemplate' || isLuxuryPropertyBrief(templateContext)) {
+    const premiumPreset = premiumTemplateConfigForBrief(templateContext, content.brand);
+    const directionTheme = Object.fromEntries(Object.entries(luxuryThemeFromDirection(direction)).filter(([, value]) => Boolean(value)));
     return renderLuxuryPropertyWebsite({
-      mode: isPropertyContext(context) ? 'property' : 'luxury',
+      ...(premiumPreset?.config || {}),
+      mode: premiumPreset?.template.luxuryMode || (isPropertyContext(context) ? 'property' : 'luxury'),
       brand: content.brand,
       summary: professionalSubhead(context),
-      headline: luxuryPropertyHeadline(context, content.brand),
-      heroKicker: isPropertyContext(context) ? 'Private property advisory' : 'Private client practice',
-      primaryCta: isPropertyContext(context) ? 'Request a private viewing' : 'Begin a private enquiry',
-      secondaryCta: isPropertyContext(context) ? 'Explore selected properties' : 'Explore the collection',
+      headline: premiumPreset?.template.headline || luxuryPropertyHeadline(context, content.brand),
+      heroKicker: premiumPreset?.template.badge || (isPropertyContext(context) ? 'Private property advisory' : 'Private client practice'),
+      primaryCta: premiumPreset?.template.cta || (isPropertyContext(context) ? 'Request a private viewing' : 'Begin a private enquiry'),
+      secondaryCta: premiumPreset?.template.secondary || (isPropertyContext(context) ? 'Explore selected properties' : 'Explore the collection'),
       images: content.images,
-      theme: luxuryThemeFromDirection(direction),
+      theme: { ...(premiumPreset?.config?.theme || {}), ...directionTheme },
       metaDescription: professionalSubhead(context),
       isConcept
     });
@@ -1170,8 +1174,11 @@ function templateProfileFor(template, context, direction) {
   if (/(salon|beauty|spa)/.test(text)) {
     return { name: 'Polished booking journey', imageCategory: 'beauty', description: 'Service cards, gallery moments, and booking prompts keep the experience premium and direct.', motion: 'polished-reveal' };
   }
-  if (/(real estate|house|property)/.test(text)) {
+  if (/(real estate|house|property|architecture|interior design|hotel|hospitality|resort|retreat)/.test(text)) {
     return { name: 'Image-led property showcase', imageCategory: 'real-estate', description: 'Strong photography, trust markers, and simple enquiry paths put the property first.', motion: 'image-led' };
+  }
+  if (/(jewellery|jewelry|atelier|watch|couture|luxury fashion)/.test(text)) {
+    return { name: 'Luxury atelier collection', imageCategory: 'ecommerce', description: 'Cinematic product imagery and private-service storytelling support considered high-value enquiries.', motion: 'cinematic-detail' };
   }
   if (/(plumber|electrician|builder|trade|construction)/.test(text)) {
     return { name: 'Proof-first local service', imageCategory: 'trades', description: 'Fast contact, service clarity, and trust signals help local buyers act quickly.', motion: 'proof-first' };

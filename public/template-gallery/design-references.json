@@ -374,14 +374,90 @@
   {
     "id": "luxury-private-assets",
     "title": "Private Assets Editorial",
-    "source": "User-provided Aurelis Private Assets HTML concept from Google Drive, adapted into original reusable DaisyUI sections",
+    "source": "Reusable luxury editorial component system adapted from the user-provided private assets reference; all category content and compositions are original.",
     "awardInspired": false,
     "referenceInspired": true,
-    "pattern": "private-assets-editorial",
+    "pattern": "premium-editorial-system",
     "searches": [
-      "https://dribbble.com/search/user-provided%20Aurelis%20private%20assets%20concept",
-      "https://dribbble.com/search/editorial%20property%20portfolio",
-      "https://dribbble.com/search/private%20client%20advisory"
+      "https://dribbble.com/search/private%20assets%20editorial%20system",
+      "https://dribbble.com/search/high-end%20service%20storytelling",
+      "https://dribbble.com/search/cinematic%20full-bleed%20imagery",
+      "https://dribbble.com/search/DaisyUI%20accessible%20primitives"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "luxury-hospitality-retreat",
+    "title": "Private Retreat Journal",
+    "source": "Reusable luxury editorial component system adapted from the user-provided private assets reference; all category content and compositions are original.",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "premium-editorial-system",
+    "searches": [
+      "https://dribbble.com/search/private%20assets%20editorial%20system",
+      "https://dribbble.com/search/high-end%20service%20storytelling",
+      "https://dribbble.com/search/cinematic%20full-bleed%20imagery",
+      "https://dribbble.com/search/DaisyUI%20accessible%20primitives"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "luxury-architecture-practice",
+    "title": "Material Architecture Practice",
+    "source": "Reusable luxury editorial component system adapted from the user-provided private assets reference; all category content and compositions are original.",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "premium-editorial-system",
+    "searches": [
+      "https://dribbble.com/search/private%20assets%20editorial%20system",
+      "https://dribbble.com/search/high-end%20service%20storytelling",
+      "https://dribbble.com/search/cinematic%20full-bleed%20imagery",
+      "https://dribbble.com/search/DaisyUI%20accessible%20primitives"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "luxury-private-wealth",
+    "title": "Private Wealth Stewardship",
+    "source": "Reusable luxury editorial component system adapted from the user-provided private assets reference; all category content and compositions are original.",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "premium-editorial-system",
+    "searches": [
+      "https://dribbble.com/search/private%20assets%20editorial%20system",
+      "https://dribbble.com/search/high-end%20service%20storytelling",
+      "https://dribbble.com/search/cinematic%20full-bleed%20imagery",
+      "https://dribbble.com/search/DaisyUI%20accessible%20primitives"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "luxury-wellness-sanctuary",
+    "title": "Integrative Wellness Sanctuary",
+    "source": "Reusable luxury editorial component system adapted from the user-provided private assets reference; all category content and compositions are original.",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "premium-editorial-system",
+    "searches": [
+      "https://dribbble.com/search/private%20assets%20editorial%20system",
+      "https://dribbble.com/search/high-end%20service%20storytelling",
+      "https://dribbble.com/search/cinematic%20full-bleed%20imagery",
+      "https://dribbble.com/search/DaisyUI%20accessible%20primitives"
+    ],
+    "researchSources": []
+  },
+  {
+    "id": "luxury-jewellery-atelier",
+    "title": "Jewellery Atelier Edition",
+    "source": "Reusable luxury editorial component system adapted from the user-provided private assets reference; all category content and compositions are original.",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "premium-editorial-system",
+    "searches": [
+      "https://dribbble.com/search/private%20assets%20editorial%20system",
+      "https://dribbble.com/search/high-end%20service%20storytelling",
+      "https://dribbble.com/search/cinematic%20full-bleed%20imagery",
+      "https://dribbble.com/search/DaisyUI%20accessible%20primitives"
     ],
     "researchSources": []
   }

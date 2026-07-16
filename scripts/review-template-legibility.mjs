@@ -6,6 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const templatesDir = path.join(__dirname, '..', 'public', 'template-gallery', 'templates');
 const imageryManifest = JSON.parse(await readFile(path.join(__dirname, '..', 'public', 'template-gallery', 'generated-imagery', 'manifest.json'), 'utf8'));
+const premiumAssetManifest = JSON.parse(await readFile(path.join(__dirname, '..', 'public', 'template-gallery', 'premium-assets', 'credits.json'), 'utf8'));
 
 const templateIds = (await readdir(templatesDir))
   .filter(async name => (await stat(path.join(templatesDir, name))).isDirectory());
@@ -18,10 +19,13 @@ for (const id of await Promise.all(templateIds)) {
   const firstHeroStart = html.indexOf('<section');
   const firstRoundedBox = html.indexOf('rounded-[2rem]');
   const sourceId = firstSection.match(/\/template-gallery\/generated-imagery\/([^/]+)\//)?.[1] || id;
-  const heroRecord = imageryManifest.templates?.[sourceId]?.images?.find(image => image.kind === 'hero');
+  const usesPremiumAssets = firstSection.includes(`/template-gallery/premium-assets/${id}/`);
+  const heroRecord = usesPremiumAssets
+    ? premiumAssetManifest.assets.find(asset => asset.templateId === id && asset.kind === 'hero')
+    : imageryManifest.templates?.[sourceId]?.images?.find(image => image.kind === 'hero');
   const checks = {
     firstSectionIsFullBleed: firstSection.includes('template-full-bleed-hero'),
-    hasGeneratedHeroImage: firstSection.includes('/template-gallery/generated-imagery/'),
+    hasGeneratedHeroImage: firstSection.includes('/template-gallery/generated-imagery/') || usesPremiumAssets,
     heroImageMarkedNoText: Boolean(heroRecord?.noTextHero),
     heroImageHasCopySpace: Boolean(heroRecord?.heroCopySpace),
     heroImageIsOpenAiGenerated: heroRecord?.provider === 'openai',

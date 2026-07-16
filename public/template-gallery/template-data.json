@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-16T09:17:47.164Z",
+  "generatedAt": "2026-07-16T10:32:25.243Z",
   "templates": [
     {
       "id": "fruit-commerce-splash",
@@ -1065,7 +1065,7 @@
       "client": "Aurelis",
       "badge": "Private property",
       "headline": "Exceptional property, represented with discretion.",
-      "subhead": "A private property and luxury asset system with editorial typography, cinematic imagery, quiet motion, and a controlled enquiry journey.",
+      "subhead": "A private property practice for exceptional homes, discreet opportunities, and considered decisions.",
       "cta": "Request a private viewing",
       "secondary": "Explore selected properties",
       "palette": [
@@ -1095,12 +1095,244 @@
         "Private access"
       ],
       "inspiration": [
-        "user-provided Aurelis private assets concept",
-        "editorial property portfolio",
-        "private client advisory"
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
       ],
-      "heroPattern": "private-assets-editorial",
-      "templateFamily": "luxuryPropertyTemplate"
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Private Assets Editorial"
+    },
+    {
+      "id": "luxury-hospitality-retreat",
+      "category": "real-estate",
+      "title": "Private Retreat Journal",
+      "client": "Morrow House",
+      "badge": "Boutique hospitality",
+      "headline": "A slower rhythm, held in remarkable places.",
+      "subhead": "A secluded country retreat where thoughtful rooms, landscape, food, and restorative rituals belong to one unhurried stay.",
+      "cta": "Plan your stay",
+      "secondary": "Explore the house",
+      "palette": [
+        "#17231c",
+        "#f2efe5",
+        "#b18b4d"
+      ],
+      "metrics": [
+        [
+          "18",
+          "individual rooms"
+        ],
+        [
+          "140",
+          "private acres"
+        ],
+        [
+          "All year",
+          "seasonal stays"
+        ]
+      ],
+      "sections": [
+        "The house",
+        "Stays",
+        "Experiences",
+        "Your journey",
+        "Reservations"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Private Retreat Journal"
+    },
+    {
+      "id": "luxury-architecture-practice",
+      "category": "real-estate",
+      "title": "Material Architecture Practice",
+      "client": "Studio Noma",
+      "badge": "Architecture and interiors",
+      "headline": "Spaces shaped by light, material, and how people live.",
+      "subhead": "An architecture and interior design practice creating enduring homes, hospitality, and cultural spaces from first study to final detail.",
+      "cta": "Discuss a project",
+      "secondary": "View selected work",
+      "palette": [
+        "#171818",
+        "#f1f0ec",
+        "#b48958"
+      ],
+      "metrics": [
+        [
+          "24",
+          "completed places"
+        ],
+        [
+          "9",
+          "active regions"
+        ],
+        [
+          "RIBA",
+          "chartered practice"
+        ]
+      ],
+      "sections": [
+        "Studio",
+        "Projects",
+        "Disciplines",
+        "Method",
+        "Contact"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Material Architecture Practice"
+    },
+    {
+      "id": "luxury-private-wealth",
+      "category": "agency",
+      "title": "Private Wealth Stewardship",
+      "client": "North & Vale",
+      "badge": "Independent family office",
+      "headline": "Clarity across capital, family, and time.",
+      "subhead": "An independent family office helping principals organise complex wealth, coordinate trusted advisers, and make long-horizon decisions with confidence.",
+      "cta": "Arrange an introduction",
+      "secondary": "Explore our approach",
+      "palette": [
+        "#101b2b",
+        "#f3f0e8",
+        "#b4955a"
+      ],
+      "metrics": [
+        [
+          "Independent",
+          "advice"
+        ],
+        [
+          "Multi-gen",
+          "perspective"
+        ],
+        [
+          "Private",
+          "by design"
+        ]
+      ],
+      "sections": [
+        "Perspective",
+        "Mandates",
+        "Capabilities",
+        "Process",
+        "Introduction"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Private Wealth Stewardship"
+    },
+    {
+      "id": "luxury-wellness-sanctuary",
+      "category": "healthcare",
+      "title": "Integrative Wellness Sanctuary",
+      "client": "Serein",
+      "badge": "Integrative health",
+      "headline": "Feel understood before you are ever treated.",
+      "subhead": "A private integrative health practice combining thoughtful clinical review, restorative therapies, and a clear plan built around the whole person.",
+      "cta": "Request a consultation",
+      "secondary": "Explore the approach",
+      "palette": [
+        "#20342f",
+        "#f3f0e7",
+        "#b78c65"
+      ],
+      "metrics": [
+        [
+          "1:1",
+          "clinical attention"
+        ],
+        [
+          "Whole",
+          "person review"
+        ],
+        [
+          "Ongoing",
+          "care continuity"
+        ]
+      ],
+      "sections": [
+        "Philosophy",
+        "Programmes",
+        "Care team",
+        "Your path",
+        "Consultation"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Integrative Wellness Sanctuary"
+    },
+    {
+      "id": "luxury-jewellery-atelier",
+      "category": "ecommerce",
+      "title": "Jewellery Atelier Edition",
+      "client": "Maison Orra",
+      "badge": "Fine jewellery atelier",
+      "headline": "Made once. Carried for generations.",
+      "subhead": "A private jewellery atelier creating one-of-one pieces through exceptional stones, restrained design, and a deeply personal commission process.",
+      "cta": "Begin a commission",
+      "secondary": "View the signatures",
+      "palette": [
+        "#25171b",
+        "#f6f0e8",
+        "#c09a62"
+      ],
+      "metrics": [
+        [
+          "One of one",
+          "private pieces"
+        ],
+        [
+          "Traceable",
+          "selected stones"
+        ],
+        [
+          "Lifetime",
+          "atelier care"
+        ]
+      ],
+      "sections": [
+        "Maison",
+        "Signatures",
+        "Atelier",
+        "Commission",
+        "Private appointment"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Jewellery Atelier Edition"
     }
   ]
 }

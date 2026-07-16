@@ -183,8 +183,11 @@ code,kbd,pre,.mockup-code{font-family:var(--template-font-accent,ui-monospace,SF
   const fontSelect = document.getElementById('font-select');
   const fontSummary = document.getElementById('font-summary');
   const fontValidation = document.getElementById('font-validation');
-  const stored = localStorage.getItem('template-gallery-palette');
-  const storedFont = localStorage.getItem('template-gallery-font-group');
+  const storageScope = location.pathname.replace(//+$/, '') || '/';
+  const paletteStorageKey = 'template-gallery-palette:' + storageScope;
+  const fontStorageKey = 'template-gallery-font-group:' + storageScope;
+  const stored = localStorage.getItem(paletteStorageKey);
+  const storedFont = localStorage.getItem(fontStorageKey);
 
   function swatchHtml(palette) {
     return [palette.colors.background, palette.colors.primary, palette.colors.secondary, palette.colors.accent, palette.colors.text]
@@ -200,7 +203,7 @@ code,kbd,pre,.mockup-code{font-family:var(--template-font-accent,ui-monospace,SF
     contrast.textContent = palette.accessibility.normalTextAA ? 'AA contrast' : 'Review contrast';
     contrast.className = palette.accessibility.normalTextAA ? 'badge badge-success' : 'badge badge-warning';
     swatches.innerHTML = swatchHtml(palette);
-    if (persist) localStorage.setItem('template-gallery-palette', palette.id);
+    if (persist) localStorage.setItem(paletteStorageKey, palette.id);
   }
 
   function applyFontGroup(id, persist = true) {
@@ -210,7 +213,7 @@ code,kbd,pre,.mockup-code{font-family:var(--template-font-accent,ui-monospace,SF
     fontSummary.textContent = fontGroup.name + ' - ' + fontGroup.style;
     fontValidation.textContent = fontGroup.validation.passed ? 'Validated' : 'Review';
     fontValidation.className = fontGroup.validation.passed ? 'badge badge-success' : 'badge badge-warning';
-    if (persist) localStorage.setItem('template-gallery-font-group', fontGroup.id);
+    if (persist) localStorage.setItem(fontStorageKey, fontGroup.id);
   }
 
   if (stored && palettes.some(item => item.id === stored)) applyPalette(stored, false);

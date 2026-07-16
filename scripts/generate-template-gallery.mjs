@@ -5,6 +5,7 @@ import { renderFullBleedHero, renderHeroSection } from './template-hero-sections
 import { enrichedPalettes, paletteCollection, paletteStyleBlock, recommendedPaletteForTemplate } from './color-palette-engine.mjs';
 import { enrichedFontGroups, fontCollection, fontImportBlock, fontStyleBlock, recommendedFontGroupForTemplate } from './font-engine.mjs';
 import { renderLuxuryPropertyWebsite } from '../src/templates/luxuryPropertyTemplate.js';
+import { premiumTemplateCatalog } from '../src/templates/premiumTemplateCatalog.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -423,27 +424,7 @@ const templates = [
     sections: ['Projects', 'Approach', 'Studio', 'Sustainability', 'Contact'],
     inspiration: ['uploaded reference: architecture minimal hero', 'panoramic project strip', 'minimal architecture website']
   },
-  {
-    id: 'luxury-private-assets',
-    category: 'real-estate',
-    theme: 'agency-preview',
-    referenceInspired: true,
-    referenceSource: 'User-provided Aurelis Private Assets HTML concept from Google Drive, adapted into original reusable DaisyUI sections',
-    templateFamily: 'luxuryPropertyTemplate',
-    imagerySourceId: 'property-showcase',
-    heroPattern: 'private-assets-editorial',
-    title: 'Private Assets Editorial',
-    client: 'Aurelis',
-    badge: 'Private property',
-    headline: 'Exceptional property, represented with discretion.',
-    subhead: 'A private property and luxury asset system with editorial typography, cinematic imagery, quiet motion, and a controlled enquiry journey.',
-    cta: 'Request a private viewing',
-    secondary: 'Explore selected properties',
-    palette: ['#151611', '#f2efe7', '#a89262'],
-    metrics: [['Private', 'off-market search'], ['Global', 'trusted network'], ['1:1', 'principal advice']],
-    sections: ['Practice', 'Properties', 'Services', 'Process', 'Private access'],
-    inspiration: ['user-provided Aurelis private assets concept', 'editorial property portfolio', 'private client advisory']
-  }
+  ...premiumTemplateCatalog
 ];
 
 await mkdir(outDir, { recursive: true });
@@ -495,7 +476,8 @@ await writeFile(path.join(outDir, 'template-data.json'), `${JSON.stringify({
     sections: template.sections,
     inspiration: template.inspiration || [],
     heroPattern: template.heroPattern || template.awardPattern || '',
-    templateFamily: template.templateFamily || 'standardDaisyTemplate'
+    templateFamily: template.templateFamily || 'standardDaisyTemplate',
+    premiumCategory: template.templateFamily === 'luxuryPropertyTemplate' ? template.title : undefined
   }))
 }, null, 2)}\n`);
 await writeFile(path.join(outDir, 'palettes.json'), `${JSON.stringify({ ...paletteCollection, palettes: enrichedPalettes }, null, 2)}\n`);
@@ -510,7 +492,7 @@ function renderGallery() {
     return `<article class="card bg-base-100 shadow-xl border border-base-300 overflow-hidden">
       <figure class="h-56"><img src="${image}" alt="" class="h-full w-full object-cover"></figure>
       <div class="card-body">
-        <div class="flex flex-wrap gap-2"><span class="badge badge-primary">${template.badge}</span><span class="badge badge-outline">${template.theme}</span>${template.awardInspired ? '<span class="badge badge-secondary">award-inspired</span>' : ''}${template.referenceInspired ? '<span class="badge badge-accent">reference pattern</span>' : ''}</div>
+        <div class="flex flex-wrap gap-2"><span class="badge badge-primary">${template.badge}</span><span class="badge badge-outline">${template.theme}</span>${template.templateFamily === 'luxuryPropertyTemplate' ? '<span class="badge badge-secondary">premium editorial system</span>' : ''}${template.awardInspired ? '<span class="badge badge-secondary">award-inspired</span>' : ''}${template.referenceInspired ? '<span class="badge badge-accent">reference pattern</span>' : ''}</div>
         <h2 class="card-title text-2xl">${escapeHtml(template.title)}</h2>
         <p>${escapeHtml(template.subhead)}</p>
         <div class="flex gap-2">${template.palette.map(color => `<span class="h-6 w-6 rounded-full border border-base-300" style="background:${color}"></span>`).join('')}</div>
@@ -527,7 +509,7 @@ function renderGallery() {
         <div>
           <div class="badge badge-primary badge-lg mb-5">DaisyUI template system</div>
           <h1 class="text-5xl md:text-7xl font-black leading-none">Review the agency template library.</h1>
-          <p class="py-6 text-lg text-base-content/70">Original DaisyUI websites generated from industry and award-site pattern research. Award sites are used only for high-level inspiration; no external site code, layouts, or assets are copied.</p>
+          <p class="py-6 text-lg text-base-content/70">Original DaisyUI websites generated from industry and award-site pattern research, including a reusable premium editorial family for property, hospitality, architecture, wealth, wellness, and atelier brands. External references inform direction only; no external site code or assets are copied.</p>
           <div class="join">
             <a class="btn btn-primary join-item rounded-full" href="#templates">Browse templates</a>
             <a class="btn btn-outline join-item rounded-full" href="/template-gallery/design-references.json">View references</a>
@@ -546,8 +528,8 @@ function renderGallery() {
 function renderTemplate(template) {
   const images = Array.from({ length: 8 }, (_, index) => imageFor(template, index));
   const features = template.sections.slice(0, 4);
-  const defaultPaletteId = recommendedPaletteForTemplate(template);
-  const defaultFontGroupId = recommendedFontGroupForTemplate(template);
+  const defaultPaletteId = template.paletteId || recommendedPaletteForTemplate(template);
+  const defaultFontGroupId = template.fontGroupId || recommendedFontGroupForTemplate(template);
   const faqs = [
     ['Can this be adapted to another brand?', 'Yes. Colour, copy, imagery, and section order can be swapped cleanly while preserving the visual direction.'],
     ['Is this mobile friendly?', 'Yes. Sections are mobile-first and expand into richer grid layouts on desktop.'],
@@ -556,7 +538,8 @@ function renderTemplate(template) {
 
   if (template.templateFamily === 'luxuryPropertyTemplate') {
     return renderLuxuryPropertyWebsite({
-      mode: 'property',
+      ...(template.luxuryConfig || {}),
+      mode: template.luxuryMode || 'property',
       brand: template.client,
       heroKicker: template.badge,
       headline: template.headline,
@@ -564,7 +547,7 @@ function renderTemplate(template) {
       primaryCta: template.cta,
       secondaryCta: template.secondary,
       metrics: template.metrics,
-      tickerItems: template.sections,
+      tickerItems: template.luxuryConfig?.tickerItems || template.sections,
       images,
       cssHref: '/daisyui.css?v=template-gallery-2',
       designControlsHtml: renderDesignControls(defaultPaletteId, defaultFontGroupId),
@@ -773,8 +756,11 @@ function designControlsScript() {
   const fontSelect = document.getElementById('font-select');
   const fontSummary = document.getElementById('font-summary');
   const fontValidation = document.getElementById('font-validation');
-  const stored = localStorage.getItem('template-gallery-palette');
-  const storedFont = localStorage.getItem('template-gallery-font-group');
+  const storageScope = location.pathname.replace(/\/+$/, '') || '/';
+  const paletteStorageKey = 'template-gallery-palette:' + storageScope;
+  const fontStorageKey = 'template-gallery-font-group:' + storageScope;
+  const stored = localStorage.getItem(paletteStorageKey);
+  const storedFont = localStorage.getItem(fontStorageKey);
 
   function swatchHtml(palette) {
     return [palette.colors.background, palette.colors.primary, palette.colors.secondary, palette.colors.accent, palette.colors.text]
@@ -790,7 +776,7 @@ function designControlsScript() {
     contrast.textContent = palette.accessibility.normalTextAA ? 'AA contrast' : 'Review contrast';
     contrast.className = palette.accessibility.normalTextAA ? 'badge badge-success' : 'badge badge-warning';
     swatches.innerHTML = swatchHtml(palette);
-    if (persist) localStorage.setItem('template-gallery-palette', palette.id);
+    if (persist) localStorage.setItem(paletteStorageKey, palette.id);
   }
 
   function applyFontGroup(id, persist = true) {
@@ -800,7 +786,7 @@ function designControlsScript() {
     fontSummary.textContent = fontGroup.name + ' - ' + fontGroup.style;
     fontValidation.textContent = fontGroup.validation.passed ? 'Validated' : 'Review';
     fontValidation.className = fontGroup.validation.passed ? 'badge badge-success' : 'badge badge-warning';
-    if (persist) localStorage.setItem('template-gallery-font-group', fontGroup.id);
+    if (persist) localStorage.setItem(fontStorageKey, fontGroup.id);
   }
 
   if (stored && palettes.some(item => item.id === stored)) applyPalette(stored, false);
@@ -816,6 +802,9 @@ function escapeScriptJson(value) {
 }
 
 function imageFor(template, index) {
+  if (Array.isArray(template.images) && template.images.length) {
+    return template.images[index % template.images.length];
+  }
   const sourceId = template.imagerySourceId || template.id;
   const generatedPool = generatedImageryManifest.templates?.[sourceId]?.images || [];
   if (index < generatedPool.length) return generatedPool[index]?.file;
