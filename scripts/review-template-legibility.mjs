@@ -17,7 +17,8 @@ for (const id of await Promise.all(templateIds)) {
   const firstSection = html.match(/<section[\s\S]*?<\/section>/i)?.[0] || '';
   const firstHeroStart = html.indexOf('<section');
   const firstRoundedBox = html.indexOf('rounded-[2rem]');
-  const heroRecord = imageryManifest.templates?.[id]?.images?.find(image => image.kind === 'hero');
+  const sourceId = firstSection.match(/\/template-gallery\/generated-imagery\/([^/]+)\//)?.[1] || id;
+  const heroRecord = imageryManifest.templates?.[sourceId]?.images?.find(image => image.kind === 'hero');
   const checks = {
     firstSectionIsFullBleed: firstSection.includes('template-full-bleed-hero'),
     hasGeneratedHeroImage: firstSection.includes('/template-gallery/generated-imagery/'),

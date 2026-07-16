@@ -370,5 +370,19 @@
       "https://dribbble.com/search/minimal%20architecture%20website"
     ],
     "researchSources": []
+  },
+  {
+    "id": "luxury-private-assets",
+    "title": "Private Assets Editorial",
+    "source": "User-provided Aurelis Private Assets HTML concept from Google Drive, adapted into original reusable DaisyUI sections",
+    "awardInspired": false,
+    "referenceInspired": true,
+    "pattern": "private-assets-editorial",
+    "searches": [
+      "https://dribbble.com/search/user-provided%20Aurelis%20private%20assets%20concept",
+      "https://dribbble.com/search/editorial%20property%20portfolio",
+      "https://dribbble.com/search/private%20client%20advisory"
+    ],
+    "researchSources": []
   }
 ]

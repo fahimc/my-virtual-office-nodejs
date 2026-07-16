@@ -2,6 +2,7 @@ export type BuildStrategy = 'existing_components' | 'internal_design_system' | '
 
 export type WebsiteTemplate =
   | 'localBusinessTemplate'
+  | 'luxuryPropertyTemplate'
   | 'saasTemplate'
   | 'ecommerceTemplate'
   | 'portfolioTemplate'

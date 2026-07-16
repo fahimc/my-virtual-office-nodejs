@@ -51,6 +51,7 @@ export class DeveloperPlanningService {
       paths['src/components/sections'] ? 'src/components/sections' : '',
       paths['src/templates'] ? 'src/templates' : '',
       paths['src/design-system'] ? 'src/design-system' : '',
+      paths['src/templates'] ? 'src/templates/luxuryPropertyTemplate.js reusable editorial sections' : '',
       'public/agency.css virtual office panels',
       'public/styles.css canvas office UI'
     ].filter(Boolean);
@@ -101,7 +102,9 @@ export class DeveloperPlanningService {
       templateSelected,
       templateReason: this.templateReason(templateSelected, customer?.businessType || '', project.structuredBrief?.businessSummary || ''),
       reusableComponentsFound: inspection.reusableComponentsFound,
-      componentsToCreate: ['Button', 'Card', 'Input', 'Textarea', 'Badge', 'Container', 'Section'],
+      componentsToCreate: templateSelected === 'luxuryPropertyTemplate'
+        ? ['LuxuryMediaHero', 'EditorialStatementSection', 'AssetPortfolioGrid', 'LuxuryServiceRows', 'CinematicStatementSection', 'ImagePrinciplesSplit', 'AudienceEditorialGrid', 'ProcessTimeline', 'PrivateAccessCta', 'PrivateInquiryForm']
+        : ['Button', 'Card', 'Input', 'Textarea', 'Badge', 'Container', 'Section'],
       componentsToModify: inspection.reusableComponentsFound.filter(item => item.startsWith('src/')),
       sectionsToCreate: this.sectionsFromHandoff(handoff),
       designTokensToApply: tokenNames.length ? tokenNames : ['palette', 'typography', 'spacing', 'radius', 'responsive breakpoints'],
@@ -199,6 +202,7 @@ export class DeveloperPlanningService {
 
   private selectTemplate(text: string): WebsiteTemplate {
     const value = text.toLowerCase();
+    if (/(property|properties|real[ -]?estate|estate agent|realtor|residence|residential|home developer|architecture|interior design|hotel|hospitality|resort|private asset|family office|luxury|premium concierge|yacht|aviation|jewellery|jewelry|private members?)/.test(value)) return 'luxuryPropertyTemplate';
     if (/(plumber|electrician|builder|cleaner|salon|restaurant|clinic|dentist|roofer|local|repair|trades?)/.test(value)) return 'localBusinessTemplate';
     if (/(software|saas|subscription|platform|b2b|app|product)/.test(value)) return 'saasTemplate';
     if (/(shop|store|ecommerce|e-commerce|catalogue|catalog|product range)/.test(value)) return 'ecommerceTemplate';

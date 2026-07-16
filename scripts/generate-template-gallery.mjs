@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { renderFullBleedHero, renderHeroSection } from './template-hero-sections.mjs';
 import { enrichedPalettes, paletteCollection, paletteStyleBlock, recommendedPaletteForTemplate } from './color-palette-engine.mjs';
 import { enrichedFontGroups, fontCollection, fontImportBlock, fontStyleBlock, recommendedFontGroupForTemplate } from './font-engine.mjs';
+import { renderLuxuryPropertyWebsite } from '../src/templates/luxuryPropertyTemplate.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -421,6 +422,27 @@ const templates = [
     metrics: [['36', 'built projects'], ['11', 'cities'], ['A+', 'energy target']],
     sections: ['Projects', 'Approach', 'Studio', 'Sustainability', 'Contact'],
     inspiration: ['uploaded reference: architecture minimal hero', 'panoramic project strip', 'minimal architecture website']
+  },
+  {
+    id: 'luxury-private-assets',
+    category: 'real-estate',
+    theme: 'agency-preview',
+    referenceInspired: true,
+    referenceSource: 'User-provided Aurelis Private Assets HTML concept from Google Drive, adapted into original reusable DaisyUI sections',
+    templateFamily: 'luxuryPropertyTemplate',
+    imagerySourceId: 'property-showcase',
+    heroPattern: 'private-assets-editorial',
+    title: 'Private Assets Editorial',
+    client: 'Aurelis',
+    badge: 'Private property',
+    headline: 'Exceptional property, represented with discretion.',
+    subhead: 'A private property and luxury asset system with editorial typography, cinematic imagery, quiet motion, and a controlled enquiry journey.',
+    cta: 'Request a private viewing',
+    secondary: 'Explore selected properties',
+    palette: ['#151611', '#f2efe7', '#a89262'],
+    metrics: [['Private', 'off-market search'], ['Global', 'trusted network'], ['1:1', 'principal advice']],
+    sections: ['Practice', 'Properties', 'Services', 'Process', 'Private access'],
+    inspiration: ['user-provided Aurelis private assets concept', 'editorial property portfolio', 'private client advisory']
   }
 ];
 
@@ -431,11 +453,11 @@ await mkdir(path.join(outDir, 'templates'), { recursive: true });
 const referenceManifest = templates.map(template => ({
   id: template.id,
   title: template.title,
-  source: template.referenceInspired
+  source: template.referenceSource || (template.referenceInspired
     ? 'Uploaded user reference image set - layout inspiration only; no external code or image assets copied'
     : template.awardInspired
     ? 'Award-site research inspiration only - no winning site code, layouts, or assets copied'
-    : 'Dribbble search reference only - no images copied or stored',
+    : 'Dribbble search reference only - no images copied or stored'),
   awardInspired: Boolean(template.awardInspired),
   referenceInspired: Boolean(template.referenceInspired),
   pattern: template.heroPattern || template.awardPattern || 'industry-template',
@@ -472,7 +494,8 @@ await writeFile(path.join(outDir, 'template-data.json'), `${JSON.stringify({
     metrics: template.metrics,
     sections: template.sections,
     inspiration: template.inspiration || [],
-    heroPattern: template.heroPattern || template.awardPattern || ''
+    heroPattern: template.heroPattern || template.awardPattern || '',
+    templateFamily: template.templateFamily || 'standardDaisyTemplate'
   }))
 }, null, 2)}\n`);
 await writeFile(path.join(outDir, 'palettes.json'), `${JSON.stringify({ ...paletteCollection, palettes: enrichedPalettes }, null, 2)}\n`);
@@ -530,6 +553,27 @@ function renderTemplate(template) {
     ['Is this mobile friendly?', 'Yes. Sections are mobile-first and expand into richer grid layouts on desktop.'],
     ['Can this support a real launch?', 'Yes. The page structure is ready for client-specific content, imagery, forms, and final approval.']
   ];
+
+  if (template.templateFamily === 'luxuryPropertyTemplate') {
+    return renderLuxuryPropertyWebsite({
+      mode: 'property',
+      brand: template.client,
+      heroKicker: template.badge,
+      headline: template.headline,
+      summary: template.subhead,
+      primaryCta: template.cta,
+      secondaryCta: template.secondary,
+      metrics: template.metrics,
+      tickerItems: template.sections,
+      images,
+      cssHref: '/daisyui.css?v=template-gallery-2',
+      designControlsHtml: renderDesignControls(defaultPaletteId, defaultFontGroupId),
+      paletteId: defaultPaletteId,
+      fontGroupId: defaultFontGroupId,
+      extraHead: `${fontImportBlock()}<style>${paletteStyleBlock()}${fontStyleBlock()}</style>`,
+      extraScript: designControlsScript()
+    });
+  }
 
   return htmlShell(template.title, template.theme, `<main class="overflow-hidden">
     <header class="navbar sticky top-0 z-30 border-b border-base-300 bg-base-100/90 px-4 backdrop-blur">
@@ -772,10 +816,12 @@ function escapeScriptJson(value) {
 }
 
 function imageFor(template, index) {
-  const generatedPool = generatedImageryManifest.templates?.[template.id]?.images || [];
-  if (generatedPool.length) return generatedPool[index % generatedPool.length]?.file;
+  const sourceId = template.imagerySourceId || template.id;
+  const generatedPool = generatedImageryManifest.templates?.[sourceId]?.images || [];
+  if (index < generatedPool.length) return generatedPool[index]?.file;
   const pool = manifest.categories[template.category] || manifest.categories.agency || [];
-  return pool[index % pool.length]?.file || '/placeholders/agency/agency-001.jpg';
+  const poolIndex = Math.max(0, index - generatedPool.length) % Math.max(pool.length, 1);
+  return pool[poolIndex]?.file || generatedPool[index % Math.max(generatedPool.length, 1)]?.file || '/placeholders/agency/agency-001.jpg';
 }
 
 async function readJsonIfExists(filePath, fallback) {

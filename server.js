@@ -5,6 +5,7 @@ import { promises as fs, readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
+import { isLuxuryPropertyBrief, renderLuxuryPropertyWebsite } from './src/templates/luxuryPropertyTemplate.js';
 
 const SERVERLESS = process.env.NETLIFY === 'true' || Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
 const LAMBDA_TASK_ROOT = process.env.LAMBDA_TASK_ROOT;
@@ -689,6 +690,22 @@ function renderProjectPreview(project, artifacts, data = {}, options = {}) {
   content.images = previewImagesFor(project.id, data, profile.imageCategory, 18);
   content.profile = profile;
   const isConcept = Boolean(options.concept);
+  const templateContext = `${context.businessType} ${context.originalBrief} ${context.style.join(' ')}`;
+  if (template === 'luxuryPropertyTemplate' || isLuxuryPropertyBrief(templateContext)) {
+    return renderLuxuryPropertyWebsite({
+      mode: isPropertyContext(context) ? 'property' : 'luxury',
+      brand: content.brand,
+      summary: professionalSubhead(context),
+      headline: luxuryPropertyHeadline(context, content.brand),
+      heroKicker: isPropertyContext(context) ? 'Private property advisory' : 'Private client practice',
+      primaryCta: isPropertyContext(context) ? 'Request a private viewing' : 'Begin a private enquiry',
+      secondaryCta: isPropertyContext(context) ? 'Explore selected properties' : 'Explore the collection',
+      images: content.images,
+      theme: luxuryThemeFromDirection(direction),
+      metaDescription: professionalSubhead(context),
+      isConcept
+    });
+  }
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -957,6 +974,7 @@ function projectContext(project, data = {}) {
 
 function inferTemplate(context) {
   const text = `${context.businessType} ${context.originalBrief}`.toLowerCase();
+  if (isLuxuryPropertyBrief(text)) return 'luxuryPropertyTemplate';
   if (isAgencyContext(context)) return 'agencyTemplate';
   if (/(software|saas|subscription|platform|b2b app)/.test(text)) return 'saasTemplate';
   if (/(shop|ecommerce|e-commerce|checkout|basket|cart|online store|mixed case|drink|juice|bottle)/.test(text)) return 'ecommerceTemplate';
@@ -1201,6 +1219,27 @@ function imageUrl(image) {
 
 function isAgencyContext(context) {
   return /(digital agency|marketing agency|web design|branding|ai automation|digital marketing|professional marketing website|agency|lead generation)/i.test(`${context.businessType} ${context.originalBrief}`);
+}
+
+function isPropertyContext(context) {
+  return /\b(property|properties|real[ -]?estate|estate agent|realtor|residence|residential|home developer|house builder|architecture|interior design)\b/i.test(`${context.businessType} ${context.originalBrief}`);
+}
+
+function luxuryPropertyHeadline(context, brand) {
+  if (isPropertyContext(context)) return 'Exceptional property, represented with discretion.';
+  if (/\b(hotel|resort|hospitality)\b/i.test(`${context.businessType} ${context.originalBrief}`)) return 'Remarkable places, presented with precision.';
+  return `${brand}, considered in every detail.`;
+}
+
+function luxuryThemeFromDirection(direction) {
+  const palette = Array.isArray(direction?.palette) ? direction.palette : [];
+  const find = pattern => palette.find(item => pattern.test(String(item?.name || '')))?.hex;
+  return {
+    ink: find(/ink|charcoal|night|navy|black/i),
+    paper: find(/paper|ivory|cream|white|warm/i),
+    paperAlt: find(/stone|sand|mist|soft|neutral/i),
+    gold: find(/gold|bronze|brass|ochre|accent/i)
+  };
 }
 
 function professionalHeadline(context, brand) {

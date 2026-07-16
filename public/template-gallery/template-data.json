@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-11T14:19:45.866Z",
+  "generatedAt": "2026-07-16T09:17:47.164Z",
   "templates": [
     {
       "id": "fruit-commerce-splash",
@@ -42,7 +42,8 @@
         "oversized editorial typography",
         "bright ecommerce landing page"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "saas-command-center",
@@ -85,7 +86,8 @@
         "clean SaaS hero",
         "product UI depth"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "local-trades-proof",
@@ -128,7 +130,8 @@
         "strong contact CTA",
         "local proof blocks"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "beauty-booking-editorial",
@@ -171,7 +174,8 @@
         "luxury service cards",
         "large beauty imagery"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "clinic-calm-care",
@@ -214,7 +218,8 @@
         "clear appointment flow",
         "accessible service cards"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "restaurant-night-menu",
@@ -257,7 +262,8 @@
         "menu card design",
         "immersive hospitality photography"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "property-showcase",
@@ -300,7 +306,8 @@
         "premium listing cards",
         "clean estate agency layout"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "portfolio-creator-grid",
@@ -343,7 +350,8 @@
         "creator landing page",
         "bold personal brand"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "agency-premium-system",
@@ -386,7 +394,8 @@
         "case study cards",
         "service design system"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "fitness-membership-flow",
@@ -429,7 +438,8 @@
         "movement photography",
         "membership pricing cards"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "fashion-shop-editorial",
@@ -472,7 +482,8 @@
         "lookbook grid",
         "editorial product cards"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "learning-platform",
@@ -515,7 +526,8 @@
         "course cards",
         "friendly learning journey"
       ],
-      "heroPattern": ""
+      "heroPattern": "",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "awarded-museum-editorial",
@@ -558,7 +570,8 @@
         "Awwwards art portfolio editorial",
         "museum website immersive typography"
       ],
-      "heroPattern": "museum-editorial"
+      "heroPattern": "museum-editorial",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "awarded-cinematic-luxury",
@@ -601,7 +614,8 @@
         "Awwwards luxury product storytelling",
         "premium editorial interaction design"
       ],
-      "heroPattern": "cinematic-luxury"
+      "heroPattern": "cinematic-luxury",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "awarded-data-story",
@@ -644,7 +658,8 @@
         "Reuters data quiz pattern",
         "Climate TRACE visual narrative"
       ],
-      "heroPattern": "data-story"
+      "heroPattern": "data-story",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "awarded-kinetic-agency",
@@ -687,7 +702,8 @@
         "FWA experimental interaction patterns",
         "Webby Best Home Page agency honorees"
       ],
-      "heroPattern": "kinetic-agency"
+      "heroPattern": "kinetic-agency",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "awarded-immersive-product",
@@ -730,7 +746,8 @@
         "Awwwards product launch sites",
         "FWA immersive product websites"
       ],
-      "heroPattern": "immersive-product"
+      "heroPattern": "immersive-product",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "awarded-human-cause",
@@ -773,7 +790,8 @@
         "public service award websites",
         "accessible campaign storytelling"
       ],
-      "heroPattern": "human-cause"
+      "heroPattern": "human-cause",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "reference-property-search-overlay",
@@ -816,7 +834,8 @@
         "real estate search hero",
         "glass filter interface"
       ],
-      "heroPattern": "property-search-overlay"
+      "heroPattern": "property-search-overlay",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "reference-mountain-journey",
@@ -860,7 +879,8 @@
         "destination landing page",
         "facility chip interface"
       ],
-      "heroPattern": "travel-chips"
+      "heroPattern": "travel-chips",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "reference-saas-carousel-growth",
@@ -903,7 +923,8 @@
         "dark product hero",
         "rounded customer card carousel"
       ],
-      "heroPattern": "centered-carousel"
+      "heroPattern": "centered-carousel",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "reference-spaceage-product-stage",
@@ -946,7 +967,8 @@
         "cinematic product stage",
         "floating preview panel"
       ],
-      "heroPattern": "kinetic-persona"
+      "heroPattern": "kinetic-persona",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "reference-interior-split-panel",
@@ -989,7 +1011,8 @@
         "home interior landing page",
         "warm editorial hero"
       ],
-      "heroPattern": "interior-split-panel"
+      "heroPattern": "interior-split-panel",
+      "templateFamily": "standardDaisyTemplate"
     },
     {
       "id": "reference-architecture-strip",
@@ -1032,7 +1055,52 @@
         "panoramic project strip",
         "minimal architecture website"
       ],
-      "heroPattern": "architecture-strip"
+      "heroPattern": "architecture-strip",
+      "templateFamily": "standardDaisyTemplate"
+    },
+    {
+      "id": "luxury-private-assets",
+      "category": "real-estate",
+      "title": "Private Assets Editorial",
+      "client": "Aurelis",
+      "badge": "Private property",
+      "headline": "Exceptional property, represented with discretion.",
+      "subhead": "A private property and luxury asset system with editorial typography, cinematic imagery, quiet motion, and a controlled enquiry journey.",
+      "cta": "Request a private viewing",
+      "secondary": "Explore selected properties",
+      "palette": [
+        "#151611",
+        "#f2efe7",
+        "#a89262"
+      ],
+      "metrics": [
+        [
+          "Private",
+          "off-market search"
+        ],
+        [
+          "Global",
+          "trusted network"
+        ],
+        [
+          "1:1",
+          "principal advice"
+        ]
+      ],
+      "sections": [
+        "Practice",
+        "Properties",
+        "Services",
+        "Process",
+        "Private access"
+      ],
+      "inspiration": [
+        "user-provided Aurelis private assets concept",
+        "editorial property portfolio",
+        "private client advisory"
+      ],
+      "heroPattern": "private-assets-editorial",
+      "templateFamily": "luxuryPropertyTemplate"
     }
   ]
 }

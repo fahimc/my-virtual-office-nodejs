@@ -9,6 +9,11 @@ export const websiteVariants = {
     components: ['navbar', 'hero', 'stats', 'card', 'steps', 'collapse', 'footer'],
     sectionTone: 'trust-first lead generation'
   },
+  luxuryPropertyTemplate: {
+    theme: 'agency-preview',
+    components: ['navbar', 'hero', 'badge', 'button', 'stats', 'portfolio grid', 'service rows', 'timeline', 'form', 'footer'],
+    sectionTone: 'editorial luxury and property presentation with discreet conversion paths'
+  },
   saasTemplate: {
     theme: 'winter',
     components: ['navbar', 'hero', 'mockup-browser', 'stats', 'card', 'timeline', 'footer'],

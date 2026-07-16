@@ -1,6 +1,6 @@
 {
   "name": "my-virtual-office-nodejs",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "description": "Node.js recreation of My Virtual Office with a live canvas office, agents, chat, dashboard, and editable layout.",
   "main": "server.js",
   "type": "module",
@@ -9,7 +9,7 @@
     "build:css": "tailwindcss -i ./src/styles/daisyui.css -o ./public/daisyui.css --minify",
     "start": "npm run build && node server.js",
     "dev": "npm run build && node --watch server.js",
-    "check": "npm run build && node --check server.js && node --check public/app.js && node --check public/agency.js && node --check public/portal.js && node scripts/test-workflow-resume.mjs && node scripts/test-imagery-generation.mjs && node scripts/test-office-state.mjs",
+    "check": "npm run build && node --check server.js && node --check public/app.js && node --check public/agency.js && node --check public/portal.js && node scripts/test-workflow-resume.mjs && node scripts/test-imagery-generation.mjs && node scripts/test-office-state.mjs && node scripts/test-luxury-property-template.mjs",
     "templates:gallery": "node scripts/generate-template-gallery.mjs",
     "templates:refresh": "npm run templates:gallery && npm run build:css",
     "templates:review": "node scripts/review-template-legibility.mjs",

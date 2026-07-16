@@ -172,7 +172,14 @@ export function cssVariablesForPalette(palette) {
     ['--color-warning', colors.accent],
     ['--color-warning-content', colors.on_accent],
     ['--color-error', '#DC2626'],
-    ['--color-error-content', '#FFFFFF']
+    ['--color-error-content', '#FFFFFF'],
+    ['--lux-ink', colors.text],
+    ['--lux-ink-soft', colors.primary],
+    ['--lux-paper', colors.background],
+    ['--lux-paper-alt', colors.surface],
+    ['--lux-stone', colors.border],
+    ['--lux-gold', colors.accent],
+    ['--lux-white', colors.on_primary]
   ].map(([key, value]) => `${key}:${value}`).join(';');
 }
 
