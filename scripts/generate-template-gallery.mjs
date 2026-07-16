@@ -15,7 +15,7 @@ const outDir = path.join(publicDir, 'template-gallery');
 const manifest = JSON.parse(await readFile(path.join(publicDir, 'placeholders', 'manifest.json'), 'utf8'));
 const generatedImageryManifest = await readJsonIfExists(path.join(outDir, 'generated-imagery', 'manifest.json'), { templates: {} });
 
-const templates = [
+const legacyTemplates = [
   {
     id: 'fruit-commerce-splash',
     category: 'food-drink',
@@ -423,13 +423,23 @@ const templates = [
     metrics: [['36', 'built projects'], ['11', 'cities'], ['A+', 'energy target']],
     sections: ['Projects', 'Approach', 'Studio', 'Sustainability', 'Contact'],
     inspiration: ['uploaded reference: architecture minimal hero', 'panoramic project strip', 'minimal architecture website']
-  },
-  ...premiumTemplateCatalog
+  }
 ];
+
+const activeTemplates = premiumTemplateCatalog;
+const archivedTemplates = legacyTemplates.map(template => ({
+  ...template,
+  archived: true,
+  archiveReason: 'Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.'
+}));
+const templates = activeTemplates;
 
 await mkdir(outDir, { recursive: true });
 await rm(path.join(outDir, 'templates'), { recursive: true, force: true });
 await mkdir(path.join(outDir, 'templates'), { recursive: true });
+const archiveDir = path.join(outDir, 'archive', 'legacy');
+await rm(archiveDir, { recursive: true, force: true });
+await mkdir(path.join(archiveDir, 'templates'), { recursive: true });
 
 const referenceManifest = templates.map(template => ({
   id: template.id,
@@ -458,6 +468,12 @@ for (const template of templates) {
   await writeFile(path.join(dir, 'index.html'), renderTemplate(template));
 }
 
+for (const template of archivedTemplates) {
+  const dir = path.join(archiveDir, 'templates', template.id);
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, 'index.html'), renderTemplate(template));
+}
+
 await writeFile(path.join(outDir, 'design-references.json'), `${JSON.stringify(referenceManifest, null, 2)}\n`);
 await writeFile(path.join(outDir, 'template-data.json'), `${JSON.stringify({
   generatedAt: new Date().toISOString(),
@@ -480,11 +496,26 @@ await writeFile(path.join(outDir, 'template-data.json'), `${JSON.stringify({
     premiumCategory: template.templateFamily === 'luxuryPropertyTemplate' ? template.title : undefined
   }))
 }, null, 2)}\n`);
+await writeFile(path.join(archiveDir, 'legacy-template-data.json'), `${JSON.stringify({
+  generatedAt: new Date().toISOString(),
+  archivedReason: 'These templates are preserved for reference only and are not shown in the active gallery because they do not use the reusable premium editorial design system.',
+  templates: archivedTemplates.map(template => ({
+    id: template.id,
+    category: template.category,
+    title: template.title,
+    client: template.client,
+    badge: template.badge,
+    headline: template.headline,
+    archiveReason: template.archiveReason,
+    url: `/template-gallery/archive/legacy/templates/${template.id}/`
+  }))
+}, null, 2)}\n`);
 await writeFile(path.join(outDir, 'palettes.json'), `${JSON.stringify({ ...paletteCollection, palettes: enrichedPalettes }, null, 2)}\n`);
 await writeFile(path.join(outDir, 'font-groups.json'), `${JSON.stringify({ ...fontCollection, groups: enrichedFontGroups }, null, 2)}\n`);
 await writeFile(path.join(outDir, 'index.html'), renderGallery());
+await writeFile(path.join(archiveDir, 'index.html'), renderArchiveGallery());
 
-console.log(`Generated ${templates.length} DaisyUI templates at /template-gallery/`);
+console.log(`Generated ${templates.length} premium templates at /template-gallery/ and archived ${archivedTemplates.length} legacy templates.`);
 
 function renderGallery() {
   const cards = templates.map(template => {
@@ -509,17 +540,51 @@ function renderGallery() {
         <div>
           <div class="badge badge-primary badge-lg mb-5">DaisyUI template system</div>
           <h1 class="text-5xl md:text-7xl font-black leading-none">Review the agency template library.</h1>
-          <p class="py-6 text-lg text-base-content/70">Original DaisyUI websites generated from industry and award-site pattern research, including a reusable premium editorial family for property, hospitality, architecture, wealth, wellness, and atelier brands. External references inform direction only; no external site code or assets are copied.</p>
+          <p class="py-6 text-lg text-base-content/70">Original DaisyUI websites generated from one reusable premium editorial system. The active library now covers luxury property, hospitality, architecture, wealth, wellness, jewellery, professional services, SaaS, restaurants, education, ecommerce, fitness, cause campaigns, and creator brands.</p>
           <div class="join">
             <a class="btn btn-primary join-item rounded-full" href="#templates">Browse templates</a>
             <a class="btn btn-outline join-item rounded-full" href="/template-gallery/design-references.json">View references</a>
             <a class="btn btn-outline join-item rounded-full" href="/template-gallery/palettes.json">View palettes</a>
             <a class="btn btn-outline join-item rounded-full" href="/template-gallery/font-groups.json">View fonts</a>
+            <a class="btn btn-outline join-item rounded-full" href="/template-gallery/archive/legacy/">Legacy archive</a>
           </div>
         </div>
       </div>
     </section>
     <section id="templates" class="mx-auto w-[min(1280px,calc(100%-2rem))] py-14">
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">${cards}</div>
+    </section>
+  </main>`);
+}
+
+function renderArchiveGallery() {
+  const cards = archivedTemplates.map(template => {
+    const image = imageFor(template, 0);
+    return `<article class="card bg-base-100 shadow-xl border border-base-300 overflow-hidden opacity-90">
+      <figure class="h-48"><img src="${image}" alt="" class="h-full w-full object-cover grayscale"></figure>
+      <div class="card-body">
+        <div class="flex flex-wrap gap-2"><span class="badge badge-outline">archived</span><span class="badge badge-ghost">${escapeHtml(template.category)}</span></div>
+        <h2 class="card-title text-xl">${escapeHtml(template.title)}</h2>
+        <p>${escapeHtml(template.archiveReason)}</p>
+        <div class="card-actions justify-end">
+          <a class="btn btn-outline rounded-full" href="/template-gallery/archive/legacy/templates/${template.id}/">Open archived template</a>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+
+  return htmlShell('Legacy Template Archive', 'corporate', `<main class="min-h-screen bg-base-200">
+    <section class="hero min-h-[42vh] bg-base-100">
+      <div class="hero-content text-center max-w-4xl">
+        <div>
+          <div class="badge badge-outline badge-lg mb-5">Legacy archive</div>
+          <h1 class="text-4xl md:text-6xl font-black leading-none">Archived non-premium templates.</h1>
+          <p class="py-6 text-lg text-base-content/70">These earlier DaisyUI experiments are preserved for reference. They are no longer part of the active client-facing gallery because they do not use the reusable premium editorial component system.</p>
+          <a class="btn btn-primary rounded-full" href="/template-gallery/">Back to active gallery</a>
+        </div>
+      </div>
+    </section>
+    <section class="mx-auto w-[min(1280px,calc(100%-2rem))] py-14">
       <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">${cards}</div>
     </section>
   </main>`);

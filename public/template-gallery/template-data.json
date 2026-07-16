@@ -1,1063 +1,6 @@
 {
-  "generatedAt": "2026-07-16T10:32:25.243Z",
+  "generatedAt": "2026-07-16T13:55:57.962Z",
   "templates": [
-    {
-      "id": "fruit-commerce-splash",
-      "category": "food-drink",
-      "title": "Fruit Commerce Splash",
-      "client": "Zestora",
-      "badge": "Product launch",
-      "headline": "Fruit drinks that look as fresh as they taste.",
-      "subhead": "A bright commerce homepage for bottled drinks, flavour packs, subscriptions, and wholesale enquiries.",
-      "cta": "Shop flavours",
-      "secondary": "Build a case",
-      "palette": [
-        "#ffb703",
-        "#fb7185",
-        "#22c55e"
-      ],
-      "metrics": [
-        [
-          "6",
-          "launch flavours"
-        ],
-        [
-          "24h",
-          "dispatch"
-        ],
-        [
-          "4.8",
-          "early rating"
-        ]
-      ],
-      "sections": [
-        "Hero",
-        "Product cards",
-        "Mixed case builder",
-        "Wholesale CTA",
-        "FAQ"
-      ],
-      "inspiration": [
-        "bold product cards",
-        "oversized editorial typography",
-        "bright ecommerce landing page"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "saas-command-center",
-      "category": "saas",
-      "title": "SaaS Command Center",
-      "client": "Northstar OS",
-      "badge": "B2B SaaS",
-      "headline": "Run the whole operation from one calm dashboard.",
-      "subhead": "A product-led website for workflow software, analytics, automation, and team visibility.",
-      "cta": "Book demo",
-      "secondary": "View platform",
-      "palette": [
-        "#2563eb",
-        "#14b8a6",
-        "#111827"
-      ],
-      "metrics": [
-        [
-          "38%",
-          "less admin"
-        ],
-        [
-          "12k",
-          "tasks routed"
-        ],
-        [
-          "99.9%",
-          "uptime"
-        ]
-      ],
-      "sections": [
-        "Hero",
-        "Feature grid",
-        "Dashboard preview",
-        "Integrations",
-        "Pricing"
-      ],
-      "inspiration": [
-        "glass dashboard cards",
-        "clean SaaS hero",
-        "product UI depth"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "local-trades-proof",
-      "category": "trades",
-      "title": "Local Trades Proof",
-      "client": "Ashford Heating",
-      "badge": "Local service",
-      "headline": "Fast repairs, tidy installs, and quotes without the runaround.",
-      "subhead": "A trust-first lead generation site for plumbers, electricians, builders, and repair teams.",
-      "cta": "Request a quote",
-      "secondary": "See services",
-      "palette": [
-        "#f97316",
-        "#0f172a",
-        "#38bdf8"
-      ],
-      "metrics": [
-        [
-          "24/7",
-          "emergency cover"
-        ],
-        [
-          "900+",
-          "jobs completed"
-        ],
-        [
-          "4.9",
-          "local rating"
-        ]
-      ],
-      "sections": [
-        "Emergency hero",
-        "Service cards",
-        "Reviews",
-        "Areas covered",
-        "Contact form"
-      ],
-      "inspiration": [
-        "high trust service cards",
-        "strong contact CTA",
-        "local proof blocks"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "beauty-booking-editorial",
-      "category": "beauty",
-      "title": "Beauty Booking Editorial",
-      "client": "Luna Studio",
-      "badge": "Beauty & salon",
-      "headline": "Soft-touch treatments with a polished booking flow.",
-      "subhead": "A premium salon site for services, portfolios, treatment menus, gift cards, and bookings.",
-      "cta": "Book treatment",
-      "secondary": "View menu",
-      "palette": [
-        "#f9a8d4",
-        "#7c2d12",
-        "#ffffff"
-      ],
-      "metrics": [
-        [
-          "18",
-          "treatments"
-        ],
-        [
-          "5k+",
-          "clients"
-        ],
-        [
-          "4.9",
-          "rating"
-        ]
-      ],
-      "sections": [
-        "Editorial hero",
-        "Treatment cards",
-        "Gallery",
-        "Specialists",
-        "Booking CTA"
-      ],
-      "inspiration": [
-        "soft editorial layout",
-        "luxury service cards",
-        "large beauty imagery"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "clinic-calm-care",
-      "category": "healthcare",
-      "title": "Clinic Calm Care",
-      "client": "Harbour Clinic",
-      "badge": "Healthcare",
-      "headline": "Clear care pathways, without the confusion.",
-      "subhead": "A calm healthcare website for appointments, services, patient information, and trust.",
-      "cta": "Book appointment",
-      "secondary": "Find a service",
-      "palette": [
-        "#10b981",
-        "#2563eb",
-        "#ecfeff"
-      ],
-      "metrics": [
-        [
-          "12",
-          "specialists"
-        ],
-        [
-          "same day",
-          "triage"
-        ],
-        [
-          "AA",
-          "contrast target"
-        ]
-      ],
-      "sections": [
-        "Care hero",
-        "Service finder",
-        "Clinician cards",
-        "Patient info",
-        "Accessible forms"
-      ],
-      "inspiration": [
-        "calm healthcare web design",
-        "clear appointment flow",
-        "accessible service cards"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "restaurant-night-menu",
-      "category": "restaurant",
-      "title": "Restaurant Night Menu",
-      "client": "Ember Table",
-      "badge": "Restaurant",
-      "headline": "Seasonal plates, warm rooms, and a table worth booking.",
-      "subhead": "An atmospheric hospitality site for menus, bookings, private dining, and venue storytelling.",
-      "cta": "Reserve table",
-      "secondary": "View menu",
-      "palette": [
-        "#ea580c",
-        "#451a03",
-        "#fde68a"
-      ],
-      "metrics": [
-        [
-          "32",
-          "seasonal dishes"
-        ],
-        [
-          "2",
-          "private rooms"
-        ],
-        [
-          "4.8",
-          "guest score"
-        ]
-      ],
-      "sections": [
-        "Image-led hero",
-        "Menu highlights",
-        "Private dining",
-        "Reviews",
-        "Booking"
-      ],
-      "inspiration": [
-        "warm restaurant landing page",
-        "menu card design",
-        "immersive hospitality photography"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "property-showcase",
-      "category": "real-estate",
-      "title": "Property Showcase",
-      "client": "Aster Homes",
-      "badge": "Real estate",
-      "headline": "Homes presented with the polish buyers expect.",
-      "subhead": "A real-estate template for featured listings, valuation requests, neighbourhood guides, and viewings.",
-      "cta": "Book valuation",
-      "secondary": "Browse homes",
-      "palette": [
-        "#0f172a",
-        "#bfdbfe",
-        "#f8fafc"
-      ],
-      "metrics": [
-        [
-          "48h",
-          "listing prep"
-        ],
-        [
-          "120+",
-          "homes sold"
-        ],
-        [
-          "97%",
-          "asking achieved"
-        ]
-      ],
-      "sections": [
-        "Hero listing",
-        "Property cards",
-        "Valuation CTA",
-        "Area guides",
-        "Agent profile"
-      ],
-      "inspiration": [
-        "image-led property website",
-        "premium listing cards",
-        "clean estate agency layout"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "portfolio-creator-grid",
-      "category": "portfolio",
-      "title": "Portfolio Creator Grid",
-      "client": "Maya Finch",
-      "badge": "Portfolio",
-      "headline": "A sharp portfolio that makes the work impossible to miss.",
-      "subhead": "A creator portfolio for photography, design, case studies, creative services, and enquiries.",
-      "cta": "View work",
-      "secondary": "Start a brief",
-      "palette": [
-        "#111827",
-        "#facc15",
-        "#ffffff"
-      ],
-      "metrics": [
-        [
-          "42",
-          "projects"
-        ],
-        [
-          "9",
-          "awards"
-        ],
-        [
-          "3",
-          "specialisms"
-        ]
-      ],
-      "sections": [
-        "Editorial hero",
-        "Project gallery",
-        "Services",
-        "Testimonials",
-        "Contact"
-      ],
-      "inspiration": [
-        "portfolio masonry grid",
-        "creator landing page",
-        "bold personal brand"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "agency-premium-system",
-      "category": "agency",
-      "title": "Agency Premium System",
-      "client": "Signal & Co",
-      "badge": "Agency",
-      "headline": "Strategy, design, and launches without the agency fog.",
-      "subhead": "A polished agency site for positioning, service packages, case studies, process, and lead capture.",
-      "cta": "Start project",
-      "secondary": "See work",
-      "palette": [
-        "#4338ca",
-        "#14b8a6",
-        "#111827"
-      ],
-      "metrics": [
-        [
-          "28",
-          "launches"
-        ],
-        [
-          "6wk",
-          "average sprint"
-        ],
-        [
-          "3x",
-          "lead lift"
-        ]
-      ],
-      "sections": [
-        "Hero",
-        "Capabilities",
-        "Case studies",
-        "Process",
-        "Proposal CTA"
-      ],
-      "inspiration": [
-        "premium agency website",
-        "case study cards",
-        "service design system"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "fitness-membership-flow",
-      "category": "fitness",
-      "title": "Fitness Membership Flow",
-      "client": "Forge Fit",
-      "badge": "Fitness",
-      "headline": "Training plans, class energy, and membership conversion in one place.",
-      "subhead": "A fitness site for classes, trainers, transformation proof, memberships, and trial passes.",
-      "cta": "Claim trial",
-      "secondary": "View classes",
-      "palette": [
-        "#facc15",
-        "#ef4444",
-        "#111827"
-      ],
-      "metrics": [
-        [
-          "36",
-          "classes weekly"
-        ],
-        [
-          "8",
-          "coaches"
-        ],
-        [
-          "30d",
-          "trial plan"
-        ]
-      ],
-      "sections": [
-        "Action hero",
-        "Class cards",
-        "Trainer roster",
-        "Results",
-        "Membership CTA"
-      ],
-      "inspiration": [
-        "high contrast fitness landing page",
-        "movement photography",
-        "membership pricing cards"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "fashion-shop-editorial",
-      "category": "ecommerce",
-      "title": "Fashion Shop Editorial",
-      "client": "Vale Supply",
-      "badge": "Ecommerce",
-      "headline": "A collection launch with editorial pace and shop clarity.",
-      "subhead": "A boutique ecommerce template for collections, lookbooks, product cards, and seasonal campaigns.",
-      "cta": "Shop collection",
-      "secondary": "See lookbook",
-      "palette": [
-        "#111827",
-        "#f9a8d4",
-        "#f8fafc"
-      ],
-      "metrics": [
-        [
-          "24",
-          "new pieces"
-        ],
-        [
-          "3",
-          "drops"
-        ],
-        [
-          "48h",
-          "shipping"
-        ]
-      ],
-      "sections": [
-        "Campaign hero",
-        "Collection cards",
-        "Lookbook gallery",
-        "Benefits",
-        "Newsletter"
-      ],
-      "inspiration": [
-        "fashion ecommerce homepage",
-        "lookbook grid",
-        "editorial product cards"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "learning-platform",
-      "category": "local-business",
-      "title": "Learning Platform",
-      "client": "BrightPath",
-      "badge": "Education",
-      "headline": "Courses that feel structured, supportive, and easy to start.",
-      "subhead": "An education template for programmes, course cards, outcomes, tutors, and enrolment.",
-      "cta": "Explore courses",
-      "secondary": "Talk to advisor",
-      "palette": [
-        "#16a34a",
-        "#2563eb",
-        "#fefce8"
-      ],
-      "metrics": [
-        [
-          "18",
-          "courses"
-        ],
-        [
-          "92%",
-          "completion"
-        ],
-        [
-          "1:1",
-          "support"
-        ]
-      ],
-      "sections": [
-        "Outcome hero",
-        "Course cards",
-        "Learning path",
-        "Tutor proof",
-        "Enquiry"
-      ],
-      "inspiration": [
-        "education landing page",
-        "course cards",
-        "friendly learning journey"
-      ],
-      "heroPattern": "",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "awarded-museum-editorial",
-      "category": "portfolio",
-      "title": "Museum Editorial",
-      "client": "Warhol Archive",
-      "badge": "Award-inspired art site",
-      "headline": "An exhibition homepage with the confidence of a gallery wall.",
-      "subhead": "A visual arts template shaped by award-gallery patterns: restrained navigation, dramatic cropping, archival captions, and cinematic object focus.",
-      "cta": "Enter exhibition",
-      "secondary": "View collection",
-      "palette": [
-        "#f8fafc",
-        "#ef4444",
-        "#0f172a"
-      ],
-      "metrics": [
-        [
-          "48",
-          "works"
-        ],
-        [
-          "7",
-          "rooms"
-        ],
-        [
-          "1960s",
-          "archive focus"
-        ]
-      ],
-      "sections": [
-        "Exhibition hero",
-        "Archive grid",
-        "Curator notes",
-        "Visit plan",
-        "Tickets"
-      ],
-      "inspiration": [
-        "Webby 2026 Architecture Art Design winner Warhol Art",
-        "Awwwards art portfolio editorial",
-        "museum website immersive typography"
-      ],
-      "heroPattern": "museum-editorial",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "awarded-cinematic-luxury",
-      "category": "real-estate",
-      "title": "Cinematic Luxury",
-      "client": "Maison Atlas",
-      "badge": "Luxury launch",
-      "headline": "A quiet luxury launch built around atmosphere, scarcity, and desire.",
-      "subhead": "A premium property/product template with dark editorial framing, slow reveal panels, concierge CTAs, and high-touch proof.",
-      "cta": "Request private view",
-      "secondary": "Explore story",
-      "palette": [
-        "#120f0a",
-        "#d6b46a",
-        "#f8f1df"
-      ],
-      "metrics": [
-        [
-          "12",
-          "private releases"
-        ],
-        [
-          "3",
-          "signature spaces"
-        ],
-        [
-          "1:1",
-          "concierge"
-        ]
-      ],
-      "sections": [
-        "Cinematic hero",
-        "Private release",
-        "Craft details",
-        "Concierge proof",
-        "Request access"
-      ],
-      "inspiration": [
-        "CSS Winner Depo Luxe cinematic luxury",
-        "Awwwards luxury product storytelling",
-        "premium editorial interaction design"
-      ],
-      "heroPattern": "cinematic-luxury",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "awarded-data-story",
-      "category": "saas",
-      "title": "Data Story Observatory",
-      "client": "TraceLab",
-      "badge": "Data narrative",
-      "headline": "Turn a complex dataset into a story people can act on.",
-      "subhead": "A data-visualisation template with map-like cards, evidence modules, narrative steps, and clear reader takeaways.",
-      "cta": "Explore the data",
-      "secondary": "Read findings",
-      "palette": [
-        "#0f766e",
-        "#38bdf8",
-        "#f8fafc"
-      ],
-      "metrics": [
-        [
-          "140+",
-          "data sources"
-        ],
-        [
-          "9",
-          "regions"
-        ],
-        [
-          "3min",
-          "guided read"
-        ]
-      ],
-      "sections": [
-        "Data hero",
-        "Signal map",
-        "Insight cards",
-        "Method notes",
-        "Action CTA"
-      ],
-      "inspiration": [
-        "Webby 2026 Best Data Visualization nominees",
-        "Reuters data quiz pattern",
-        "Climate TRACE visual narrative"
-      ],
-      "heroPattern": "data-story",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "awarded-kinetic-agency",
-      "category": "agency",
-      "title": "Kinetic Agency",
-      "client": "Junction Lab",
-      "badge": "Experimental studio",
-      "headline": "A studio homepage that moves like a pitch deck and lands like a product.",
-      "subhead": "An agency template inspired by motion-heavy award sites: kinetic type, diagonal work strips, capability chips, and bold proof moments.",
-      "cta": "Start a sprint",
-      "secondary": "See motion reel",
-      "palette": [
-        "#a855f7",
-        "#22d3ee",
-        "#111827"
-      ],
-      "metrics": [
-        [
-          "6wk",
-          "launch sprint"
-        ],
-        [
-          "40+",
-          "brand systems"
-        ],
-        [
-          "3x",
-          "lead lift"
-        ]
-      ],
-      "sections": [
-        "Kinetic hero",
-        "Work strip",
-        "Capability chips",
-        "Proof wall",
-        "Sprint CTA"
-      ],
-      "inspiration": [
-        "Awwwards interaction design gallery",
-        "FWA experimental interaction patterns",
-        "Webby Best Home Page agency honorees"
-      ],
-      "heroPattern": "kinetic-agency",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "awarded-immersive-product",
-      "category": "ecommerce",
-      "title": "Immersive Product Drop",
-      "client": "Aether One",
-      "badge": "Product experience",
-      "headline": "A product drop with depth, motion, and a reason to scroll.",
-      "subhead": "A launch template for objects, fashion, devices, and limited drops with layered product cards, feature hotspots, and pre-order flow.",
-      "cta": "Join the drop",
-      "secondary": "Inspect features",
-      "palette": [
-        "#f97316",
-        "#7c3aed",
-        "#111827"
-      ],
-      "metrics": [
-        [
-          "72h",
-          "early access"
-        ],
-        [
-          "5",
-          "feature layers"
-        ],
-        [
-          "1",
-          "limited drop"
-        ]
-      ],
-      "sections": [
-        "Drop hero",
-        "Feature orbit",
-        "Material story",
-        "Social proof",
-        "Preorder"
-      ],
-      "inspiration": [
-        "Webby 2026 Best Home Page honoree Aether 1",
-        "Awwwards product launch sites",
-        "FWA immersive product websites"
-      ],
-      "heroPattern": "immersive-product",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "awarded-human-cause",
-      "category": "healthcare",
-      "title": "Human Cause Story",
-      "client": "Ensaaf Foundation",
-      "badge": "Cause campaign",
-      "headline": "A campaign page that makes the human story impossible to skip.",
-      "subhead": "A nonprofit/cause template with emotionally direct hierarchy, timeline evidence, donation prompts, and careful accessibility.",
-      "cta": "Support the work",
-      "secondary": "Read the story",
-      "palette": [
-        "#064e3b",
-        "#fbbf24",
-        "#f8fafc"
-      ],
-      "metrics": [
-        [
-          "25yr",
-          "timeline"
-        ],
-        [
-          "18k",
-          "records"
-        ],
-        [
-          "4",
-          "ways to help"
-        ]
-      ],
-      "sections": [
-        "Story hero",
-        "Evidence timeline",
-        "Impact cards",
-        "Donate",
-        "Updates"
-      ],
-      "inspiration": [
-        "Webby Best Home Page honoree Ensaaf",
-        "public service award websites",
-        "accessible campaign storytelling"
-      ],
-      "heroPattern": "human-cause",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "reference-property-search-overlay",
-      "category": "real-estate",
-      "title": "Property Search Overlay",
-      "client": "AsterKey",
-      "badge": "Property search",
-      "headline": "Where affordability meets sustainability.",
-      "subhead": "A property platform hero with an immediate search task, glass filters, buyer proof, and listing intent above the fold.",
-      "cta": "Search homes",
-      "secondary": "View neighbourhoods",
-      "palette": [
-        "#0f172a",
-        "#e2e8f0",
-        "#111827"
-      ],
-      "metrics": [
-        [
-          "1.8k",
-          "active homes"
-        ],
-        [
-          "42",
-          "green-rated areas"
-        ],
-        [
-          "24h",
-          "viewing response"
-        ]
-      ],
-      "sections": [
-        "Search",
-        "Featured homes",
-        "Neighbourhoods",
-        "Buyer proof",
-        "Book viewing"
-      ],
-      "inspiration": [
-        "uploaded reference: property search overlay",
-        "real estate search hero",
-        "glass filter interface"
-      ],
-      "heroPattern": "property-search-overlay",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "reference-mountain-journey",
-      "category": "portfolio",
-      "title": "Mountain Journey Hero",
-      "client": "Gateway",
-      "badge": "Travel concierge",
-      "headline": "Crafting journeys, not just trips.",
-      "subhead": "A full-bleed travel hero with headline emphasis, facility chips, social proof, and a concierge-style action.",
-      "cta": "Consult us",
-      "secondary": "Explore journeys",
-      "palette": [
-        "#0f172a",
-        "#f8fafc",
-        "#94a3b8"
-      ],
-      "metrics": [
-        [
-          "27",
-          "routes"
-        ],
-        [
-          "4.9",
-          "guest rating"
-        ],
-        [
-          "1:1",
-          "trip design"
-        ]
-      ],
-      "sections": [
-        "Tour guide",
-        "Travel package",
-        "Accommodation",
-        "Transport",
-        "Food",
-        "Online delivery"
-      ],
-      "inspiration": [
-        "uploaded reference: mountain full-bleed travel hero",
-        "destination landing page",
-        "facility chip interface"
-      ],
-      "heroPattern": "travel-chips",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "reference-saas-carousel-growth",
-      "category": "saas",
-      "title": "SaaS Carousel Growth",
-      "client": "EoS",
-      "badge": "Business automation",
-      "headline": "More growth, less work. Get your time back.",
-      "subhead": "A centered SaaS homepage with highlighted outcome words, a rounded media carousel, and a clean product-led CTA.",
-      "cta": "Take control now",
-      "secondary": "See workflow",
-      "palette": [
-        "#1d1738",
-        "#a7f3d0",
-        "#ffffff"
-      ],
-      "metrics": [
-        [
-          "31%",
-          "hours recovered"
-        ],
-        [
-          "8",
-          "workflows live"
-        ],
-        [
-          "2wk",
-          "setup sprint"
-        ]
-      ],
-      "sections": [
-        "Product",
-        "Problems",
-        "Features",
-        "Resources",
-        "Pricing"
-      ],
-      "inspiration": [
-        "uploaded reference: centered SaaS carousel hero",
-        "dark product hero",
-        "rounded customer card carousel"
-      ],
-      "heroPattern": "centered-carousel",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "reference-spaceage-product-stage",
-      "category": "ecommerce",
-      "title": "SpaceAge Product Stage",
-      "client": "SpaceAge",
-      "badge": "Launch experience",
-      "headline": "A launch page with atmosphere, motion, and product focus.",
-      "subhead": "A dark cinematic stage for fashion, products, creators, and immersive campaigns with metrics and preview media.",
-      "cta": "Watch launch",
-      "secondary": "View collection",
-      "palette": [
-        "#11131d",
-        "#ef4444",
-        "#22d3ee"
-      ],
-      "metrics": [
-        [
-          "01",
-          "hero product"
-        ],
-        [
-          "4",
-          "launch chapters"
-        ],
-        [
-          "90s",
-          "motion reel"
-        ]
-      ],
-      "sections": [
-        "Launch",
-        "Collection",
-        "Story",
-        "Preview",
-        "Reserve"
-      ],
-      "inspiration": [
-        "uploaded reference: SpaceAge dark hero",
-        "cinematic product stage",
-        "floating preview panel"
-      ],
-      "heroPattern": "kinetic-persona",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "reference-interior-split-panel",
-      "category": "real-estate",
-      "title": "Interior Split Panel",
-      "client": "HouseCut",
-      "badge": "Interior studio",
-      "headline": "A loft apartment arranged around modern comfort.",
-      "subhead": "A split hero using an immersive room image and a warm editorial panel for interior designers, venues, and lifestyle brands.",
-      "cta": "Plan the room",
-      "secondary": "View spaces",
-      "palette": [
-        "#f97316",
-        "#111827",
-        "#f8fafc"
-      ],
-      "metrics": [
-        [
-          "14",
-          "room concepts"
-        ],
-        [
-          "3wk",
-          "design sprint"
-        ],
-        [
-          "1:1",
-          "consultation"
-        ]
-      ],
-      "sections": [
-        "Spaces",
-        "Services",
-        "Materials",
-        "Process",
-        "Consultation"
-      ],
-      "inspiration": [
-        "uploaded reference: interior split orange panel",
-        "home interior landing page",
-        "warm editorial hero"
-      ],
-      "heroPattern": "interior-split-panel",
-      "templateFamily": "standardDaisyTemplate"
-    },
-    {
-      "id": "reference-architecture-strip",
-      "category": "real-estate",
-      "title": "Architecture Strip",
-      "client": "Formline",
-      "badge": "Architecture studio",
-      "headline": "Building shapes for the future.",
-      "subhead": "A minimal architecture hero with oversized typography, restrained copy, and a panoramic project strip.",
-      "cta": "Discuss project",
-      "secondary": "View portfolio",
-      "palette": [
-        "#111827",
-        "#f8fafc",
-        "#cbd5e1"
-      ],
-      "metrics": [
-        [
-          "36",
-          "built projects"
-        ],
-        [
-          "11",
-          "cities"
-        ],
-        [
-          "A+",
-          "energy target"
-        ]
-      ],
-      "sections": [
-        "Projects",
-        "Approach",
-        "Studio",
-        "Sustainability",
-        "Contact"
-      ],
-      "inspiration": [
-        "uploaded reference: architecture minimal hero",
-        "panoramic project strip",
-        "minimal architecture website"
-      ],
-      "heroPattern": "architecture-strip",
-      "templateFamily": "standardDaisyTemplate"
-    },
     {
       "id": "luxury-private-assets",
       "category": "real-estate",
@@ -1333,6 +276,466 @@
       "heroPattern": "premium-editorial-system",
       "templateFamily": "luxuryPropertyTemplate",
       "premiumCategory": "Jewellery Atelier Edition"
+    },
+    {
+      "id": "premium-law-firm",
+      "category": "agency",
+      "title": "Legal Counsel Practice",
+      "client": "Hale & Rowan",
+      "badge": "Legal practice",
+      "headline": "Serious legal counsel, explained with clarity.",
+      "subhead": "A premium legal website for commercial firms, private client practices, dispute specialists, and boutique advisory teams.",
+      "cta": "Arrange a consultation",
+      "secondary": "Explore expertise",
+      "palette": [
+        "#111827",
+        "#f7f2e8",
+        "#b9975b"
+      ],
+      "metrics": [
+        [
+          "Partner-led",
+          "advice"
+        ],
+        [
+          "24h",
+          "response target"
+        ],
+        [
+          "Private",
+          "client intake"
+        ]
+      ],
+      "sections": [
+        "Expertise",
+        "Matters",
+        "People",
+        "Process",
+        "Consultation"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Legal Counsel Practice"
+    },
+    {
+      "id": "premium-dental-clinic",
+      "category": "healthcare",
+      "title": "Private Dental Clinic",
+      "client": "Aster Dental",
+      "badge": "Dental clinic",
+      "headline": "Calm dentistry with every step made clear.",
+      "subhead": "A polished dental website for treatment plans, clinician trust, online booking, emergency triage, and patient education.",
+      "cta": "Book a visit",
+      "secondary": "View treatments",
+      "palette": [
+        "#1d3557",
+        "#f8f7f2",
+        "#7ad7c7"
+      ],
+      "metrics": [
+        [
+          "Same day",
+          "triage"
+        ],
+        [
+          "12",
+          "treatments"
+        ],
+        [
+          "4.9",
+          "patient rating"
+        ]
+      ],
+      "sections": [
+        "Treatments",
+        "Clinicians",
+        "Fees",
+        "Patient path",
+        "Booking"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Private Dental Clinic"
+    },
+    {
+      "id": "premium-accountancy-advisory",
+      "category": "agency",
+      "title": "Accountancy Advisory",
+      "client": "Ledger North",
+      "badge": "Accounting firm",
+      "headline": "Numbers translated into better business decisions.",
+      "subhead": "A professional services template for accountants, tax advisers, CFO services, and finance teams selling confidence rather than compliance alone.",
+      "cta": "Book a finance review",
+      "secondary": "See services",
+      "palette": [
+        "#006b68",
+        "#f2fbf8",
+        "#ffb000"
+      ],
+      "metrics": [
+        [
+          "Monthly",
+          "reporting"
+        ],
+        [
+          "Tax",
+          "planning"
+        ],
+        [
+          "CFO",
+          "advisory"
+        ]
+      ],
+      "sections": [
+        "Services",
+        "Industries",
+        "Advisory",
+        "Process",
+        "Review"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Accountancy Advisory"
+    },
+    {
+      "id": "premium-ai-saas-platform",
+      "category": "saas",
+      "title": "AI SaaS Platform",
+      "client": "VectorLane",
+      "badge": "AI software",
+      "headline": "Make complex work feel like one calm system.",
+      "subhead": "A premium SaaS website for AI products, workflow platforms, developer tools, and automation software with proof-led conversion.",
+      "cta": "Book a demo",
+      "secondary": "View platform",
+      "palette": [
+        "#111827",
+        "#7c3aed",
+        "#c4f1f9"
+      ],
+      "metrics": [
+        [
+          "42%",
+          "time saved"
+        ],
+        [
+          "99.9%",
+          "uptime"
+        ],
+        [
+          "SOC2",
+          "ready"
+        ]
+      ],
+      "sections": [
+        "Platform",
+        "Use cases",
+        "Security",
+        "Proof",
+        "Demo"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "AI SaaS Platform"
+    },
+    {
+      "id": "premium-restaurant-group",
+      "category": "restaurant",
+      "title": "Restaurant Group",
+      "client": "Orso Table",
+      "badge": "Restaurant and bar",
+      "headline": "A dining room people can feel before they book.",
+      "subhead": "A hospitality website for restaurants, bars, private dining, seasonal menus, events, and reservations.",
+      "cta": "Reserve a table",
+      "secondary": "View menus",
+      "palette": [
+        "#2b211c",
+        "#fff7ef",
+        "#c9a27e"
+      ],
+      "metrics": [
+        [
+          "Seasonal",
+          "menus"
+        ],
+        [
+          "2",
+          "private rooms"
+        ],
+        [
+          "4.8",
+          "guest score"
+        ]
+      ],
+      "sections": [
+        "Menus",
+        "Rooms",
+        "Private dining",
+        "Events",
+        "Reservations"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Restaurant Group"
+    },
+    {
+      "id": "premium-fitness-studio",
+      "category": "fitness",
+      "title": "Boutique Fitness Studio",
+      "client": "Pulse House",
+      "badge": "Fitness studio",
+      "headline": "Training energy with a membership path that converts.",
+      "subhead": "A high-impact fitness website for class schedules, coaches, transformations, memberships, and trial bookings.",
+      "cta": "Start a trial",
+      "secondary": "View classes",
+      "palette": [
+        "#18181b",
+        "#ff3ea5",
+        "#ffe45e"
+      ],
+      "metrics": [
+        [
+          "44",
+          "weekly classes"
+        ],
+        [
+          "8",
+          "coaches"
+        ],
+        [
+          "30d",
+          "trial"
+        ]
+      ],
+      "sections": [
+        "Classes",
+        "Coaches",
+        "Results",
+        "Memberships",
+        "Trial"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Boutique Fitness Studio"
+    },
+    {
+      "id": "premium-photography-studio",
+      "category": "portfolio",
+      "title": "Photography Studio",
+      "client": "Mara Vale",
+      "badge": "Creative portfolio",
+      "headline": "A portfolio that lets the images carry the decision.",
+      "subhead": "A refined portfolio website for photographers, filmmakers, art directors, stylists, and creative studios.",
+      "cta": "Enquire about a shoot",
+      "secondary": "View work",
+      "palette": [
+        "#172033",
+        "#f8f7f2",
+        "#e5b567"
+      ],
+      "metrics": [
+        [
+          "42",
+          "campaigns"
+        ],
+        [
+          "12",
+          "editorials"
+        ],
+        [
+          "Global",
+          "commissions"
+        ]
+      ],
+      "sections": [
+        "Work",
+        "Series",
+        "Services",
+        "Journal",
+        "Enquiry"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Photography Studio"
+    },
+    {
+      "id": "premium-education-academy",
+      "category": "local-business",
+      "title": "Education Academy",
+      "client": "BrightPath Academy",
+      "badge": "Education",
+      "headline": "Learning pathways that feel structured from the first click.",
+      "subhead": "A premium education website for courses, academies, tutors, cohorts, outcomes, and enrolment conversations.",
+      "cta": "Explore courses",
+      "secondary": "Speak to an advisor",
+      "palette": [
+        "#0a2526",
+        "#7ad7c7",
+        "#ffb000"
+      ],
+      "metrics": [
+        [
+          "18",
+          "courses"
+        ],
+        [
+          "92%",
+          "completion"
+        ],
+        [
+          "1:1",
+          "support"
+        ]
+      ],
+      "sections": [
+        "Courses",
+        "Outcomes",
+        "Tutors",
+        "Pathway",
+        "Enrolment"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Education Academy"
+    },
+    {
+      "id": "premium-charity-campaign",
+      "category": "healthcare",
+      "title": "Charity Campaign",
+      "client": "Common Ground",
+      "badge": "Nonprofit campaign",
+      "headline": "Make the cause clear enough to act on today.",
+      "subhead": "A campaign website for charities, fundraisers, community projects, reports, petitions, and public-interest storytelling.",
+      "cta": "Support the campaign",
+      "secondary": "Read the story",
+      "palette": [
+        "#064e3b",
+        "#fbbf24",
+        "#f8fafc"
+      ],
+      "metrics": [
+        [
+          "4",
+          "ways to help"
+        ],
+        [
+          "18k",
+          "people reached"
+        ],
+        [
+          "100%",
+          "impact focus"
+        ]
+      ],
+      "sections": [
+        "Story",
+        "Impact",
+        "Evidence",
+        "Updates",
+        "Support"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Charity Campaign"
+    },
+    {
+      "id": "premium-skincare-commerce",
+      "category": "ecommerce",
+      "title": "Skincare Commerce",
+      "client": "Luma Rituals",
+      "badge": "Beauty ecommerce",
+      "headline": "A product ritual that feels premium before checkout.",
+      "subhead": "A luxury ecommerce website for skincare, beauty, wellness products, bundles, education, subscriptions, and launches.",
+      "cta": "Shop rituals",
+      "secondary": "Explore the range",
+      "palette": [
+        "#20342f",
+        "#f3f0e7",
+        "#b78c65"
+      ],
+      "metrics": [
+        [
+          "6",
+          "hero products"
+        ],
+        [
+          "24h",
+          "dispatch"
+        ],
+        [
+          "4.8",
+          "review score"
+        ]
+      ],
+      "sections": [
+        "Products",
+        "Rituals",
+        "Ingredients",
+        "Proof",
+        "Subscribe"
+      ],
+      "inspiration": [
+        "private assets editorial system",
+        "high-end service storytelling",
+        "cinematic full-bleed imagery",
+        "DaisyUI accessible primitives"
+      ],
+      "heroPattern": "premium-editorial-system",
+      "templateFamily": "luxuryPropertyTemplate",
+      "premiumCategory": "Skincare Commerce"
     }
   ]
 }

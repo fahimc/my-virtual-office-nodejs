@@ -48,13 +48,16 @@ assert.match(html, /id="luxuryEnquiryForm"/);
 assert.doesNotMatch(html, /template section/i);
 assert.doesNotMatch(html, />\s*(?:undefined|null)\s*</i);
 
-assert.equal(premiumTemplateCatalog.length, 6);
+assert.equal(premiumTemplateCatalog.length, 16);
 assert.equal(new Set(premiumTemplateCatalog.map(item => item.id)).size, premiumTemplateCatalog.length);
 assert.equal(premiumTemplateForBrief('boutique hotel and private country retreat')?.id, 'luxury-hospitality-retreat');
 assert.equal(premiumTemplateForBrief('architecture and interior design studio')?.id, 'luxury-architecture-practice');
 assert.equal(premiumTemplateForBrief('independent family office for private wealth')?.id, 'luxury-private-wealth');
 assert.equal(premiumTemplateForBrief('integrative wellness and longevity practice')?.id, 'luxury-wellness-sanctuary');
 assert.equal(premiumTemplateForBrief('fine jewellery atelier')?.id, 'luxury-jewellery-atelier');
+assert.equal(premiumTemplateForBrief('private law firm and solicitor website')?.id, 'premium-law-firm');
+assert.equal(premiumTemplateForBrief('AI SaaS automation software platform')?.id, 'premium-ai-saas-platform');
+assert.equal(premiumTemplateForBrief('skincare ecommerce product launch')?.id, 'premium-skincare-commerce');
 
 for (const template of premiumTemplateCatalog) {
   assert.equal(template.images.length, 8, `${template.id} must expose a complete curated image set`);

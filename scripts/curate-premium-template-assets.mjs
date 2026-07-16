@@ -1,12 +1,15 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
+import { premiumTemplateCatalog } from '../src/templates/premiumTemplateCatalog.js';
 
 const workspaceRoot = path.resolve(import.meta.dirname, '..');
 const outputRoot = path.join(workspaceRoot, 'public', 'template-gallery', 'premium-assets');
 const unsplashLicense = 'https://unsplash.com/license';
+const placeholderManifest = JSON.parse(await readFile(path.join(workspaceRoot, 'public', 'placeholders', 'manifest.json'), 'utf8'));
 
-const catalog = {
+const sourceOverrides = {
   'luxury-private-assets': [
     local('public/template-gallery/generated-imagery/property-showcase/hero-property-showcase.webp', 'Existing text-free OpenAI gallery asset'),
     unsplash('1600585154340-be6161a56a0c'),
@@ -69,6 +72,11 @@ const catalog = {
   ]
 };
 
+const catalog = Object.fromEntries(
+  premiumTemplateCatalog.map(template => [template.id, sourceOverrides[template.id] || fallbackSources(template)])
+);
+
+await rm(outputRoot, { recursive: true, force: true });
 await mkdir(outputRoot, { recursive: true });
 const credits = [];
 
@@ -105,7 +113,7 @@ for (const [templateId, sources] of Object.entries(catalog)) {
 }
 
 await writeFile(path.join(outputRoot, 'credits.json'), `${JSON.stringify({ generatedAt: new Date().toISOString(), assets: credits }, null, 2)}\n`);
-console.log(`Curated ${credits.length} premium template assets across ${Object.keys(catalog).length} categories.`);
+console.log(`Curated ${credits.length} premium template assets across ${Object.keys(catalog).length} templates.`);
 
 function unsplash(photoId) {
   return {
@@ -119,6 +127,35 @@ function unsplash(photoId) {
 
 function local(filePath, origin) {
   return { kind: 'local', path: filePath, origin, provider: 'openai' };
+}
+
+function fallbackSources(template) {
+  const category = placeholderCategory(template.category);
+  const pool = placeholderManifest.categories[category] || placeholderManifest.categories.agency || [];
+  const sourceId = template.imagerySourceId || template.id;
+  const generatedHeroPath = path.join('public', 'template-gallery', 'generated-imagery', sourceId, `hero-${sourceId}.webp`);
+  const heroSources = existsSync(path.join(workspaceRoot, generatedHeroPath))
+    ? [local(generatedHeroPath, 'Existing text-free OpenAI gallery asset')]
+    : [];
+  const usable = pool.slice(0, 8 - heroSources.length);
+  while (usable.length < 8 - heroSources.length && pool.length) usable.push(pool[usable.length % pool.length]);
+  if (!usable.length) throw new Error(`No fallback placeholder image pool found for ${template.id}`);
+  return [
+    ...heroSources,
+    ...usable.map((asset, index) => ({
+    kind: 'local',
+    path: path.join('public', asset.file.replace(/^\/+/, '')),
+    origin: index === 0
+      ? `Curated ${category} placeholder used as premium supporting source`
+      : `Curated ${category} placeholder used as premium content source`,
+    provider: 'local-placeholder'
+    }))
+  ];
+}
+
+function placeholderCategory(category) {
+  if (category === 'trades') return 'local-business';
+  return category || 'agency';
 }
 
 async function download(url) {

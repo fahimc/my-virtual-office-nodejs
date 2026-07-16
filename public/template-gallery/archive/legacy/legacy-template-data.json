@@ -1,0 +1,246 @@
+{
+  "generatedAt": "2026-07-16T13:55:57.963Z",
+  "archivedReason": "These templates are preserved for reference only and are not shown in the active gallery because they do not use the reusable premium editorial design system.",
+  "templates": [
+    {
+      "id": "fruit-commerce-splash",
+      "category": "food-drink",
+      "title": "Fruit Commerce Splash",
+      "client": "Zestora",
+      "badge": "Product launch",
+      "headline": "Fruit drinks that look as fresh as they taste.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/fruit-commerce-splash/"
+    },
+    {
+      "id": "saas-command-center",
+      "category": "saas",
+      "title": "SaaS Command Center",
+      "client": "Northstar OS",
+      "badge": "B2B SaaS",
+      "headline": "Run the whole operation from one calm dashboard.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/saas-command-center/"
+    },
+    {
+      "id": "local-trades-proof",
+      "category": "trades",
+      "title": "Local Trades Proof",
+      "client": "Ashford Heating",
+      "badge": "Local service",
+      "headline": "Fast repairs, tidy installs, and quotes without the runaround.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/local-trades-proof/"
+    },
+    {
+      "id": "beauty-booking-editorial",
+      "category": "beauty",
+      "title": "Beauty Booking Editorial",
+      "client": "Luna Studio",
+      "badge": "Beauty & salon",
+      "headline": "Soft-touch treatments with a polished booking flow.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/beauty-booking-editorial/"
+    },
+    {
+      "id": "clinic-calm-care",
+      "category": "healthcare",
+      "title": "Clinic Calm Care",
+      "client": "Harbour Clinic",
+      "badge": "Healthcare",
+      "headline": "Clear care pathways, without the confusion.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/clinic-calm-care/"
+    },
+    {
+      "id": "restaurant-night-menu",
+      "category": "restaurant",
+      "title": "Restaurant Night Menu",
+      "client": "Ember Table",
+      "badge": "Restaurant",
+      "headline": "Seasonal plates, warm rooms, and a table worth booking.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/restaurant-night-menu/"
+    },
+    {
+      "id": "property-showcase",
+      "category": "real-estate",
+      "title": "Property Showcase",
+      "client": "Aster Homes",
+      "badge": "Real estate",
+      "headline": "Homes presented with the polish buyers expect.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/property-showcase/"
+    },
+    {
+      "id": "portfolio-creator-grid",
+      "category": "portfolio",
+      "title": "Portfolio Creator Grid",
+      "client": "Maya Finch",
+      "badge": "Portfolio",
+      "headline": "A sharp portfolio that makes the work impossible to miss.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/portfolio-creator-grid/"
+    },
+    {
+      "id": "agency-premium-system",
+      "category": "agency",
+      "title": "Agency Premium System",
+      "client": "Signal & Co",
+      "badge": "Agency",
+      "headline": "Strategy, design, and launches without the agency fog.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/agency-premium-system/"
+    },
+    {
+      "id": "fitness-membership-flow",
+      "category": "fitness",
+      "title": "Fitness Membership Flow",
+      "client": "Forge Fit",
+      "badge": "Fitness",
+      "headline": "Training plans, class energy, and membership conversion in one place.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/fitness-membership-flow/"
+    },
+    {
+      "id": "fashion-shop-editorial",
+      "category": "ecommerce",
+      "title": "Fashion Shop Editorial",
+      "client": "Vale Supply",
+      "badge": "Ecommerce",
+      "headline": "A collection launch with editorial pace and shop clarity.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/fashion-shop-editorial/"
+    },
+    {
+      "id": "learning-platform",
+      "category": "local-business",
+      "title": "Learning Platform",
+      "client": "BrightPath",
+      "badge": "Education",
+      "headline": "Courses that feel structured, supportive, and easy to start.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/learning-platform/"
+    },
+    {
+      "id": "awarded-museum-editorial",
+      "category": "portfolio",
+      "title": "Museum Editorial",
+      "client": "Warhol Archive",
+      "badge": "Award-inspired art site",
+      "headline": "An exhibition homepage with the confidence of a gallery wall.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/awarded-museum-editorial/"
+    },
+    {
+      "id": "awarded-cinematic-luxury",
+      "category": "real-estate",
+      "title": "Cinematic Luxury",
+      "client": "Maison Atlas",
+      "badge": "Luxury launch",
+      "headline": "A quiet luxury launch built around atmosphere, scarcity, and desire.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/awarded-cinematic-luxury/"
+    },
+    {
+      "id": "awarded-data-story",
+      "category": "saas",
+      "title": "Data Story Observatory",
+      "client": "TraceLab",
+      "badge": "Data narrative",
+      "headline": "Turn a complex dataset into a story people can act on.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/awarded-data-story/"
+    },
+    {
+      "id": "awarded-kinetic-agency",
+      "category": "agency",
+      "title": "Kinetic Agency",
+      "client": "Junction Lab",
+      "badge": "Experimental studio",
+      "headline": "A studio homepage that moves like a pitch deck and lands like a product.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/awarded-kinetic-agency/"
+    },
+    {
+      "id": "awarded-immersive-product",
+      "category": "ecommerce",
+      "title": "Immersive Product Drop",
+      "client": "Aether One",
+      "badge": "Product experience",
+      "headline": "A product drop with depth, motion, and a reason to scroll.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/awarded-immersive-product/"
+    },
+    {
+      "id": "awarded-human-cause",
+      "category": "healthcare",
+      "title": "Human Cause Story",
+      "client": "Ensaaf Foundation",
+      "badge": "Cause campaign",
+      "headline": "A campaign page that makes the human story impossible to skip.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/awarded-human-cause/"
+    },
+    {
+      "id": "reference-property-search-overlay",
+      "category": "real-estate",
+      "title": "Property Search Overlay",
+      "client": "AsterKey",
+      "badge": "Property search",
+      "headline": "Where affordability meets sustainability.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/reference-property-search-overlay/"
+    },
+    {
+      "id": "reference-mountain-journey",
+      "category": "portfolio",
+      "title": "Mountain Journey Hero",
+      "client": "Gateway",
+      "badge": "Travel concierge",
+      "headline": "Crafting journeys, not just trips.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/reference-mountain-journey/"
+    },
+    {
+      "id": "reference-saas-carousel-growth",
+      "category": "saas",
+      "title": "SaaS Carousel Growth",
+      "client": "EoS",
+      "badge": "Business automation",
+      "headline": "More growth, less work. Get your time back.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/reference-saas-carousel-growth/"
+    },
+    {
+      "id": "reference-spaceage-product-stage",
+      "category": "ecommerce",
+      "title": "SpaceAge Product Stage",
+      "client": "SpaceAge",
+      "badge": "Launch experience",
+      "headline": "A launch page with atmosphere, motion, and product focus.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/reference-spaceage-product-stage/"
+    },
+    {
+      "id": "reference-interior-split-panel",
+      "category": "real-estate",
+      "title": "Interior Split Panel",
+      "client": "HouseCut",
+      "badge": "Interior studio",
+      "headline": "A loft apartment arranged around modern comfort.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/reference-interior-split-panel/"
+    },
+    {
+      "id": "reference-architecture-strip",
+      "category": "real-estate",
+      "title": "Architecture Strip",
+      "client": "Formline",
+      "badge": "Architecture studio",
+      "headline": "Building shapes for the future.",
+      "archiveReason": "Legacy DaisyUI template archived because it does not use the reusable premium editorial template system.",
+      "url": "/template-gallery/archive/legacy/templates/reference-architecture-strip/"
+    }
+  ]
+}
